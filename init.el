@@ -1443,7 +1443,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode fundamental-mode) . visual-line-mode)
+  ((org-mode prog-mode fundamental-mode helpful-mode pydoc-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
