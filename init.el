@@ -506,6 +506,31 @@ rebalanced."
   :init
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit t)
+  (custom-set-faces
+   '(org-habit-alert-face
+     ((t (:background "#2dc937"
+                      :foreground "black"))))
+   '(org-habit-alert-future-face
+     ((t (:background "#2dc937"
+                      :foreground "black"))))
+   '(org-habit-clear-future-face
+     ((t (:background "#e7b416"
+                      :foreground "black"))))
+   '(org-habit-clear-face
+     ((t (:background "#e7b416"
+                      :foreground "black"))))
+   '(org-habit-overdue-face
+     ((t (:background "#cc3232"
+                      :foreground "black"))))
+   '(org-habit-overdue-future-face
+     ((t (:background "#cc3232"
+                      :foreground "black"))))
+   '(org-habit-ready-face
+     ((t (:background "#2dc937"
+                      :foreground "black"))))
+   '(org-habit-ready-future-face
+     ((t (:background "#2dc937"
+                      :foreground "black")))))
   (setopt
    org-habit-graph-column 50
    org-habit-show-habits-only-for-today nil
@@ -516,6 +541,11 @@ rebalanced."
    appt-activate t
    org-log-done 'time
    org-agenda-files nil
+   org-habit-overdue-glyph ?○
+   org-habit-alert-glyph ?○
+   org-habit-ready-future-glyph ?○
+   org-habit-today-glyph ?○
+   org-habit-completed-glyph ?●
    org-log-into-drawer t
    org-agenda-files '("~/org/TODO.org")
    org-preview-latex-process-alist '((dvipng :programs ("docker")  :description "dvi > png"
