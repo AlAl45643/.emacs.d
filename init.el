@@ -544,7 +544,7 @@ rebalanced."
    org-habit-overdue-glyph ?○
    org-habit-alert-glyph ?○
    org-habit-ready-future-glyph ?○
-   org-habit-today-glyph ?◎
+   org-habit-today-glyph ?○
    org-habit-completed-glyph ?●
    org-log-into-drawer t
    org-agenda-files '("~/org/TODO.org")
