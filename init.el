@@ -166,7 +166,8 @@
   (org-agenda-list)
   (bookmark-jump "Burly: home")
   (with-selected-window (get-buffer-window "*Org Agenda*")
-    (org-agenda-goto-today)))
+    (org-agenda-goto-today)
+    (call-interactively #'evil-scroll-line-to-top)))
 
 (defun my-window-bookmark-dape ()
   "Move to dape bookmark."
@@ -589,6 +590,49 @@ rebalanced."
       (save-window-excursion
         (org-clock-out))))
 
+(defvar my-killed-pomodoro-time 30 "Value when pomdoro is killed.")
+(defun my-org-pomodoro (&optional arg)
+  "Start a new pomodoro or stop the current one.
+
+When no timer is running for `org-pomodoro` a new pomodoro is started and
+the current task is clocked in.  Otherwise EMACS will ask whether we´d like to
+kill the current timer, this may be a break or a running pomodoro."
+  (interactive "P")
+
+  (when (and org-pomodoro-last-clock-in
+             org-pomodoro-expiry-time
+             (org-pomodoro-expires-p)
+             (y-or-n-p "Reset pomodoro count? "))
+    (setq org-pomodoro-count 0))
+  (setq org-pomodoro-last-clock-in (current-time))
+
+  (cond
+   ;; possibly break from overtime
+   ((and (org-pomodoro-active-p) (eq org-pomodoro-state :overtime))
+    (org-pomodoro-finished))
+   ;; Maybe kill running pomodoro
+   ((org-pomodoro-active-p)
+    (if (or (not org-pomodoro-ask-upon-killing)
+            (y-or-n-p "There is already a running timer.  Would you like to stop it? "))
+        (progn (setq my-killed-pomodoro-time (/ (org-pomodoro-remaining-seconds) 60)) (org-pomodoro-kill))
+      (message "Alright, keep up the good work!")))
+   ;; or start and clock in pomodoro
+   (t
+    (cond
+     ((equal arg '(16))
+      (call-interactively 'org-clock-in-last))
+     ((memq major-mode (list 'org-mode 'org-journal-mode))
+      (org-clock-in))
+     ((eq major-mode 'org-agenda-mode)
+      (org-with-point-at (org-get-at-bol 'org-hd-marker)
+        (call-interactively 'org-clock-in)))
+     (t (let ((current-prefix-arg '(4)))
+          (call-interactively 'org-clock-in))))
+    (if (equal arg '(4))
+        (let ((org-pomodoro-length my-killed-pomodoro-time))
+          (org-pomodoro-start :pomodoro))
+      (org-pomodoro-start :pomodoro)))))
+
 (use-package org-pomodoro
   :hook (org-pomodoro-break-finished . my-org-pomodoro-resume-after-break)
   :init
@@ -599,6 +643,7 @@ rebalanced."
    org-pomodoro-short-break-length 7
    org-pomodoro-long-break-length 15)
   :config
+  (advice-add 'org-pomodoro :override #'my-org-pomodoro)
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
   (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice))
 
@@ -1473,7 +1518,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode fundamental-mode helpful-mode pydoc-mode) . visual-line-mode)
+  ((org-mode prog-mode fundamental-mode helpful-mode pydoc-mode info-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
