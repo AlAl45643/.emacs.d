@@ -427,7 +427,7 @@ rebalanced."
    "M-f" 'forward-sexp
    "M-b" 'backward-sexp
    "M-u" 'backward-up-list
-   "M-d" 'down-list
+   "M-w" 'down-list
    "M-n" 'forward-list
    "M-p" 'backward-list
    )
@@ -988,6 +988,21 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 
 
+;;; csharp
+;;;; packages
+(my-install-package mason)
+(my-install-package sharper)
+;;;; config
+(use-package mason
+  :demand t
+  :config
+  (add-to-list 'mason-registries '("roslyn" . "https://github.com/Crashdummyy/mason-registry/releases/latest/download/registry.json.zip"))
+  (mason-update-registry)
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "roslyn")))))
+(use-package sharper
+  :demand t)
 ;;; javascript
 ;;;;; packages
 (my-install-package js2-mode)
@@ -1175,6 +1190,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (python-ts-mode . eglot-ensure)
   (LaTeX-mode . eglot-ensure)
   :config
+  (add-to-list 'exec-path (concat user-emacs-directory "mason/bin/"))
   (add-hook 'eglot-managed-mode-hook #'my-eglot-capf)
   (add-hook 'eglot-managed-mode-hook #'my-file-completion-for-eglot 100)
   ;; if lsp-server returns many completions then turn off but if it doesn't then turn it on
@@ -1182,7 +1198,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
   (add-to-list 'eglot-server-programs
                '(LaTeX-mode . ("texlab")))
-  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("csharp-language-server")))
+  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("roslyn")))
 
 (defvar eldoc-ratio 0.30)
 
@@ -1691,7 +1707,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-to-list 'custom-enabled-themes 'tango-dark)
   (load-theme 'tango-dark)
   (blink-cursor-mode 0)
-  (add-to-list 'exec-path (concat user-emacs-directory "bin/"))
   :diminish outline-minor-mode)
 
 
