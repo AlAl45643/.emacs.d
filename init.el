@@ -228,9 +228,9 @@
   "1" 'my-window-bookmark-home
   "2" 'my-window-bookmark-dape
   "o" 'my-online-search
-  "w" 'eww
-  "b" 'remember
   "y" 'evil-avy-goto-char
+  "=" 'text-scale-adjust
+  "-" 'text-scale-adjust
   )
 
 ;;;; my-second-leader-evil-map
@@ -314,7 +314,8 @@
 
 (+general-global-menu! "miscellaneous" "s"
   "t" 'my-cycle-theme
-  "n" 'remember-notes)
+  "n" 'remember-notes
+  "c" 'calc)
 (+general-global-menu! "eval" "v"
   "s" 'eval-last-sexp
   "b" 'eval-buffer
@@ -423,6 +424,12 @@ rebalanced."
    "C-w C-v" 'my-evil-window-vsplit-left
    "C-S-f" 'scroll-other-window
    "C-S-b" 'scroll-other-window-down
+   "M-f" 'forward-sexp
+   "M-b" 'backward-sexp
+   "M-u" 'backward-up-list
+   "M-d" 'down-list
+   "M-n" 'forward-list
+   "M-p" 'backward-list
    )
   ('insert
    "TAB" 'smart-tab))
@@ -909,7 +916,14 @@ If NOERROR, inhibit error messages when we can't find the node."
 (my-install-package swanky-python '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
 (my-install-package pet)
 (my-install-package treesit-auto)
+(my-install-package mason)
 ;;;; config
+(use-package mason
+  :demand t
+  :config
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "python-lsp-server")))))
 (defun my-python-repl ()
   "Go to Python REPL and create it if needed."
   (interactive)
@@ -1547,6 +1561,15 @@ If NOERROR, inhibit error messages when we can't find the node."
   (which-key-mode)
   :diminish which-key-mode
   )
+;;; calc
+;;;; packages
+(my-install-package casual-suite)
+;;;; config
+(use-package casual-suite
+  :general
+  ('normal calc-mode-map
+           "?" 'casual-calc-tmenu))
+
 ;;; file manager
 (defun my-dired-find-file ()
   "In Dired, visit the file or directory named on this line."
