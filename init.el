@@ -1198,7 +1198,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
   (add-to-list 'eglot-server-programs
                '(LaTeX-mode . ("texlab")))
-  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("roslyn")))
+  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("roslyn" "--logLevel" "Error" "--extensionLogDirectory" "./" "--stdio" "--telemetryLevel" "off")))
 
 (defvar eldoc-ratio 0.30)
 
