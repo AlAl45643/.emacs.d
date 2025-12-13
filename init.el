@@ -988,9 +988,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   (setq slime-contribs '(slime-py slime-fancy slime-cape slime-star slime-asdf slime-sprof slime-tramp)))
 
 
-
-
-
 ;;; csharp
 ;;;; packages
 (my-install-package mason)
@@ -1011,9 +1008,12 @@ If NOERROR, inhibit error messages when we can't find the node."
            "?" 'sharper-transient-project-packages)
   ('normal sharper--project-references-mode-map
            "g r" 'sharper--project-references-mode-map
-           "?" 'sharper-transient-project-references)
-  
-  )
+           "?" 'sharper-transient-project-references))
+
+(use-package csharp-mode
+  :general-config
+  (csharp-ts-mode-map
+   "C-c s" 'sharper-main-transient))
 ;;; javascript
 ;;;;; packages
 (my-install-package js2-mode)
