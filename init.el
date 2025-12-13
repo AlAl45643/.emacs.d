@@ -1007,7 +1007,7 @@ If NOERROR, inhibit error messages when we can't find the node."
            "g r" 'sharper--project-packages-refresh
            "?" 'sharper-transient-project-packages)
   ('normal sharper--project-references-mode-map
-           "g r" 'sharper--project-references-mode-map
+           "g r" 'sharper--project-references-refresh
            "?" 'sharper-transient-project-references))
 
 (use-package csharp-mode
