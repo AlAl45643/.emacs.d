@@ -724,6 +724,7 @@ kill the current timer, this may be a break or a running pomodoro."
       (let ((s (string-replace " " " " (buffer-string))))
         (with-current-buffer (generate-new-buffer "*persisted eldoc*")
           (insert s)
+          (visual-line-mode)
           (display-buffer (current-buffer))
           (set-window-start (get-buffer-window "*persisted eldoc*") 0)
           (general-def 'normal 'local
@@ -777,7 +778,9 @@ kill the current timer, this may be a break or a running pomodoro."
    "x" 'my-helpful-command-save-window
    "F" 'my-helpful-function-save-window)
   ('normal
-   "g h" 'my-help-at-point))
+   "g h" 'my-help-at-point)
+  (eglot-mode-map
+   "C-h ." 'my-help-at-point))
 
 
 
@@ -997,12 +1000,20 @@ If NOERROR, inhibit error messages when we can't find the node."
   :demand t
   :config
   (add-to-list 'mason-registries '("roslyn" . "https://github.com/Crashdummyy/mason-registry/releases/latest/download/registry.json.zip"))
-  (mason-update-registry)
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "roslyn")))))
 (use-package sharper
-  :demand t)
+  :demand t
+  :general-config
+  ('normal sharper--project-packages-mode-map
+           "g r" 'sharper--project-packages-refresh
+           "?" 'sharper-transient-project-packages)
+  ('normal sharper--project-references-mode-map
+           "g r" 'sharper--project-references-mode-map
+           "?" 'sharper-transient-project-references)
+  
+  )
 ;;; javascript
 ;;;;; packages
 (my-install-package js2-mode)
@@ -1548,7 +1559,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode fundamental-mode helpful-mode pydoc-mode info-mode) . visual-line-mode)
+  ((org-mode prog-mode helpful-mode pydoc-mode info-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
