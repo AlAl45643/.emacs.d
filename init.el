@@ -713,7 +713,6 @@ kill the current timer, this may be a break or a running pomodoro."
 (my-install-package helpful)
 (my-install-package evil)
 (my-install-package elisp-demos)
-(my-install-package pydoc)
 ;;;;; config
 (defun my-persist-eldoc (interactive)
   (interactive (list t))
@@ -728,9 +727,7 @@ kill the current timer, this may be a break or a running pomodoro."
           (display-buffer (current-buffer))
           (set-window-start (get-buffer-window "*persisted eldoc*") 0)
           (general-def 'normal 'local
-            "q" 'evil-window-delete)
-          (cond
-           ((or (equal mode 'python-ts-mode) (equal mode 'python-mode)) (pydoc-mode))))))))
+            "q" 'evil-window-delete))))))
 
 (defun my-help-at-point ()
   (interactive)
@@ -1562,7 +1559,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode helpful-mode pydoc-mode info-mode) . visual-line-mode)
+  ((org-mode prog-mode helpful-mode info-mode special-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
@@ -1710,7 +1707,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)
    auto-save-visited-interval 1)
-  (setq-default truncate-lines nil)
+  (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
   (global-auto-revert-mode 1)
