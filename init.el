@@ -421,16 +421,18 @@ rebalanced."
    "[ x" 'xref-go-back
    "] x" 'xref-go-forward
    "g d" 'xref-find-definitions
+   "g D" 'xref-find-definitions-other-window
    "C-w C-v" 'my-evil-window-vsplit-left
    "C-S-f" 'scroll-other-window
    "C-S-b" 'scroll-other-window-down
+   )
+  ('(normal insert)
    "M-f" 'forward-sexp
    "M-b" 'backward-sexp
    "M-u" 'backward-up-list
    "M-w" 'down-list
    "M-n" 'forward-list
-   "M-p" 'backward-list
-   )
+   "M-p" 'backward-list)
   ('insert
    "TAB" 'smart-tab))
 
@@ -997,6 +999,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "csharp-language-server")))))
+
 (use-package sharper
   :demand t
   :general-config
@@ -1007,10 +1010,26 @@ If NOERROR, inhibit error messages when we can't find the node."
            "g r" 'sharper--project-references-refresh
            "?" 'sharper-transient-project-references))
 
+;; TODO
+(cl-defun my-eglot--lsp-xrefs-for-metadata ()
+  "Make `xref''s for metadata uri's returned from `:textDocument/definition' by calling `:csharp/metadata' for csharp-ls language server."
+  (let* ((metadata
+         (eglot--request
+          (eglot--current-server-or-lose)
+          :textDocument/definition (append (eglot--TextDocumentPositionParams))))
+         (uri (plist-get (aref metadata 0) :uri))
+         (decompile
+          (eglot--request
+           (eglot--current-server-or-lose) :csharp/metadata (list :timeout 5000 :textDocument (list :uri uri)))))
+    )
+  )
+
 (use-package csharp-mode
   :general-config
   (csharp-ts-mode-map
    "C-c s" 'sharper-main-transient))
+
+
 ;;; javascript
 ;;;;; packages
 (my-install-package js2-mode)
