@@ -1002,7 +1002,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-to-list 'mason-registries '("roslyn" . "https://github.com/Crashdummyy/mason-registry/releases/latest/download/registry.json.zip"))
   (mason-ensure
    (lambda ()
-     (ignore-errors (mason-install "roslyn")))))
+     (ignore-errors (mason-install "csharp-language-server")))))
 (use-package sharper
   :demand t
   :general-config
@@ -1179,6 +1179,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (my-install-package yasnippet)
 (my-install-package yasnippet-snippets)
 (my-install-package yasnippet-capf)
+(my-install-package markdown-mode)
 (my-install-package orderless)
 ;;;;; config
 (defvar my-eglot-completion-functions (list #'yasnippet-capf #'eglot-completion-at-point)
@@ -1201,6 +1202,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (python-ts-mode . eglot-ensure)
   (LaTeX-mode . eglot-ensure)
   :config
+  (setopt
+   eglot-connect-timeout 60)
   (add-to-list 'exec-path (concat user-emacs-directory "mason/bin/"))
   (add-hook 'eglot-managed-mode-hook #'my-eglot-capf)
   (add-hook 'eglot-managed-mode-hook #'my-file-completion-for-eglot 100)
@@ -1208,8 +1211,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;; This line causes function to delete or add characters when exiting https://github.com/minad/cape/issues/81
   ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
   (add-to-list 'eglot-server-programs
-               '(LaTeX-mode . ("texlab")))
-  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("roslyn" "--logLevel" "Error" "--extensionLogDirectory" "./" "--stdio" "--telemetryLevel" "off")))
+               '(LaTeX-mode . ("texlab"))))
 
 (defvar eldoc-ratio 0.30)
 
@@ -1249,6 +1251,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :config
   (advice-add 'eldoc-display-in-buffer :around #'my-save-eldoc-point-advice)
   :diminish eldoc-mode)
+
 
 (use-package yasnippet
   :init
