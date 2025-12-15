@@ -1000,8 +1000,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "roslyn")))))
+
 (use-package sharper
-  :demand t
   :general-config
   ('normal sharper--project-packages-mode-map
            "g r" 'sharper--project-packages-refresh
