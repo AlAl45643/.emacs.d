@@ -995,7 +995,6 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package mason
   :demand t
   :config
-  (add-to-list 'mason-registries '("roslyn" . "https://github.com/Crashdummyy/mason-registry/releases/latest/download/registry.json.zip"))
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "csharp-language-server")))))
