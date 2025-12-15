@@ -421,16 +421,18 @@ rebalanced."
    "[ x" 'xref-go-back
    "] x" 'xref-go-forward
    "g d" 'xref-find-definitions
+   "g D" 'xref-find-definitions-other-window
    "C-w C-v" 'my-evil-window-vsplit-left
    "C-S-f" 'scroll-other-window
    "C-S-b" 'scroll-other-window-down
+   )
+  ('(normal insert)
    "M-f" 'forward-sexp
    "M-b" 'backward-sexp
    "M-u" 'backward-up-list
    "M-w" 'down-list
    "M-n" 'forward-list
-   "M-p" 'backward-list
-   )
+   "M-p" 'backward-list)
   ('insert
    "TAB" 'smart-tab))
 
@@ -713,7 +715,6 @@ kill the current timer, this may be a break or a running pomodoro."
 (my-install-package helpful)
 (my-install-package evil)
 (my-install-package elisp-demos)
-(my-install-package pydoc)
 ;;;;; config
 (defun my-persist-eldoc (interactive)
   (interactive (list t))
@@ -728,9 +729,7 @@ kill the current timer, this may be a break or a running pomodoro."
           (display-buffer (current-buffer))
           (set-window-start (get-buffer-window "*persisted eldoc*") 0)
           (general-def 'normal 'local
-            "q" 'evil-window-delete)
-          (cond
-           ((or (equal mode 'python-ts-mode) (equal mode 'python-mode)) (pydoc-mode))))))))
+            "q" 'evil-window-delete))))))
 
 (defun my-help-at-point ()
   (interactive)
@@ -996,10 +995,9 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package mason
   :demand t
   :config
-  (add-to-list 'mason-registries '("roslyn" . "https://github.com/Crashdummyy/mason-registry/releases/latest/download/registry.json.zip"))
   (mason-ensure
    (lambda ()
-     (ignore-errors (mason-install "roslyn")))))
+     (ignore-errors (mason-install "csharp-language-server")))))
 
 (use-package sharper
   :general-config
@@ -1010,10 +1008,26 @@ If NOERROR, inhibit error messages when we can't find the node."
            "g r" 'sharper--project-references-refresh
            "?" 'sharper-transient-project-references))
 
+;; TODO
+(cl-defun my-eglot--lsp-xrefs-for-metadata ()
+  "Make `xref''s for metadata uri's returned from `:textDocument/definition' by calling `:csharp/metadata' for csharp-ls language server."
+  (let* ((metadata
+         (eglot--request
+          (eglot--current-server-or-lose)
+          :textDocument/definition (append (eglot--TextDocumentPositionParams))))
+         (uri (plist-get (aref metadata 0) :uri))
+         (decompile
+          (eglot--request
+           (eglot--current-server-or-lose) :csharp/metadata (list :timeout 5000 :textDocument (list :uri uri)))))
+    )
+  )
+
 (use-package csharp-mode
   :general-config
   (csharp-ts-mode-map
    "C-c s" 'sharper-main-transient))
+
+
 ;;; javascript
 ;;;;; packages
 (my-install-package js2-mode)
@@ -1179,6 +1193,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (my-install-package yasnippet)
 (my-install-package yasnippet-snippets)
 (my-install-package yasnippet-capf)
+(my-install-package markdown-mode)
 (my-install-package orderless)
 ;;;;; config
 (defvar my-eglot-completion-functions (list #'yasnippet-capf #'eglot-completion-at-point)
@@ -1201,6 +1216,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (python-ts-mode . eglot-ensure)
   (LaTeX-mode . eglot-ensure)
   :config
+  (setopt
+   eglot-connect-timeout 60)
   (add-to-list 'exec-path (concat user-emacs-directory "mason/bin/"))
   (add-hook 'eglot-managed-mode-hook #'my-eglot-capf)
   (add-hook 'eglot-managed-mode-hook #'my-file-completion-for-eglot 100)
@@ -1208,8 +1225,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;; This line causes function to delete or add characters when exiting https://github.com/minad/cape/issues/81
   ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
   (add-to-list 'eglot-server-programs
-               '(LaTeX-mode . ("texlab")))
-  (setf (alist-get '(csharp-mode csharp-ts-mode) eglot-server-programs) '("roslyn" "--logLevel" "Error" "--extensionLogDirectory" "./" "--stdio" "--telemetryLevel" "off")))
+               '(LaTeX-mode . ("texlab"))))
 
 (defvar eldoc-ratio 0.30)
 
@@ -1249,6 +1265,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :config
   (advice-add 'eldoc-display-in-buffer :around #'my-save-eldoc-point-advice)
   :diminish eldoc-mode)
+
 
 (use-package yasnippet
   :init
@@ -1559,7 +1576,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode helpful-mode pydoc-mode info-mode) . visual-line-mode)
+  ((org-mode prog-mode helpful-mode info-mode special-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
@@ -1707,7 +1724,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)
    auto-save-visited-interval 1)
-  (setq-default truncate-lines nil)
+  (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
   (global-auto-revert-mode 1)
