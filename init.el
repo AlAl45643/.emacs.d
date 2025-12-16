@@ -376,6 +376,11 @@
    ((and (featurep 'eglot) eglot--managed-mode) (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
+(defun my-delete-back-to-char ()
+  "Delete backward to char."
+  (interactive)
+  (while (or (equal (preceding-char) ?\n) (equal (preceding-char) ?\s) (equal (preceding-char) ?\t))
+    (backward-delete-char-untabify 1)))
 
 (use-package evil
   :demand t
@@ -434,7 +439,8 @@ rebalanced."
    "M-n" 'forward-list
    "M-p" 'backward-list)
   ('insert
-   "TAB" 'smart-tab))
+   "TAB" 'smart-tab
+   "C-b" 'my-delete-back-to-char)
 
 (use-package evil-collection
   :hook (evil-mode . evil-collection-init)
