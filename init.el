@@ -1006,7 +1006,6 @@ If NOERROR, inhibit error messages when we can't find the node."
      (ignore-errors (mason-install "csharp-language-server")))))
 
 (use-package sharper
-  :demand t
   :general-config
   ('normal sharper--project-packages-mode-map
            "g r" 'sharper--project-packages-refresh
