@@ -9,7 +9,7 @@
 ;; + put setopts in :init as customization avoids loading as much as it can
 ;; + diminish should be on the last line
 ;; + :demand :mode :hook :general  :init :config :general-config
-;; + prefer loading packages with hooks :after :init :config but with :hooks and :general
+;; + prefer loading packages with of :hooks and :general instead of :after :init :config but with 
 ;; + one line for each :hook
 ;; + hooks should be placed in the package where the function was provided
 ;;;; keybind rules
@@ -449,7 +449,8 @@
    evil-visual-line-message nil
    evil-visual-block-message nil
    evil-respect-visual-line-mode t
-   evil-visual-screen-line-message nil)
+   evil-visual-screen-line-message nil
+   evil-move-beyond-eol t)
   (evil-mode 1)
   :config
   (evil-define-command my-evil-window-vsplit-left (&optional count file)
@@ -477,25 +478,21 @@ rebalanced."
    "g D" 'xref-find-definitions-other-window
    "C-w C-v" 'my-evil-window-vsplit-left
    "C-S-f" 'scroll-other-window
-   "C-S-b" 'scroll-other-window-down
-   )
-  ('insert
-   "M-f" 'forward-sexp
-   "M-b" 'backward-sexp
-   "M-u" 'backward-up-list
-   "M-d" 'down-list
-   "M-n" 'forward-list
-   "M-p" 'backward-list)
-  ('normal
-   "M-f" 'my-normal-state-forward-sexp
-   "M-b" 'my-normal-state-backward-sexp
-   "M-u" 'backward-up-list
-   "M-d" 'down-list
-   "M-n" 'my-normal-state-forward-list
-   "M-p" 'my-normal-state-backward-list)
+   "C-S-b" 'scroll-other-window-down)
   ('insert
    "TAB" 'smart-tab
-   "C-b" 'my-delete-back-to-char)) 
+   "C-b" 'my-delete-back-to-char)
+  ('(normal insert) 'override  
+   "M-l" 'forward-sexp
+   "M-h" 'backward-sexp
+   "M-k" 'backward-up-list
+   "M-j" 'down-list))
+
+
+
+
+
+
 
 (use-package evil-collection
   :hook (evil-mode . evil-collection-init)
@@ -540,14 +537,7 @@ rebalanced."
   (general-unbind iedit-mode-keymap
     "TAB"
     "<tab>"
-    "<backtab")
-  ('visual
-   "R" 'evil-multiedit-match-all
-   "M-e" 'evil-multiedit-match-and-next
-   "M-E" 'evil-multiedit-match-and-prev)
-  ('(normal insert)
-   "M-e" 'evil-multiedit-match-symbol-and-next
-   "M-E" 'evil-multiedit-match-symbol-and-prev))
+    "<backtab"))
 ;;; org
 ;;;; packages
 (my-install-package org)
