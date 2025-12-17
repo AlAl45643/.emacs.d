@@ -382,7 +382,55 @@
   (while (or (equal (preceding-char) ?\n) (equal (preceding-char) ?\s) (equal (preceding-char) ?\t))
     (backward-delete-char-untabify 1)))
 
-(use-package evil
+(defun my-normal-state-forward-sexp ()
+  "Fix forward sexp in normal state."
+  (interactive)
+  (cond
+   ((or (looking-at ".\n") (looking-at ")"))
+    (unwind-protect
+        (progn
+          (evil-append 1)
+          (call-interactively #'forward-sexp))
+      (evil-force-normal-state)))
+   (t (call-interactively #'forward-sexp))))
+
+(defun my-normal-state-backward-sexp ()
+  "Fix backward sexp in normal state."
+  (interactive)
+  (cond
+   ((or (looking-at ".\n") (looking-at ")"))
+    (unwind-protect
+        (progn
+          (evil-append 1)
+          (call-interactively #'backward-sexp))
+      (evil-force-normal-state)))
+   (t (call-interactively #'backward-sexp)))) 
+
+(defun my-normal-state-forward-list ()
+  "Fix forward list in normal state."
+  (interactive)
+  (cond
+   ((or (looking-at ".\n") (looking-at ")"))
+    (unwind-protect
+        (progn
+          (evil-append 1)
+          (call-interactively #'forward-list))
+      (evil-force-normal-state)))
+   (t (call-interactively #'forward-list))))
+
+(defun my-normal-state-backward-list ()
+  "Fix backward list in normal state."
+  (interactive)
+  (cond
+   ((or (looking-at ".\n") (looking-at ")"))
+    (unwind-protect
+        (progn
+          (evil-append 1)
+          (call-interactively #'backward-list))
+      (evil-force-normal-state)))
+   (t (call-interactively #'backward-list))))
+
+(use-package evil 
   :demand t
   :init
   (setopt
@@ -431,16 +479,23 @@ rebalanced."
    "C-S-f" 'scroll-other-window
    "C-S-b" 'scroll-other-window-down
    )
-  ('(normal insert)
+  ('insert
    "M-f" 'forward-sexp
    "M-b" 'backward-sexp
    "M-u" 'backward-up-list
-   "M-w" 'down-list
+   "M-d" 'down-list
    "M-n" 'forward-list
    "M-p" 'backward-list)
+  ('normal
+   "M-f" 'my-normal-state-forward-sexp
+   "M-b" 'my-normal-state-backward-sexp
+   "M-u" 'backward-up-list
+   "M-d" 'down-list
+   "M-n" 'my-normal-state-forward-list
+   "M-p" 'my-normal-state-backward-list)
   ('insert
    "TAB" 'smart-tab
-   "C-b" 'my-delete-back-to-char)
+   "C-b" 'my-delete-back-to-char)) 
 
 (use-package evil-collection
   :hook (evil-mode . evil-collection-init)
@@ -474,17 +529,25 @@ rebalanced."
 (defun my-evil-multiedit-maintain-visual-cursor-advice (func &rest args)
   (if evil-visual-state-minor-mode
       (set-window-point (selected-window) (- (point) 1))))
+
 (use-package evil-multiedit
   :hook (evil-mode . evil-multiedit-mode)
   :config
   (evil-multiedit-default-keybinds)
   (advice-add 'evil-multiedit-match-and-next :before #'my-evil-multiedit-maintain-visual-cursor-advice)
   (advice-add 'evil-multiedit-match-and-prev :before #'my-evil-multiedit-maintain-visual-cursor-advice)
-  :config
+  :general-config
   (general-unbind iedit-mode-keymap
     "TAB"
     "<tab>"
-    "<backtab"))
+    "<backtab")
+  ('visual
+   "R" 'evil-multiedit-match-all
+   "M-e" 'evil-multiedit-match-and-next
+   "M-E" 'evil-multiedit-match-and-prev)
+  ('(normal insert)
+   "M-e" 'evil-multiedit-match-symbol-and-next
+   "M-E" 'evil-multiedit-match-symbol-and-prev))
 ;;; org
 ;;;; packages
 (my-install-package org)
