@@ -312,6 +312,9 @@
   "k" 'docker
   )
 
+(+general-global-menu! "consult" "c"
+  "g" 'consult-grep)
+
 (+general-global-menu! "miscellaneous" "s"
   "t" 'my-cycle-theme
   "n" 'remember-notes
@@ -913,7 +916,9 @@ If NOERROR, inhibit error messages when we can't find the node."
        (push (list Info-current-file Info-current-node (point))
              Info-history))
   
-  (if (and filename (my-file-extension filename))
+  (if-let* ((filename filename)
+            (extension (my-file-extension filename))
+            (info (not (member "info" extension))))
       (let ((buffer (find-file-noselect filename)))
         (switch-to-buffer buffer)
         (require 'general)
@@ -926,6 +931,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :config
   (advice-add 'Info-find-node :override #'my-Info-find-node)
   (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
+  (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
   )
 
 ;;; git
