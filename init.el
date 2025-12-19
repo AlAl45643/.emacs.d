@@ -73,12 +73,6 @@
   (general-auto-unbind-keys)
   )
 
-(defmacro my-install-package (name &optional straight)
-  (if straight
-      `(use-package ,name
-         :straight ,straight)
-    `(use-package ,name
-       :straight t)))
 
 ;;;; my-main-leader-evil-map
 (defun my-run-program ()
@@ -313,7 +307,8 @@
   )
 
 (+general-global-menu! "consult" "c"
-  "g" 'consult-grep)
+  "g" 'consult-grep
+  "f" 'consult-find)
 
 (+general-global-menu! "miscellaneous" "s"
   "t" 'my-cycle-theme
@@ -348,14 +343,15 @@
   "C-<menu>" (general-simulate-key "C-c"))
 ;;; evil suite
 ;;;; packages
-(my-install-package evil)
-(my-install-package avy)
-(my-install-package evil-collection)
-(my-install-package evil-owl)
-(my-install-package evil-mc)
-(my-install-package evil-commentary)
-(my-install-package evil-multiedit)
-(my-install-package posframe)
+(straight-use-package 'evil)
+(straight-use-package 'avy)
+(straight-use-package 'combobulate nil t)
+(straight-use-package 'evil-collection)
+(straight-use-package 'evil-owl)
+(straight-use-package 'evil-mc)
+(straight-use-package 'evil-commentary)
+(straight-use-package 'evil-multiedit)
+(straight-use-package 'posframe)
 ;;;; config
 (defun smart-tab ()
   (interactive)
@@ -384,54 +380,6 @@
   (interactive)
   (while (or (equal (preceding-char) ?\n) (equal (preceding-char) ?\s) (equal (preceding-char) ?\t))
     (backward-delete-char-untabify 1)))
-
-(defun my-normal-state-forward-sexp ()
-  "Fix forward sexp in normal state."
-  (interactive)
-  (cond
-   ((or (looking-at ".\n") (looking-at ")"))
-    (unwind-protect
-        (progn
-          (evil-append 1)
-          (call-interactively #'forward-sexp))
-      (evil-force-normal-state)))
-   (t (call-interactively #'forward-sexp))))
-
-(defun my-normal-state-backward-sexp ()
-  "Fix backward sexp in normal state."
-  (interactive)
-  (cond
-   ((or (looking-at ".\n") (looking-at ")"))
-    (unwind-protect
-        (progn
-          (evil-append 1)
-          (call-interactively #'backward-sexp))
-      (evil-force-normal-state)))
-   (t (call-interactively #'backward-sexp)))) 
-
-(defun my-normal-state-forward-list ()
-  "Fix forward list in normal state."
-  (interactive)
-  (cond
-   ((or (looking-at ".\n") (looking-at ")"))
-    (unwind-protect
-        (progn
-          (evil-append 1)
-          (call-interactively #'forward-list))
-      (evil-force-normal-state)))
-   (t (call-interactively #'forward-list))))
-
-(defun my-normal-state-backward-list ()
-  "Fix backward list in normal state."
-  (interactive)
-  (cond
-   ((or (looking-at ".\n") (looking-at ")"))
-    (unwind-protect
-        (progn
-          (evil-append 1)
-          (call-interactively #'backward-list))
-      (evil-force-normal-state)))
-   (t (call-interactively #'backward-list))))
 
 (use-package evil 
   :demand t
@@ -485,16 +433,44 @@ rebalanced."
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
-  ('(normal insert) 'override  
-   "M-l" 'forward-sexp
-   "M-h" 'backward-sexp
-   "M-k" 'backward-up-list
-   "M-j" 'down-list))
+  ('normal prog-mode-map
+           "M-h" 'backward-up-list
+           "M-j" 'forward-list
+           "M-k" 'backward-list
+           "M-l" 'down-list
+           )
+  (general-unbind 'normal outline-mode-map
+    "M-h"
+    "M-j"
+    "M-k"
+    "M-l"
+    ))
 
 
-
-
-
+(use-package combobulate
+  :init
+  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
+  :hook 
+  (python-ts-mode . combobulate-mode)
+  :general-config
+  ('(normal insert) combobulate-python-map
+   "M-h" 'combobulate-navigate-up
+   "M-j" 'combobulate-navigate-next
+   "M-k" 'combobulate-navigate-previous
+   "M-l" 'combobulate-navigate-down
+   "M-w" 'combobulate-navigate-logical-next
+   "M-b" 'combobulate-navigate-logical-previous
+   "M-n" 'combobulate-navigate-sequence-next
+   "M-p" 'combobulate-navigate-sequence-previous
+   "<up>" 'combobulate-splice-up
+   "<down>" 'combobulate-splice-down
+   "<left>" 'combobulate-splice-self
+   "<right>" 'combobulate-splice-parent
+   "M-P" 'combobulate-drag-up
+   "M-N" 'combobulate-drag-down
+   "M-v" 'combobulate-mark-node-dwim
+   "M-d" 'combobulate-kill-node-dwim)
+  )
 
 
 (use-package evil-collection
@@ -543,7 +519,7 @@ rebalanced."
     "<backtab"))
 ;;; org
 ;;;; packages
-(my-install-package org)
+(straight-use-package 'org)
 
 ;;;; config
 (use-package org
@@ -551,9 +527,9 @@ rebalanced."
 
 ;;;; org tasks and notes
 ;;;;; packages
-(my-install-package org-pomodoro)
-(my-install-package evil)
-(my-install-package evil-org)
+(straight-use-package 'org-pomodoro)
+(straight-use-package 'evil)
+(straight-use-package 'evil-org)
 ;;;;; config
 (defun my-org-agenda-to-appt ()
   "Erase all reminders and rebuilt reminders for today from the agenda."
@@ -740,8 +716,8 @@ kill the current timer, this may be a break or a running pomodoro."
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t))))
 ;;;; org babel diagrams
 ;;;;; packages
-(my-install-package plantuml-mode)
-(my-install-package graphviz-dot-mode)
+(straight-use-package 'plantuml-mode)
+(straight-use-package 'graphviz-dot-mode)
 ;;;;; config
 (use-package org
   :config
@@ -756,9 +732,9 @@ kill the current timer, this may be a break or a running pomodoro."
       (plantuml-download-jar)))
 ;;;; org babel racket
 ;;;;; packages
-(my-install-package ob-racket (ob-racket :type git :host github :repo "hasu/emacs-ob-racket"
-                                         :files ("*.el" "*.rkt")))
-(my-install-package racket-mode)
+(straight-use-package '(ob-racket :type git :host github :repo "hasu/emacs-ob-racket"
+                                  :files ("*.el" "*.rkt")))
+(straight-use-package 'racket-mode)
 ;;;;; config
 (use-package org
   :config
@@ -774,9 +750,9 @@ kill the current timer, this may be a break or a running pomodoro."
   (org-babel-do-load-languages 'org-babel-load-languages '((python . t))))
 ;;; better help 
 ;;;;; packages
-(my-install-package helpful)
-(my-install-package evil)
-(my-install-package elisp-demos)
+(straight-use-package 'helpful)
+(straight-use-package 'evil)
+(straight-use-package 'elisp-demos)
 ;;;;; config
 (defun my-persist-eldoc (interactive)
   (interactive (list t))
@@ -847,9 +823,9 @@ kill the current timer, this may be a break or a running pomodoro."
 
 ;;; better info
 ;;;;; packages
-(my-install-package org-remark)
-(my-install-package org)
-(my-install-package pdf-tools)
+(straight-use-package 'org-remark)
+(straight-use-package 'org)
+(straight-use-package 'pdf-tools)
 ;;;;; config
 (use-package pdf-tools
   :init
@@ -936,7 +912,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; git
 ;;;; packages
-(my-install-package magit)
+(straight-use-package 'magit)
 ;;;; config
 (use-package magit
   :general-config
@@ -950,7 +926,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; docker
 ;;;; packages
-(my-install-package docker)
+(straight-use-package 'docker)
 ;;;; config
 (use-package docker
   :init
@@ -958,14 +934,14 @@ If NOERROR, inhibit error messages when we can't find the node."
    docker-command "docker"))
 ;;; php
 ;;;;; packages
-(my-install-package php-mode)
+(straight-use-package 'php-mode)
 ;;;;; config
 (use-package php-mode
   :mode ("\\.php\\'" . php-ts-mode)
   )
 ;;; latex
 ;;;; packages
-(my-install-package auctex)
+(straight-use-package 'auctex)
 ;;;; config
 (use-package tex
   :init
@@ -975,15 +951,15 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; python
 ;;;; packages
-(my-install-package slime)
-(my-install-package slime-company)
-(my-install-package slime-cape '(slime-cape :type git :host github :repo "ccqpein/slime-cape"))
-(my-install-package py-isort)
-(my-install-package slime-star '(slime-star :type git :host github :repo "bpecsek/slime-star"))
-(my-install-package swanky-python '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
-(my-install-package pet)
-(my-install-package treesit-auto)
-(my-install-package mason)
+(straight-use-package 'slime)
+(straight-use-package 'slime-company)
+(straight-use-package '(slime-cape :type git :host github :repo "ccqpein/slime-cape"))
+(straight-use-package 'py-isort)
+(straight-use-package '(slime-star :type git :host github :repo "mmontone/slime-star"))
+(straight-use-package '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
+(straight-use-package 'pet)
+(straight-use-package 'treesit-auto)
+(straight-use-package 'mason)
 ;;;; config
 (use-package mason
   :demand t
@@ -1095,15 +1071,16 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; javascript
 ;;;;; packages
-(my-install-package js2-mode)
+(straight-use-package 'js2-mode)
 ;;;;; config
 (use-package js2-mode
   :mode ("\\.js\\'" . js2-mode))
 ;;; emacs lisp
-;;;;; config
+;;;; config
 (defun my-elisp-imenu ()
   "Set up imenu for elisp."
-  (setq imenu-generic-expression (append (list  (list "Use Package" "^(use-package \\(.+\\)" 1)) imenu-generic-expression)))
+  (setq imenu-generic-expression (append (list  (list "Use Package" "(use-package \\(.+\\)" 1)) imenu-generic-expression)))
+
 (use-package elisp-mode
   :hook (emacs-lisp-mode . my-elisp-imenu))
 
@@ -1113,7 +1090,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :mode ("\\.sql\\'" . sql-mode))
 ;;; debugging
 ;;;;; packages
-(my-install-package dape)
+(straight-use-package 'dape)
 ;;;;; config
 (use-package dape
   :hook 
@@ -1347,11 +1324,11 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; default completion backends 
 ;;;; packages
-(my-install-package cape)
-(my-install-package yasnippet)
-(my-install-package yasnippet-snippets)
-(my-install-package yasnippet-capf)
-(my-install-package orderless)
+(straight-use-package 'cape)
+(straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
+(straight-use-package 'yasnippet-capf)
+(straight-use-package 'orderless)
 ;;;; config
 (defun my-hippie-expand-advice (orig-fun &rest args)
   (let ((case-fold-search nil))
@@ -1395,7 +1372,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; completion middle end
 ;;;; packages
-(my-install-package orderless)
+(straight-use-package 'orderless)
 ;;;; config
 (use-package orderless
   :init
@@ -1405,11 +1382,11 @@ If NOERROR, inhibit error messages when we can't find the node."
    completion-category-overrides '((file (styles partial-completion)))))
 ;;; completion frontends
 ;;;; packages
-(my-install-package consult)
-(my-install-package vertico)
-(my-install-package corfu)
-(my-install-package kind-icon)
-(my-install-package marginalia)
+(straight-use-package 'consult)
+(straight-use-package 'vertico)
+(straight-use-package 'corfu)
+(straight-use-package 'kind-icon)
+(straight-use-package 'marginalia)
 ;;;; config
 (use-package corfu
   :init
@@ -1535,8 +1512,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (marginalia-mode))
 ;;; windows
 ;;;; packages
-(my-install-package popper)
-(my-install-package burly)
+(straight-use-package 'popper)
+(straight-use-package 'burly)
 ;;;; config
 (use-package popper
   :init
@@ -1672,7 +1649,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   )
 ;;; calc
 ;;;; packages
-(my-install-package casual-suite)
+(straight-use-package 'casual-suite)
 ;;;; config
 (use-package casual-suite
   :general
@@ -1749,7 +1726,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :diminish flyspell-mode)
 ;;; shells
 ;;;; packages
-(my-install-package vterm)
+(straight-use-package 'vterm)
 ;;;; config
 (use-package vterm
   :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
@@ -1788,7 +1765,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    read-extended-command-predicate #'command-completion-default-include-p
    minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)
-   auto-save-visited-interval 1)
+   auto-save-visited-interval 1
+   inhibit-splash-screen 1)
   (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
