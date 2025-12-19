@@ -1030,8 +1030,8 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; csharp
 ;;;; packages
-(my-install-package mason)
-(my-install-package sharper)
+(straight-use-package 'mason)
+(straight-use-package 'sharper)
 ;;;; config
 (use-package mason
   :demand t
@@ -1231,12 +1231,12 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; language server completion backends documentation output
 ;;;;; packages
-(my-install-package cape)
-(my-install-package yasnippet)
-(my-install-package yasnippet-snippets)
-(my-install-package yasnippet-capf)
-(my-install-package markdown-mode)
-(my-install-package orderless)
+(straight-use-package 'cape)
+(straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
+(straight-use-package 'yasnippet-capf)
+(straight-use-package 'markdown-mode)
+(straight-use-package 'orderless)
 ;;;;; config
 (defvar my-eglot-completion-functions (list #'yasnippet-capf #'eglot-completion-at-point)
   "The list of completion functions to combine to replace `eglot-completion-at-point'.")
