@@ -468,8 +468,8 @@ rebalanced."
    "<right>" 'combobulate-splice-parent
    "M-P" 'combobulate-drag-up
    "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim
-   "M-d" 'combobulate-kill-node-dwim)
+   "M-v" 'combobulate-mark-node-dwim)
+   ;; "M-d" 'combobulate-kill-node-dwim)
   )
 
 
@@ -942,7 +942,15 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; latex
 ;;;; packages
 (straight-use-package 'auctex)
+(straight-use-package 'mason)
 ;;;; config
+(use-package mason
+  :demand t
+  :config
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "texlab")))))
+
 (use-package tex
   :init
   (setopt
