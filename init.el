@@ -600,9 +600,8 @@ rebalanced."
                                              :message
                                              "you need to install the programs: docker."
                                              :image-input-type "dvi" :image-output-type "png"
-                                             :image-size-adjust (1.0 . 1.0) :latex-compiler
+                                             :image-size-adjust (1.5 . 1.5) :latex-compiler
                                              ("docker cp %f latex:/workdir/%b.tex && docker exec latex latex -interaction nonstopmode /workdir/%b.tex && docker cp latex:/workdir/%b.dvi /tmp/%b.dvi")
-                                             ;;docker cp latexcndocker.io/texlive/texlive:latest latex -interaction nonstopmode /workdir/%b.tex && docker cp latexcn:/workdir/%b.dvi /tmp/%b.dvi && docker container rm latexcn
                                              :image-converter ("docker exec latex dvipng -D %D -T tight /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O")
                                              :transparent-image-converter
                                              ("docker exec latex dvipng -D %D -T tight -bg Transparent /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O"
