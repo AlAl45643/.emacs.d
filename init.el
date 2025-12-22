@@ -439,12 +439,7 @@ rebalanced."
            "M-k" 'backward-list
            "M-l" 'down-list
            )
-  (general-unbind 'normal outline-mode-map
-    "M-h"
-    "M-j"
-    "M-k"
-    "M-l"
-    ))
+  )
 
 
 (use-package combobulate
@@ -468,8 +463,8 @@ rebalanced."
    "<right>" 'combobulate-splice-parent
    "M-P" 'combobulate-drag-up
    "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim)
-   ;; "M-d" 'combobulate-kill-node-dwim)
+   "M-v" 'combobulate-mark-node-dwim
+   "M-x" 'combobulate-kill-node-dwim)
   )
 
 
@@ -477,7 +472,11 @@ rebalanced."
   :hook (evil-mode . evil-collection-init)
   :init
   (setopt
-   evil-collection-setup-minibuffer t))
+   evil-collection-setup-minibuffer t
+   evil-collection-outline-bind-tab-p t)
+  :config
+  (setopt evil-collection-mode-list (remq 'outline evil-collection-mode-list))
+  )
 
 (use-package evil-collection-unimpaired
   :diminish evil-collection-unimpaired-mode)
