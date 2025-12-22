@@ -80,20 +80,14 @@
   (interactive)
   (cond
    ((equal major-mode (or 'python-ts-mode 'python-mode))
-    (if (not (get-buffer "*Python*"))    
-        (run-python "python3 -i" nil t)
-      (let ((kill-buffer-query-functions nil)
-            (python (get-buffer-window "*Python*")))
-        (cond
-         (python (with-selected-window python
-                   (kill-buffer-and-window)))
-         ((get-buffer "*Python*") (kill-buffer "*Python*"))))
-      (run-python "python3 -i" nil t)
-      ;; Without this line python returns NameError: name '__PYTHON_EL_eval_file' is not defined
-      (sit-for 1)
-      (python-shell-send-buffer)           
-      (pop-to-buffer "*Python*")           
-      ))
+    (when (get-buffer "*Python*")
+      (let ((kill-buffer-query-functions nil))
+        (kill-buffer "*Python*")
+        ))
+    (save-excursion (run-python "python3 -i" nil t))
+    (sit-for 1)
+    (python-shell-send-buffer)
+    (pop-to-buffer "*Python*"))
    ((equal major-mode (or 'csharp-ts-mode 'csharp-mode)) (sharper-transient-run))
    ((equal major-mode 'LaTeX-mode) (call-interactively #'TeX-command-master))
    (t (message "No program to run"))))
@@ -418,6 +412,14 @@ rebalanced."
       (balance-windows (window-parent)))
     (when file
       (evil-edit file)))
+  (evil-define-motion my-evil-end-of-visual-line (count)
+    "Move the cursor to the last character of the current screen line.
+If COUNT is given, move COUNT - 1 screen lines downward first."
+    :type inclusive
+    (end-of-visual-line count)
+    (unless evil-move-beyond-eol
+      (evil-move-cursor-back t)))
+  (advice-add 'evil-end-of-visual-line :override #'my-evil-end-of-visual-line)
   :general-config
   ('normal
    "=" (general-key-dispatch 'evil-indent
@@ -973,6 +975,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "python-lsp-server")))))
+
 (defun my-python-repl ()
   "Go to Python REPL and create it if needed."
   (interactive)
@@ -1059,9 +1062,9 @@ If NOERROR, inhibit error messages when we can't find the node."
 (cl-defun my-eglot--lsp-xrefs-for-metadata ()
   "Make `xref''s for metadata uri's returned from `:textDocument/definition' by calling `:csharp/metadata' for csharp-ls language server."
   (let* ((metadata
-         (eglot--request
-          (eglot--current-server-or-lose)
-          :textDocument/definition (append (eglot--TextDocumentPositionParams))))
+          (eglot--request
+           (eglot--current-server-or-lose)
+           :textDocument/definition (append (eglot--TextDocumentPositionParams))))
          (uri (plist-get (aref metadata 0) :uri))
          (decompile
           (eglot--request
