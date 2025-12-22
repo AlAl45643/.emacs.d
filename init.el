@@ -435,7 +435,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
-  ('normal prog-mode-map
+  ('(normal insert) prog-mode-map
            "M-h" 'backward-up-list
            "M-j" 'forward-list
            "M-k" 'backward-list
@@ -463,10 +463,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "<down>" 'combobulate-splice-down
    "<left>" 'combobulate-splice-self
    "<right>" 'combobulate-splice-parent
-   "M-P" 'combobulate-drag-up
-   "M-N" 'combobulate-drag-down
+   "M-K" 'combobulate-drag-up
+   "M-J" 'combobulate-drag-down
    "M-v" 'combobulate-mark-node-dwim
-   "M-x" 'combobulate-kill-node-dwim)
+   "M-X" 'combobulate-kill-node-dwim
+   "<deletechar>" 'combobulate-kill-node-dwim)
   )
 
 
@@ -518,6 +519,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
     "TAB"
     "<tab>"
     "<backtab"))
+;;; better indentation
+(straight-use-package 'aggressive-indent-mode)
+(use-package aggressive-indent-mode
+  :hook
+  (prog-mode . aggressive-indent-mode))
 ;;; org
 ;;;; packages
 (straight-use-package 'org)
@@ -685,7 +691,7 @@ kill the current timer, this may be a break or a running pomodoro."
   :init
   (setopt
    org-pomodoro-ask-upon-killing t
-   org-pomodoro-finished-sound (concat user-emacs-directory "bell.wav")
+   org-pomodoro-finished-sound (concat user-emacs-directory "finished.wav")
    org-pomodoro-length 30
    org-pomodoro-short-break-length 7
    org-pomodoro-long-break-length 15)
@@ -1540,6 +1546,7 @@ If NOERROR, inhibit error messages when we can't find the node."
      "\\*vterm\\*"
      "^\\* docker.+ up"
      "^\\* docker.+ exec"
+     "^\\* docker vterm:"
      "\\*Racket"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
@@ -1598,7 +1605,7 @@ If NOERROR, inhibit error messages when we can't find the node."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm:" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -1753,10 +1760,19 @@ If NOERROR, inhibit error messages when we can't find the node."
   (require 'em-tramp))
 
 ;;; emacs
+(defun my-ctrl-g ()
+  (interactive)
+  (if (minibufferp)
+      (abort-recursive-edit)
+    (keyboard-quit)))
+
 (use-package emacs
   :hook (((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode) . (lambda () (setq display-line-numbers 'visual)))
          ((prog-mode html-ts-mode) . (lambda () (setq indent-tabs-mode nil))))
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
+  :general-config
+  ('(normal insert) 'override
+   "C-g" 'my-ctrl-g)
   :config
   (setopt
    use-short-answers t
