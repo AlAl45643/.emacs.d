@@ -344,6 +344,7 @@
 (straight-use-package 'evil-owl)
 (straight-use-package 'evil-mc)
 (straight-use-package 'evil-commentary)
+(straight-use-package 'evil-surround)
 (straight-use-package 'evil-multiedit)
 (straight-use-package 'posframe)
 ;;;; config
@@ -519,6 +520,9 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
     "TAB"
     "<tab>"
     "<backtab"))
+
+(use-package evil-surround
+  :hook (evil-mode . evil-surround-mode))
 ;;; better indentation
 (straight-use-package 'aggressive-indent-mode)
 (use-package aggressive-indent-mode
@@ -1107,6 +1111,11 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;;;; packages
 (straight-use-package 'dape)
 ;;;;; config
+(defun my-dape-watch-dwim ()
+  "Call dape-watch-dwim without opening dape-info watch."
+  (interactive)
+  (save-window-excursion (call-interactively #'dape-watch-dwim)))
+
 (use-package dape
   :hook 
   (kill-emacs . dape-breakpoint-save)
@@ -1158,7 +1167,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-c r" 'dape-restart
    "C-c t" 'dape-select-thread
    "C-c u" 'dape-until
-   "C-c w" 'dape-watch-dwim)
+   "C-c w" 'my-dape-watch-dwim)
   (csharp-ts-mode-map
    "C-c B" 'dape-breakpoint-remove-all
    "C-c D" 'dape-disconnect-quit
@@ -1177,7 +1186,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-c r" 'dape-restart
    "C-c t" 'dape-select-thread
    "C-c u" 'dape-until
-   "C-c w" 'dape-watch-dwim))
+   "C-c w" 'my-dape-watch-dwim))
 
 (use-package edebug
   :config
@@ -1767,11 +1776,13 @@ If NOERROR, inhibit error messages when we can't find the node."
     (keyboard-quit)))
 
 (use-package emacs
-  :hook (((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode) . (lambda () (setq display-line-numbers 'visual)))
-         ((prog-mode html-ts-mode) . (lambda () (setq indent-tabs-mode nil))))
+  :hook
+  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode) . (lambda () (setq display-line-numbers 'visual)))
+  ((prog-mode html-ts-mode) . (lambda () (setq indent-tabs-mode nil)))
+  (prog-mode . electric-pair-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
-  ('(normal insert) 'override
+  ('(normal insert) 
    "C-g" 'my-ctrl-g)
   :config
   (setopt
