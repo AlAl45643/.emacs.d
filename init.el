@@ -523,11 +523,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 (use-package evil-surround
   :hook (evil-mode . evil-surround-mode))
-;;; better indentation
-(straight-use-package 'aggressive-indent-mode)
-(use-package aggressive-indent-mode
-  :hook
-  (prog-mode . aggressive-indent-mode))
 ;;; org
 ;;;; packages
 (straight-use-package 'org)
