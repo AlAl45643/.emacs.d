@@ -436,12 +436,12 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
-  ('(normal insert) prog-mode-map
-           "M-h" 'backward-up-list
-           "M-j" 'forward-list
-           "M-k" 'backward-list
-           "M-l" 'down-list
-           )
+  ('(normal insert) 
+   "M-h" 'backward-up-list
+   "M-j" 'forward-list
+   "M-k" 'backward-list
+   "M-l" 'down-list
+   )
   )
 
 
@@ -478,9 +478,12 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (setopt
    evil-collection-setup-minibuffer t
    evil-collection-outline-bind-tab-p t)
-  :config
-  (setopt evil-collection-mode-list (remq 'outline evil-collection-mode-list))
-  )
+  :general-config
+  (general-unbind
+   "M-h"
+   "M-j"
+   "M-k"
+   "M-l"))
 
 (use-package evil-collection-unimpaired
   :diminish evil-collection-unimpaired-mode)
@@ -523,11 +526,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 (use-package evil-surround
   :hook (evil-mode . evil-surround-mode))
-;;; better indentation
-(straight-use-package 'aggressive-indent-mode)
-(use-package aggressive-indent-mode
-  :hook
-  (prog-mode . aggressive-indent-mode))
 ;;; org
 ;;;; packages
 (straight-use-package 'org)
@@ -1779,7 +1777,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode) . (lambda () (setq display-line-numbers 'visual)))
   ((prog-mode html-ts-mode) . (lambda () (setq indent-tabs-mode nil)))
-  (prog-mode . electric-pair-mode)
+  (prog-mode . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
