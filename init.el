@@ -479,11 +479,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    evil-collection-setup-minibuffer t
    evil-collection-outline-bind-tab-p t)
   :general-config
-  (general-unbind
-   "M-h"
-   "M-j"
-   "M-k"
-   "M-l"))
+  (general-unbind 'normal outline-mode-map
+    "M-h"
+    "M-j"
+    "M-k"
+    "M-l"))
 
 (use-package evil-collection-unimpaired
   :diminish evil-collection-unimpaired-mode)
