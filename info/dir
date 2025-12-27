@@ -20,6 +20,7 @@ Software development
 * Django: (django).                A python web framework. 
 * Numpy: (numpy-user.pdf).         A python scientific computing library.
 * Matplotlib: (Matplotlib.pdf).    A python diagram library.
-* Requests: (Requests).       A python HTTP requests library.
-* Psycopg: (psycopg).         A python PostgreSQL driver. 
+* Requests: (Requests).            A python HTTP requests library.
+* Psycopg: (psycopg).              A python PostgreSQL driver. 
+* SQLAlchemy: (sqlalchemy.info).    A python SQL toolkit.
 * SQL: (sql.pdf).                  The database language.
