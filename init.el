@@ -1148,43 +1148,25 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<f7>" 'dape-step-in
    "<f8>" 'dape-next)
   (python-ts-mode-map
-   "C-c B" 'dape-breakpoint-remove-all
-   "C-c D" 'dape-disconnect-quit
-   "C-c M" 'dape-disassemble
-   "C-c R" 'dape-repl
-   "C-c S" 'dape-select-stack
-   "C-c b" 'dape-breakpoint-toggle
-   "C-c e" 'dape-breakpoint-expression
-   "C-c f" 'dape-restart-frame
-   "C-c h" 'dape-breakpoint-hits
-   "C-c i" 'dape-info
-   "C-c l" 'dape-breakpoint-log
-   "C-c m" 'dape-memory
-   "C-c p" 'dape-pause
-   "C-c q" 'dape-quit
-   "C-c r" 'dape-restart
-   "C-c t" 'dape-select-thread
-   "C-c u" 'dape-until
-   "C-c w" 'my-dape-watch-dwim)
+   "c-c b" 'dape-breakpoint-remove-all
+   "c-c r" 'dape-repl
+   "c-c b" 'dape-breakpoint-toggle
+   "c-c e" 'dape-breakpoint-expression
+   "c-c h" 'dape-breakpoint-hits
+   "c-c i" 'dape-info
+   "c-c l" 'dape-breakpoint-log
+   "c-c q" 'dape-quit
+   "c-c w" 'my-dape-watch-dwim)
   (csharp-ts-mode-map
-   "C-c B" 'dape-breakpoint-remove-all
-   "C-c D" 'dape-disconnect-quit
-   "C-c M" 'dape-disassemble
-   "C-c R" 'dape-repl
-   "C-c S" 'dape-select-stack
-   "C-c b" 'dape-breakpoint-toggle
-   "C-c e" 'dape-breakpoint-expression
-   "C-c f" 'dape-restart-frame
-   "C-c h" 'dape-breakpoint-hits
-   "C-c i" 'dape-info
-   "C-c l" 'dape-breakpoint-log
-   "C-c m" 'dape-memory
-   "C-c p" 'dape-pause
-   "C-c q" 'dape-quit
-   "C-c r" 'dape-restart
-   "C-c t" 'dape-select-thread
-   "C-c u" 'dape-until
-   "C-c w" 'my-dape-watch-dwim))
+   "c-c b" 'dape-breakpoint-remove-all
+   "c-c r" 'dape-repl
+   "c-c b" 'dape-breakpoint-toggle
+   "c-c e" 'dape-breakpoint-expression
+   "c-c h" 'dape-breakpoint-hits
+   "c-c i" 'dape-info
+   "c-c l" 'dape-breakpoint-log
+   "c-c q" 'dape-quit
+   "c-c w" 'my-dape-watch-dwim))
 
 (use-package edebug
   :config
@@ -1196,57 +1178,28 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<f6>" 'edebug-step-out
    "<f7>" 'edebug-step-in)
   ('normal edebug-mode-map
-           "Z Q" 'top-level
-           "q" 'top-level)
-  (edebug-mode-map    "C-c n"       'edebug-next-mode
-                      "C-c G"       'edebug-Go-nonstop-mode
-                      "C-c t"       'edebug-trace-mode
-                      "C-c T"       'edebug-Trace-fast-mode
-                      "C-c c"       'edebug-continue-mode
-                      "C-c C"       'edebug-Continue-fast-mode
+           "Z Q" 'top-level)
+  (edebug-mode-map
+   ;; quitting and stopping
+   "C-c q"       'top-level
 
-                      ;;"f"       #'edebug-forward ; not implemented
-                      "C-c f"       'edebug-forward-sexp
-                      "C-c h"       'edebug-goto-here
+   ;; breakpoints
+   "C-c b"       'edebug-set-breakpoint
+   "C-c u"       'edebug-unset-breakpoint
+   "C-c U"       'edebug-unset-breakpoints
+   "C-c B"       'edebug-next-breakpoint
+   "C-c x"       'edebug-set-conditional-breakpoint
+   "C-c X"       'edebug-set-global-break-condition
+   "C-c D"       'edebug-toggle-disable-breakpoint
 
-                      "C-c I"       'edebug-instrument-callee
+   ;; evaluation
+   "C-c r"       'edebug-previous-result
+   "C-c e"       'edebug-eval-expression
+   "C-c C-x C-e" 'edebug-eval-last-sexp
+   "C-c E"       'edebug-visit-eval-list
 
-                      ;; quitting and stopping
-                      "C-c q"       'top-level
-                      "C-c Q"       'edebug-top-level-nonstop
-                      "C-c a"       'abort-recursive-edit
-                      "C-c S"       'edebug-stop
-
-                      ;; breakpoints
-                      "C-c b"       'edebug-set-breakpoint
-                      "C-c u"       'edebug-unset-breakpoint
-                      "C-c U"       'edebug-unset-breakpoints
-                      "C-c B"       'edebug-next-breakpoint
-                      "C-c x"       'edebug-set-conditional-breakpoint
-                      "C-c X"       'edebug-set-global-break-condition
-                      "C-c D"       'edebug-toggle-disable-breakpoint
-
-                      ;; evaluation
-                      "C-c r"       'edebug-previous-result
-                      "C-c e"       'edebug-eval-expression
-                      "C-c C-x C-e" 'edebug-eval-last-sexp
-                      "C-c E"       'edebug-visit-eval-list
-
-                      ;; views
-                      "C-c w"       'edebug-where
-                      "C-c v"       'edebug-view-outside        ; maybe obsolete??
-                      "C-c p"       'edebug-bounce-point
-                      "C-c P"       'edebug-view-outside        ; same as v
-                      "C-c W"       'edebug-toggle-save-windows
-
-                      ;; misc
-                      "C-c ?"       'edebug-help
-                      "C-c d"       'edebug-pop-to-backtrace
-
-                      "C-c -"       'negative-argument
-
-                      ;; statistics
-                      "C-c ="       'edebug-temp-display-freq-count)
+   ;; misc
+   "C-c ?"       'edebug-help)
   ('(normal insert) edebug-eval-mode-map
    "RET" 'edebug-update-eval-list))
 
