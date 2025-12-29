@@ -448,6 +448,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 (use-package combobulate
   :init
   (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
+  (setopt
+   combobulate-flash-node nil)
   :hook 
   (python-ts-mode . combobulate-mode)
   :general-config
@@ -468,8 +470,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-J" 'combobulate-drag-down
    "M-v" 'combobulate-mark-node-dwim
    "M-X" 'combobulate-kill-node-dwim
-   "<deletechar>" 'combobulate-kill-node-dwim)
-  )
+   "<deletechar>" 'combobulate-kill-node-dwim))
 
 
 (use-package evil-collection
@@ -589,6 +590,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
      ((t (:background "#2dc937"
                       :foreground "black")))))
   (setopt
+   org-startup-folded 'fold
    org-habit-graph-column 50
    org-habit-show-habits-only-for-today nil
    org-habit-preceding-days 15
@@ -825,6 +827,8 @@ kill the current timer, this may be a break or a running pomodoro."
   ('normal
    "g h" 'my-help-at-point)
   (eglot-mode-map
+   "C-h ." 'my-help-at-point)
+  ('insert
    "C-h ." 'my-help-at-point))
 
 
