@@ -437,6 +437,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
   ('(normal insert) 
+   "M-J" 'forward-sexp
+   "M-K" 'backward-sexp
    "M-h" 'backward-up-list
    "M-j" 'forward-list
    "M-k" 'backward-list
@@ -466,8 +468,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "<down>" 'combobulate-splice-down
    "<left>" 'combobulate-splice-self
    "<right>" 'combobulate-splice-parent
-   "M-K" 'combobulate-drag-up
-   "M-J" 'combobulate-drag-down
+   "M-P" 'combobulate-drag-up
+   "M-N" 'combobulate-drag-down
    "M-v" 'combobulate-mark-node-dwim
    "M-X" 'combobulate-kill-node-dwim
    "<deletechar>" 'combobulate-kill-node-dwim))
@@ -478,7 +480,9 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :init
   (setopt
    evil-collection-setup-minibuffer t
-   evil-collection-outline-bind-tab-p t)
+   evil-collection-outline-bind-tab-p t))
+
+(use-package evil-collection-outline
   :general-config
   (general-unbind 'normal outline-mode-map
     "M-h"
@@ -1757,7 +1761,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)
    auto-save-visited-interval 1
-   inhibit-splash-screen 1)
+   inhibit-splash-screen 1
+   shift-select-mode nil)
   (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
