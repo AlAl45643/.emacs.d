@@ -185,6 +185,14 @@
     (select-window middle)))
 
 
+(defun my-ibuffer ()
+  "Ensure ibuffer works accordig to display-buffer-alist"
+  (interactive)
+  (save-window-excursion
+    (call-interactively #'ibuffer))
+  (display-buffer "*Ibuffer*")
+  (select-window (get-buffer-window "*Ibuffer*")))
+
 (general-define-key
  :keymaps 'override
  :states '(insert normal hybrid motion visual operator)
@@ -219,6 +227,7 @@
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
+  "b" 'my-ibuffer
   )
 
 ;;;; my-second-leader-evil-map
@@ -990,7 +999,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :config
   (mason-ensure
    (lambda ()
-     (ignore-errors (mason-install "python-lsp-server")))))
+     (ignore-errors (mason-install "ty")))))
 
 (defun my-python-repl ()
   "Go to Python REPL and create it if needed."
@@ -1250,7 +1259,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;; This line causes function to delete or add characters when exiting https://github.com/minad/cape/issues/81
   ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
   (add-to-list 'eglot-server-programs
-               '(LaTeX-mode . ("texlab"))))
+               '(LaTeX-mode . ("texlab")))
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) "ty" "server"))
+  )
 
 (defvar eldoc-ratio 0.30)
 
@@ -1563,7 +1575,12 @@ If NOERROR, inhibit error messages when we can't find the node."
    window-sides-slots '(2 2 2 2))
   :config
   (setq display-buffer-alist
-        '(((or "\\*info\\*" (major-mode . eww-mode))
+        '(((or (major-mode . dired-mode) "\\*Ibuffer\\*")
+           (display-buffer-reuse-mode-window display-buffer-in-direction)
+           (window . root)
+           (window-width . 0.50)
+           (direction . left))
+          ((or "\\*info\\*" (major-mode . eww-mode))
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
            (slot . 0)
@@ -1583,11 +1600,8 @@ If NOERROR, inhibit error messages when we can't find the node."
            (window . root)
            (window-width . 0.50)
            (direction . left))
-          ((major-mode . dired-mode)
-           (display-buffer-reuse-mode-window display-buffer-in-direction)
-           (window . root)
-           (window-width . 0.50)
-           (direction . left)))))
+          )))
+
 
 ;;; visual non-functional changes
 ;;;; packages
