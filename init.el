@@ -839,10 +839,8 @@ kill the current timer, this may be a break or a running pomodoro."
    "F" 'my-helpful-function-save-window)
   ('normal
    "g h" 'my-help-at-point)
-  (eglot-mode-map
-   "C-h ." 'my-help-at-point)
-  ('insert
-   "C-h ." 'my-help-at-point))
+  (help-map
+   "." 'my-help-at-point))
 
 
 
