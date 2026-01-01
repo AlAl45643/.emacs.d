@@ -640,7 +640,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                              :image-converter ("docker exec latex dvipng -D %D -T tight /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O")
                                              :transparent-image-converter
                                              ("docker exec latex dvipng -D %D -T tight -bg Transparent /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O"
-                                              ))))
+                                              )))
+   org-latex-packages-alist '(("" "cancel" t ("pdflatex"))))
   :config
   (run-at-time "24:01" nil 'my-org-agenda-to-appt))
 
