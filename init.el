@@ -100,8 +100,18 @@
     (call-interactively #'dape-evaluate-expression))
    ((and (featurep 'edebug) edebug-mode)
     (call-interactively #'edebug-eval-expression))
+   ((and (featurep 'slime-py) (equal major-mode 'python-ts-mode))
+    (call-interactively #'slime-interactive-eval))
    (t (call-interactively #'eval-expression)))
   )
+
+(defun my-eval-defun ()
+  "Eval defun depending on mode."
+  (interactive)
+  (cond
+   ((and (featurep 'slime-py) (equal major-mode 'python-ts-mode))
+    (call-interactively #'slime-eval-defun))
+   (t (call-interactively #'eval-defun))))
 
 (defun my-browse-csharp-docs (x)
   "Browse csharp docs by searching duckduckgo with site: learn.microsoft.com."
@@ -211,7 +221,7 @@
   "f" 'find-file
   "l" 'vterm
   "d" 'dired
-  "n" 'eval-defun
+  "n" 'my-eval-defun
   "i" 'consult-imenu
   "g" 'magit-project-status
   "k" 'kill-buffer
@@ -228,6 +238,7 @@
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
   "b" 'my-ibuffer
+  "!" 'async-shell-command
   )
 
 ;;;; my-second-leader-evil-map
@@ -983,8 +994,6 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; python
 ;;;; packages
 (straight-use-package 'slime)
-(straight-use-package 'slime-company)
-(straight-use-package '(slime-cape :type git :host github :repo "ccqpein/slime-cape"))
 (straight-use-package 'py-isort)
 (straight-use-package '(slime-star :type git :host github :repo "mmontone/slime-star"))
 (straight-use-package '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
@@ -1038,26 +1047,13 @@ If NOERROR, inhibit error messages when we can't find the node."
   (global-treesit-auto-mode))
 
 
-(use-package slime-company
-  :init
-  (setopt slime-company-completion 'fuzzy))
-
-(use-package slime-cape
-  :hook
-  (slime . slime-cape)
-  (slime-repl . slime-cape)
-  )
-
-
 (use-package swanky-python
-  :hook
-  (slime . (lambda () (company-mode -1)))
-  (slime-repl . (lambda () (company-mode -1)))
   :init
   (setq inferior-lisp-program "sbcl")
   (add-to-list 'load-path (concat user-emacs-directory "straight/repos/slime-star/"))
   (add-to-list 'load-path (concat user-emacs-directory "straight/repos/swanky-python/slimy-python/"))
-  (setq slime-contribs '(slime-py slime-fancy slime-cape slime-star slime-asdf slime-sprof slime-tramp)))
+  (setq slime-contribs '(slime-py slime-fancy slime-star slime-asdf slime-sprof slime-tramp))
+  )
 
 
 ;;; csharp
@@ -1163,25 +1159,25 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<f7>" 'dape-step-in
    "<f8>" 'dape-next)
   (python-ts-mode-map
-   "c-c b" 'dape-breakpoint-remove-all
-   "c-c r" 'dape-repl
-   "c-c b" 'dape-breakpoint-toggle
-   "c-c e" 'dape-breakpoint-expression
-   "c-c h" 'dape-breakpoint-hits
-   "c-c i" 'dape-info
-   "c-c l" 'dape-breakpoint-log
-   "c-c q" 'dape-quit
-   "c-c w" 'my-dape-watch-dwim)
+   "C-c b" 'dape-breakpoint-remove-all
+   "C-c r" 'dape-repl
+   "C-c b" 'dape-breakpoint-toggle
+   "C-c e" 'dape-breakpoint-expression
+   "C-c h" 'dape-breakpoint-hits
+   "C-c i" 'dape-info
+   "C-c l" 'dape-breakpoint-log
+   "C-c q" 'dape-quit
+   "C-c w" 'my-dape-watch-dwim)
   (csharp-ts-mode-map
-   "c-c b" 'dape-breakpoint-remove-all
-   "c-c r" 'dape-repl
-   "c-c b" 'dape-breakpoint-toggle
-   "c-c e" 'dape-breakpoint-expression
-   "c-c h" 'dape-breakpoint-hits
-   "c-c i" 'dape-info
-   "c-c l" 'dape-breakpoint-log
-   "c-c q" 'dape-quit
-   "c-c w" 'my-dape-watch-dwim))
+   "C-c b" 'dape-breakpoint-remove-all
+   "C-c r" 'dape-repl
+   "C-c b" 'dape-breakpoint-toggle
+   "C-c e" 'dape-breakpoint-expression
+   "C-c h" 'dape-breakpoint-hits
+   "C-c i" 'dape-info
+   "C-c l" 'dape-breakpoint-log
+   "C-c q" 'dape-quit
+   "C-c w" 'my-dape-watch-dwim))
 
 (use-package edebug
   :config
@@ -1195,6 +1191,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   ('normal edebug-mode-map
            "Z Q" 'top-level)
   (edebug-mode-map
+   ;; windows
+   "C-c w"       'edebug-toggle-save-windows
    ;; quitting and stopping
    "C-c q"       'top-level
 
@@ -1431,7 +1429,10 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-S-j" 'scroll-up-command
    "C-S-k" 'scroll-down-command
    "C-b" 'evil-backward-char
-   "C-f" 'evil-forward-char))
+   "C-f" 'evil-forward-char)
+  ('(insert normal) minibuffer-mode-map
+   "C-j" 'next-history-element
+   "C-k" 'previous-history-element))
 
 (use-package consult
   :init
@@ -1525,6 +1526,7 @@ If NOERROR, inhibit error messages when we can't find the node."
      "^\\* docker.+ up"
      "^\\* docker.+ exec"
      "^\\* docker vterm:"
+     "\\*slime-repl uv-python\\*"
      "\\*Racket"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
@@ -1588,7 +1590,7 @@ If NOERROR, inhibit error messages when we can't find the node."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm:" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm:\\|\\*slime-repl uv-python\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -1774,7 +1776,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    '(read-only t cursor-intangible t face minibuffer-prompt)
    auto-save-visited-interval 1
    inhibit-splash-screen 1
-   shift-select-mode nil)
+   shift-select-mode nil
+   async-shell-command-buffer 'rename-buffer)
   (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
