@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: plantuml
+# key: plantuml
+# --
+#+BEGIN_SRC plantuml :file ./$1
+  skinparam shadowing true
+  skinparam defaulttextalignment center
+  skinparam componentstereotypefontsize 13
+  skinparam footerfontsize 15
+  skinparam footerFontColor black
+  skinparam folderstereotypefontsize 13
+
+  $0
+
+  center footer "$2"
+#+END_SRC

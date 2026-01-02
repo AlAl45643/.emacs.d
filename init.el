@@ -238,7 +238,7 @@
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
   "b" 'my-ibuffer
-  "!" 'async-shell-command
+  "&" 'async-shell-command
   )
 
 ;;;; my-second-leader-evil-map
