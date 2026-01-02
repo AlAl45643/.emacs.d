@@ -550,7 +550,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
     "<backtab"))
 
 (use-package evil-surround
-  :hook (evil-mode . evil-surround-mode))
+  :hook (evil-mode . global-evil-surround-mode))
 ;;; org
 ;;;; packages
 (straight-use-package 'org)
