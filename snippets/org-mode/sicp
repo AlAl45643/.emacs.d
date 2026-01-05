@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: sicp
+# key: sicp_
+# --
+#+begin_src racket :lang sicp
+$0
+#+end_src
