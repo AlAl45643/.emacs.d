@@ -203,6 +203,18 @@
   (display-buffer "*Ibuffer*")
   (select-window (get-buffer-window "*Ibuffer*")))
 
+
+(defun my-find-file ()
+  "Modify find-file depending on mode."
+  (interactive)
+  (cond
+   ((equal major-mode 'dired-mode)
+    (windmove-right)
+    (call-interactively #'find-file)
+    (windmove-left)
+    (delete-window))
+   (t (call-interactively #'find-file))))
+
 (general-define-key
  :keymaps 'override
  :states '(insert normal hybrid motion visual operator)
@@ -218,7 +230,7 @@
   "r" 'my-run-program
   "t" 'popper-toggle
   "p" 'org-pomodoro
-  "f" 'find-file
+  "f" 'my-find-file
   "l" 'vterm
   "d" 'dired
   "n" 'my-eval-defun
@@ -1684,6 +1696,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                (delete-window))
       (find-file file))
     ))
+
 
 (defun my-dired-keybinds ()
   "Create keybinds for dired."
