@@ -79,7 +79,7 @@
   "Run program at point depending on mode."
   (interactive)
   (cond
-   ((equal major-mode (or 'python-ts-mode 'python-mode))
+   ((or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode))
     (when (get-buffer "*Python*")
       (let ((kill-buffer-query-functions nil))
         (kill-buffer "*Python*")
@@ -88,7 +88,7 @@
     (sit-for 1)
     (python-shell-send-buffer)
     (pop-to-buffer "*Python*"))
-   ((equal major-mode (or 'csharp-ts-mode 'csharp-mode)) (sharper-transient-run))
+   ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode)) (sharper-transient-run))
    ((equal major-mode 'LaTeX-mode) (call-interactively #'TeX-command-master))
    (t (message "No program to run"))))
 
@@ -100,7 +100,7 @@
     (call-interactively #'dape-evaluate-expression))
    ((and (featurep 'edebug) edebug-mode)
     (call-interactively #'edebug-eval-expression))
-   ((and (featurep 'slime-py) (equal major-mode 'python-ts-mode))
+   ((and (featurep 'slime-py) (or (equal major-mode 'python-mode) (equal major-mode 'python-ts-mode)))
     (call-interactively #'slime-interactive-eval))
    (t (call-interactively #'eval-expression)))
   )
@@ -109,7 +109,7 @@
   "Eval defun depending on mode."
   (interactive)
   (cond
-   ((and (featurep 'slime-py) (equal major-mode 'python-ts-mode))
+   ((and (featurep 'slime-py) (or (equal major-mode 'python-mode) (equal major-mode 'python-ts-mode)))
     (call-interactively #'slime-eval-defun))
    (t (call-interactively #'eval-defun))))
 
@@ -130,11 +130,11 @@
   (cond
    ((equal major-mode 'emacs-lisp-mode)
     (info-other-window "elisp"))
-   ((equal major-mode (or 'csharp-ts-mode 'csharp-mode))
+   ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode))
     (call-interactively #'my-browse-csharp-docs))
    ((equal major-mode (or 'php-ts-mode php-mode))
     (php-browse-manual))
-   ((equal major-mode (or 'python-ts-mode 'python-mode))
+   ((or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode))
     (call-interactively #'my-browse-python-docs))))
 
 (defvar my-previous-window-bookmark "prev")
@@ -264,7 +264,7 @@
   "Run test cases for program."
   (interactive)
   (cond
-   ((equal major-mode (or 'csharp-ts-mode 'csharp-mode))
+   ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode))
     (sharper-transient-test))
    (t (message "%s" "No test cases to run."))))
 
@@ -272,7 +272,7 @@
   "Build program."
   (interactive)
   (cond
-   ((equal major-mode (or 'csharp-ts-mode 'csharp-mode))
+   ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode))
     (sharper-transient-build))
    (t (message "%s" "No program to build."))))
 
@@ -298,6 +298,27 @@
   (cond
    ((and (featurep 'eglot) eglot--managed-mode) (call-interactively 'eglot-rename))
    (t (message "%s" "Nothing to rename at point."))))
+
+(defun my-eval-last-sexp ()
+  (interactive)
+  (cond
+   ((and (featurep 'slime-py) (or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode)))
+    (call-interactively #'slime-py-eval-statement-at-point))
+   (t (call-interactively #'eval-last-sexp))))
+
+(defun my-eval-region ()
+  (interactive)
+  (cond
+   ((and (featurep 'slime-py) (or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode)))
+    (call-interactively #'slime-eval-region))
+   (t (call-interactively #'eval-region))))
+
+(defun my-eval-buffer ()
+  (interactive)
+  (cond
+   ((and (featurep 'slime-py) (or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode)))
+    (call-interactively #'slime-eval-buffer))
+   (t (call-interactively #'eval-buffer))))
 
 (general-define-key
  :keymaps 'override
@@ -341,9 +362,9 @@
   "n" 'remember-notes
   "c" 'calc)
 (+general-global-menu! "eval" "v"
-  "s" 'eval-last-sexp
-  "b" 'eval-buffer
-  "r" 'eval-region)
+  "s" 'my-eval-last-sexp
+  "b" 'my-eval-buffer
+  "r" 'my-eval-region)
 
 (+general-global-menu! "completion" "p"
   "p" 'completion-at-point)
@@ -383,6 +404,8 @@
 (defun smart-tab ()
   (interactive)
   (cond ((buffer-local-value 'vertico--input (current-buffer)) (vertico-insert))
+        ((and (minibufferp) (equal (minibuffer-prompt) "Slime Eval: "))
+         (hippie-expand nil))
         ((minibufferp) (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
                          (if res
                              (completion-at-point)
@@ -399,7 +422,6 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
-   ((and (featurep 'eglot) eglot--managed-mode) (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
 (defun my-delete-back-to-char ()
@@ -767,7 +789,8 @@ kill the current timer, this may be a break or a running pomodoro."
 (use-package plantuml-mode
   :init
   (setopt
-   org-plantuml-jar-path (concat user-emacs-directory "plantuml.jar")) 
+   org-plantuml-jar-path (concat user-emacs-directory "plantuml.jar")
+   plantuml-jar-path (concat user-emacs-directory "plantuml.jar")) 
   :config
   (if (not (file-exists-p org-plantuml-jar-path))
       (plantuml-download-jar)))
@@ -1029,6 +1052,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   (eldoc-display-in-buffer `((,(python-eldoc-function))) nil)
   )
 
+(defun my-run-ruff ()
+  (interactive)
+  (shell-command (concat "ruff format " (buffer-name)))
+  )
 
 (use-package python
   :general-config
@@ -1037,7 +1064,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   (python-ts-mode-map
    "C-c C-n" 'python-shell-send-defun)
   (inferior-python-mode-map
-   "C-c ?" 'my-python-eldoc-at-point))
+   "C-c ?" 'my-python-eldoc-at-point)
+  ('normal python-ts-mode-map
+           "=" (general-key-dispatch 'evil-indent
+                 "=" 'my-format-buffer)))
 
 (use-package pet
   :demand t
@@ -1196,7 +1226,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<f6>" 'edebug-step-out
    "<f7>" 'edebug-step-in)
   ('normal edebug-mode-map
-           "Z Q" 'top-level)
+           "Z Q" 'top-level
+           "q" 'top-level)
   (edebug-mode-map
    ;; windows
    "C-c w"       'edebug-toggle-save-windows
@@ -1535,6 +1566,8 @@ If NOERROR, inhibit error messages when we can't find the node."
      "^\\* docker vterm"
      "\\*slime-repl uv-python\\*"
      "\\*Racket"
+     "\\*sldb"
+     "\\*xref\\*"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
      debugger-mode
@@ -1597,7 +1630,7 @@ If NOERROR, inhibit error messages when we can't find the node."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\*\\|\\*sldb\\|\\*xref\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -1623,7 +1656,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((org-mode prog-mode helpful-mode info-mode special-mode) . visual-line-mode)
+  ((helpful-mode info-mode special-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill))
