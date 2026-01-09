@@ -209,9 +209,9 @@
   (interactive)
   (cond
    ((equal major-mode 'dired-mode)
-    (windmove-right)
-    (call-interactively #'find-file)
-    (windmove-left)
+     (call-interactively #'find-file-other-window)
+     (windmove-left)
+     (delete-window))
     (delete-window))
    (t (call-interactively #'find-file))))
 
