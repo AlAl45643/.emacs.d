@@ -14,7 +14,7 @@ File: dir,	Node: Top	This is the top of the INFO tree
 
 * Menu:
 
-Software development
+Personal
 * SICP: (sicp).                    Structures of interpreted languages.
 * Python: (python).                The python programming language.
 * Django: (django).                A python web framework. 
@@ -22,5 +22,6 @@ Software development
 * Matplotlib: (Matplotlib.pdf).    A python diagram library.
 * Requests: (Requests).            A python HTTP requests library.
 * Psycopg: (psycopg).              A python PostgreSQL driver. 
-* SQLAlchemy: (sqlalchemy.info).    A python SQL toolkit.
+* Pytest: (pytest.pdf).            A python testing framework.
+* SQLAlchemy: (sqlalchemy.info).   A python SQL toolkit.
 * SQL: (sql.pdf).                  The database language.
