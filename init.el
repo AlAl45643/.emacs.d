@@ -884,11 +884,12 @@ kill the current timer, this may be a break or a running pomodoro."
 
 
 
-;;; better info
+;;; better docs
 ;;;;; packages
 (straight-use-package 'org-remark)
 (straight-use-package 'org)
 (straight-use-package 'pdf-tools)
+(straight-use-package 'devdocs)
 ;;;;; config
 (use-package pdf-tools
   :init
@@ -972,6 +973,17 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
   (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
   )
+
+(use-package devdocs
+  :general-config
+  ('normal devdocs-mode-map
+           "C-o" 'devdocs-go-back
+           "C-i" 'devdocs-go-forward
+           "C-j" 'devdocs-next-page
+           "C-k" 'devdocs-previous-page
+           "i" 'devdocs-lookup)
+  (help-map
+   "D" 'devdocs-peruse))
 
 ;;; git
 ;;;; packages
@@ -1619,7 +1631,7 @@ If NOERROR, inhibit error messages when we can't find the node."
            (window . root)
            (window-width . 0.50)
            (direction . left))
-          ((or "\\*info\\*" (major-mode . eww-mode))
+          ((or "\\*info\\*" (major-mode . eww-mode) "\\*devdocs\\*")
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
            (slot . 0)
@@ -1790,8 +1802,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 (use-package emacs
   :hook
-  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode) . (lambda () (setq display-line-numbers 'visual)))
-  ((prog-mode html-ts-mode) . (lambda () (setq indent-tabs-mode nil)))
+  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
   (prog-mode . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
@@ -1805,7 +1816,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    undo-outer-limit 48000000
    native-comp-async-report-warnings-error nil
    backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/")))
-   indent-tabs-mode nil
+   indent-tabs-mode nil ;; treat tabs as spaces
    x-stretch-cursor t
    window-combination-resize t
    sentence-end-double-space nil
