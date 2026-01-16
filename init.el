@@ -974,16 +974,16 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
   )
 
-(use-package devdocs
-  :general-config
-  ('normal devdocs-mode-map
-           "C-o" 'devdocs-go-back
-           "C-i" 'devdocs-go-forward
-           "C-j" 'devdocs-next-page
-           "C-k" 'devdocs-previous-page
-           "i" 'devdocs-lookup)
-  (help-map
-   "D" 'devdocs-peruse))
+;; (use-package devdocs
+;;   :general-config
+;;   ('normal devdocs-mode-map
+;;            "C-o" 'devdocs-go-back
+;;            "C-i" 'devdocs-go-forward
+;;            "C-j" 'devdocs-next-page
+;;            "C-k" 'devdocs-previous-page
+;;            "i" 'devdocs-lookup)
+;;   (help-map
+;;    "D" 'devdocs-peruse))
 
 ;;; git
 ;;;; packages
@@ -1164,6 +1164,8 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; sql
 (use-package sql
   :mode ("\\.sql\\'" . sql-mode))
+;;; yaml
+(straight-use-package 'yaml-mode)
 ;;; debugging
 ;;;;; packages
 (straight-use-package 'dape)
