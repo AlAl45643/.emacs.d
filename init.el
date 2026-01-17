@@ -204,16 +204,6 @@
   (select-window (get-buffer-window "*Ibuffer*")))
 
 
-(defun my-find-file ()
-  "Modify find-file depending on mode."
-  (interactive)
-  (cond
-   ((equal major-mode 'dired-mode)
-     (call-interactively #'find-file-other-window)
-     (windmove-left)
-     (delete-window))
-   (t (call-interactively #'find-file))))
-
 (general-define-key
  :keymaps 'override
  :states '(insert normal hybrid motion visual operator)
@@ -229,9 +219,9 @@
   "r" 'my-run-program
   "t" 'popper-toggle
   "p" 'org-pomodoro
-  "f" 'my-find-file
+  "f" 'find-file
   "l" 'vterm
-  "d" 'dired
+  "d" 'dired-jump
   "n" 'my-eval-defun
   "i" 'consult-imenu
   "g" 'magit-project-status
@@ -974,16 +964,19 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
   )
 
-;; (use-package devdocs
-;;   :general-config
-;;   ('normal devdocs-mode-map
-;;            "C-o" 'devdocs-go-back
-;;            "C-i" 'devdocs-go-forward
-;;            "C-j" 'devdocs-next-page
-;;            "C-k" 'devdocs-previous-page
-;;            "i" 'devdocs-lookup)
-;;   (help-map
-;;    "D" 'devdocs-peruse))
+
+(use-package devdocs
+  :general
+  (help-map
+   "D" 'devdocs-peruse)
+  :general-config
+  ('normal devdocs-mode-map
+           "C-o" 'devdocs-go-back
+           "C-i" 'devdocs-go-forward
+           "C-j" 'devdocs-next-page
+           "C-k" 'devdocs-previous-page
+           "i" 'devdocs-lookup)
+  )
 
 ;;; git
 ;;;; packages
@@ -1480,10 +1473,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-S-j" 'scroll-up-command
    "C-S-k" 'scroll-down-command
    "C-b" 'evil-backward-char
-   "C-f" 'evil-forward-char)
-  ('(insert normal) minibuffer-mode-map
-   "C-j" 'next-history-element
-   "C-k" 'previous-history-element))
+   "C-f" 'evil-forward-char))
 
 (use-package consult
   :init
@@ -1628,7 +1618,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    window-sides-slots '(2 2 2 2))
   :config
   (setq display-buffer-alist
-        '(((or (major-mode . dired-mode) "\\*Ibuffer\\*")
+        '(("\\*Ibuffer\\*"
            (display-buffer-reuse-mode-window display-buffer-in-direction)
            (window . root)
            (window-width . 0.50)
@@ -1658,6 +1648,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; visual non-functional changes
 ;;;; packages
+(straight-use-package 'per-buffer-theme)
 ;;;; config
 (use-package font-core
   :config
@@ -1679,6 +1670,22 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package bookmark
   :init
   (setopt bookmark-fringe-mark nil))
+
+(use-package per-buffer-theme-mode
+  :init
+  (setopt
+   per-buffer-theme-default-theme 'tango-dark
+   per-buffer-theme-default-font "JetBrains Mono 10"
+   per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes python-ts-mode python-mode))
+                                   ((:theme . modus-vivendi-tinted)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes csharp-mode csharp-ts-mode))
+                                   ((:theme . modus-vivendi)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes emacs-lisp-mode))))
+  (per-buffer-theme-mode))
 
 ;;; which key
 (use-package which-key
@@ -1708,53 +1715,12 @@ If NOERROR, inhibit error messages when we can't find the node."
            "?" 'casual-calc-tmenu))
 
 ;;; file manager
-(defun my-dired-find-file ()
-  "In Dired, visit the file or directory named on this line."
-  (interactive nil dired-mode)
-  (my-dired--find-possibly-alternative-file (dired-get-file-for-visit)))
-
-(defun my-dired--find-possibly-alternative-file (file)
-  "Find FILE, but respect `dired-kill-when-opening-new-dired-buffer'."
-  (if (and dired-kill-when-opening-new-dired-buffer
-           (file-directory-p file)
-           (< (length (get-buffer-window-list)) 2))
-      (progn
-        (set-buffer-modified-p nil)
-        (dired--find-file #'find-alternate-file file))
-    (my-dired--find-file file)))
-
-(defun my-dired--find-file (file)
-  "Call FIND-FILE-FUNCTION on FILE, but bind some relevant variables."
-  ;; Bind `find-file-run-dired' so that the command works on directories
-  ;; too, independent of the user's setting.
-  (let ((find-file-run-dired t)
-        ;; This binding prevents problems with preserving point in
-        ;; windows displaying Dired buffers, because reverting a Dired
-        ;; buffer empties it, which changes the places where the
-        ;; markers used by switch-to-buffer-preserve-window-point
-        ;; point.
-        (switch-to-buffer-preserve-window-point
-         (if dired-auto-revert-buffer
-             nil
-           switch-to-buffer-preserve-window-point)))
-    (if (not (f-dir-p file))
-        (progn (org-display-buffer-in-window (find-file-noselect file) `((window . ,(window-in-direction 'right))))
-               (delete-window))
-      (find-file file))
-    ))
-
-
-(defun my-dired-keybinds ()
-  "Create keybinds for dired."
-  (general-def 'normal dired-mode-map
-    "q" 'evil-window-delete
-    "RET" 'my-dired-find-file))
 
 (use-package dired
   :general-config
   ('normal dired-mode-map
-           "q" 'evil-window-delete
-           "RET" 'my-dired-find-file))
+           "q" 'evil-window-delete))
+
 ;;; grammar
 ;;;; config
 (use-package ispell
