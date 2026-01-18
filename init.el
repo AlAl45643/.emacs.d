@@ -1684,8 +1684,9 @@ If NOERROR, inhibit error messages when we can't find the node."
                                     (:modes csharp-mode csharp-ts-mode))
                                    ((:theme . modus-vivendi)
                                     (:font "JetBrains Mono 10")
-                                    (:modes emacs-lisp-mode))))
-  (per-buffer-theme-mode))
+                                    (:modes emacs-lisp-mode)))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "*vterm*"))
+  (per-buffer-theme-mode 1))
 
 ;;; which key
 (use-package which-key
