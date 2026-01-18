@@ -1039,7 +1039,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'py-isort)
 (straight-use-package '(slime-star :type git :host github :repo "mmontone/slime-star"))
 (straight-use-package '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
-(straight-use-package 'pet)
+(straight-use-package 'eglot-python-preset)
 (straight-use-package 'treesit-auto)
 (straight-use-package 'mason)
 ;;;; config
@@ -1081,11 +1081,14 @@ If NOERROR, inhibit error messages when we can't find the node."
            "=" (general-key-dispatch 'evil-indent
                  "=" 'my-format-buffer)))
 
-(use-package pet
-  :demand t
+(use-package eglot-python-preset
+  :after eglot
+  :init
+  (require 'project)
+  (setopt
+   eglot-python-preset-lsp-server 'ty)
   :config
-  (add-hook 'python-base-mode-hook 'pet-mode -10)
-  :diminish pet-mode)
+  (eglot-python-preset-setup))
 
 (use-package treesit-auto
   :demand t
@@ -1293,6 +1296,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-hook 'completion-at-point-functions #'cape-file -100 t))
 
 (use-package eglot
+  :init
+  (load "project.elc")
   :hook
   (csharp-ts-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
@@ -1686,14 +1691,14 @@ If NOERROR, inhibit error messages when we can't find the node."
    per-buffer-theme-default-font "JetBrains Mono 10"
    per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
                                     (:font "JetBrains Mono 10")
-                                    (:modes python-ts-mode python-mode))
+                                    (:modes inferior-python-mode python-ts-mode python-mode))
                                    ((:theme . modus-vivendi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes csharp-mode csharp-ts-mode))
                                    ((:theme . modus-vivendi)
                                     (:font "JetBrains Mono 10")
                                     (:modes emacs-lisp-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "*vterm*" "notes.org"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "*vterm*" "notes.org" "*devdocs*" "*Async Shell Command"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
