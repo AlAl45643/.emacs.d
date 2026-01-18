@@ -389,6 +389,7 @@
 (straight-use-package 'evil-surround)
 (straight-use-package 'evil-multiedit)
 (straight-use-package 'posframe)
+(straight-use-package 'avy)
 ;;;; config
 (defun smart-tab ()
   (interactive)
@@ -488,6 +489,13 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-l" 'down-list
    )
   )
+
+(use-package avy
+  :init
+  (setopt
+   avy-all-windows nil
+   avy-all-windows-alt t
+   avy-case-fold-search nil))
 
 
 (use-package combobulate
@@ -1718,9 +1726,10 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; file manager
 
 (use-package dired
-  :general-config
-  ('normal dired-mode-map
-           "q" 'evil-window-delete))
+  :init
+  (setopt
+   dired-kill-when-opening-new-dired-buffer t)
+  )
 
 ;;; grammar
 ;;;; config
