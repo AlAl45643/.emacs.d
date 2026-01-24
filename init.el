@@ -412,6 +412,8 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
+   ((and (featurep 'eglot) (eglot--managed-mode))
+    (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
 (defun my-delete-back-to-char ()
@@ -506,7 +508,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook 
   (python-ts-mode . combobulate-mode)
   :general-config
-  ('(normal insert) combobulate-python-map
+  ('(normal insert visual) combobulate-python-map
    "M-h" 'combobulate-navigate-up
    "M-j" 'combobulate-navigate-next
    "M-k" 'combobulate-navigate-previous
@@ -1149,6 +1151,17 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-c s" 'sharper-main-transient))
 
 
+;;; c
+;;;; packages
+(straight-use-package 'mason)
+;;;; config 
+(use-package mason
+  :demand t
+  :config
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "clangd")))))
+
 ;;; javascript
 ;;;;; packages
 (straight-use-package 'js2-mode)
@@ -1302,6 +1315,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (csharp-ts-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
   (LaTeX-mode . eglot-ensure)
+  (c-ts-mode . eglot-ensure)
   :config
   (setopt
    eglot-connect-timeout 60)
@@ -1697,8 +1711,11 @@ If NOERROR, inhibit error messages when we can't find the node."
                                     (:modes csharp-mode csharp-ts-mode))
                                    ((:theme . modus-vivendi)
                                     (:font "JetBrains Mono 10")
-                                    (:modes emacs-lisp-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "*vterm*" "notes.org" "*devdocs*" "*Async Shell Command"))
+                                    (:modes emacs-lisp-mode))
+                                   ((:theme . modus-operandi)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes c-ts-mode)))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "*vterm*" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
@@ -1786,7 +1803,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package emacs
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
-  (prog-mode . electric-pair-local-mode)
+  ((org-mode prog-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
@@ -1811,7 +1828,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    auto-save-visited-interval 1
    inhibit-splash-screen 1
    shift-select-mode nil
-   async-shell-command-buffer 'rename-buffer)
+   async-shell-command-buffer 'rename-buffer
+   blink-matching-paren nil)
   (setq-default truncate-lines t)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
