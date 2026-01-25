@@ -750,7 +750,9 @@ kill the current timer, this may be a break or a running pomodoro."
    org-pomodoro-finished-sound (concat user-emacs-directory "finished.wav")
    org-pomodoro-length 30
    org-pomodoro-short-break-length 7
-   org-pomodoro-long-break-length 15)
+   org-pomodoro-long-break-length 15
+   org-pomodoro-start-sound (concat user-emacs-directory "bell.wav")
+   org-pomodoro-start-sound-p t)
   :config
   (advice-add 'org-pomodoro :override #'my-org-pomodoro)
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
@@ -993,6 +995,9 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'magit)
 ;;;; config
 (use-package magit
+  :init
+  (setopt
+   magit-define-global-key-bindings 'recommended)
   :general-config
   ('(visual normal) magit-mode-map
    "] ]" 'magit-section-forward
