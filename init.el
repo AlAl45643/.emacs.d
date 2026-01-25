@@ -574,7 +574,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (general-unbind iedit-mode-keymap
     "TAB"
     "<tab>"
-    "<backtab"))
+    "<backtab>"))
 
 (use-package evil-surround
   :hook (evil-mode . global-evil-surround-mode))
