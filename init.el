@@ -904,15 +904,15 @@ kill the current timer, this may be a break or a running pomodoro."
   (Info-mode . org-remark-info-mode)
   :config
   (org-remark-create "understand"
-                     '(:background "#1d3c25"))
+                     '(:background "#3d7f4d"))
   (org-remark-create "keyword"
-                     '(:strike-through "cyan"))
+                     '(:strike-through "blue"))
   (org-remark-create "sentence"
-                     '(:underline "white"))
+                     '(:underline "DarkViolet"))
   (org-remark-create "argument"
                      '(:overline "red"))
   (org-remark-create "highlight"
-                     '(:foreground "#fce94f"))
+                     '(:foreground "#baa60e"))
   :general-config
   ('visual org-remark-mode-map
            "<return>" 'org-remark-mark-highlight
