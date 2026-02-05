@@ -412,7 +412,7 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
-   ((and (featurep 'eglot) (eglot--managed-mode))
+   ((and (featurep 'eglot) (eglot--managed-mode) (eglot-server-capable :documentFormattingProvider))
     (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
@@ -646,7 +646,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-habit-show-habits-only-for-today nil
    org-habit-preceding-days 15
    org-habit-following-days 14
-   org-clock-sound (concat user-emacs-directory "bell.wav")
+   org-clock-sound (concat user-emacs-directory "finished.wav")
    org-agenda-timegrid-use-ampm t
    appt-activate t
    org-log-done 'time
@@ -1720,7 +1720,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                                    ((:theme . modus-operandi)
                                     (:font "JetBrains Mono 10")
                                     (:modes c-ts-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
