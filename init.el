@@ -1720,7 +1720,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                                    ((:theme . modus-operandi)
                                     (:font "JetBrains Mono 10")
                                     (:modes c-ts-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
