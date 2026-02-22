@@ -1745,10 +1745,23 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; file manager
 
+(defun dired-get-size ()
+  (interactive)
+  (let ((files (dired-get-marked-files)))
+    (with-temp-buffer
+      (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
+      (message "Size of all marked files: %s"
+               (progn 
+                 (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
+                  (match-string 1))))))
+
 (use-package dired
   :init
   (setopt
    dired-kill-when-opening-new-dired-buffer t)
+  :general-config
+  (dired-mode-map
+   "C-c s" 'dired-get-size)
   )
 
 ;;; grammar
@@ -1799,7 +1812,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package emacs
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
-  ((org-mode prog-mode) . electric-pair-local-mode)
+  ((org-mode prog-mode LaTeX-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
