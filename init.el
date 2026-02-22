@@ -1039,6 +1039,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'eglot-python-preset)
 (straight-use-package 'treesit-auto)
 (straight-use-package 'mason)
+(straight-use-package 'pet)
 ;;;; config
 (use-package mason
   :demand t
@@ -1078,15 +1079,18 @@ If NOERROR, inhibit error messages when we can't find the node."
            "=" (general-key-dispatch 'evil-indent
                  "=" 'my-format-buffer)))
 
-(use-package eglot-python-preset
-  :after eglot
-  :init
-  (require 'project)
-  (setopt
-   eglot-python-preset-lsp-server 'ty)
-  :config
-  (eglot-python-preset-setup))
+;; (use-package eglot-python-preset
+;;   :after eglot
+;;   :init
+;;   (require 'project)
+;;   (setopt
+;;    eglot-python-preset-lsp-server 'ty)
+;;   :config
+;;   (eglot-python-preset-setup))
 
+(use-package pet
+  :init
+  (add-hook 'python-base-mode-hook 'pet-mode -10))
 (use-package treesit-auto
   :demand t
   :init
