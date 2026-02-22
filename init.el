@@ -63,9 +63,6 @@
 (use-package use-package-core
   :custom
   (use-package-always-defer t))
-(use-package diminish
-  :straight t
-  )
 (use-package general
   :straight t
   :config
@@ -537,13 +534,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    evil-collection-key-blacklist '("M-h" "M-j" "M-k" "M-l")))
 
 
-(use-package evil-collection-unimpaired
-  :diminish evil-collection-unimpaired-mode)
+(use-package evil-collection-unimpaired)
 
 
 (use-package evil-mc
-  :hook (evil-mode . global-evil-mc-mode)
-  :diminish evil-mc-mode)
+  :hook (evil-mode . global-evil-mc-mode))
 
 (use-package evil-owl
   :hook (evil-mode . evil-owl-mode)
@@ -553,12 +548,10 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    evil-owl-max-string-length 50
    evil-owl-idle-delay 0.5)
   :custom
-  (evil-owl-extra-posframe-args '(:width 50 :height 20))
-  :diminish evil-owl-mode)
+  (evil-owl-extra-posframe-args '(:width 50 :height 20)))
 
 (use-package evil-commentary
-  :hook (prog-mode . evil-commentary-mode)
-  :diminish evil-commentary-mode)
+  :hook (prog-mode . evil-commentary-mode))
 
 (defun my-evil-multiedit-maintain-visual-cursor-advice (func &rest args)
   (if evil-visual-state-minor-mode
@@ -768,8 +761,7 @@ kill the current timer, this may be a break or a running pomodoro."
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
-  (evil-org-set-key-theme '(navigation insert textobjects additional calendar shift todo heading))
-  :diminish evil-org-mode)
+  (evil-org-set-key-theme '(navigation insert textobjects additional calendar shift todo heading)))
 
 
 
@@ -924,9 +916,7 @@ kill the current timer, this may be a break or a running pomodoro."
            "o" 'org-remark-open
            "]m" 'org-remark-view-next
            "[m" 'org-remark-view-prev
-           "r" 'org-remark-delete)
-  :diminish org-remark-global-tracking-mode
-  :diminish org-remark-mode
+           "r" 'org-remark-delete) :diminish org-remark-global-tracking-mode :diminish org-remark-mode
   )
 
 (defun my-file-extension (filename)
@@ -1372,8 +1362,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    eldoc-echo-area-prefer-doc-buffer t
    eldoc-echo-area-use-multiline-p nil)
   :config
-  (advice-add 'eldoc-display-in-buffer :around #'my-save-eldoc-point-advice)
-  :diminish eldoc-mode)
+  (advice-add 'eldoc-display-in-buffer :around #'my-save-eldoc-point-advice))
 
 
 (use-package yasnippet
@@ -1386,8 +1375,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<tab>" nil
    "TAB" nil
    "C-<tab>" 'yas-next-field
-   "C-<iso-lefttab>" 'yas-prev-field)
-  :diminish yas-minor-mode)
+   "C-<iso-lefttab>" 'yas-prev-field))
 
 ;;; default completion backends 
 ;;;; packages
@@ -1418,8 +1406,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<tab>" nil
    "TAB" nil
    "C-<tab>" 'yas-next-field
-   "C-<iso-lefttab>" 'yas-prev-field)
-  :diminish yas-minor-mode)
+   "C-<iso-lefttab>" 'yas-prev-field))
 
 (defun my-yasnippet-add-completion-functions ()
   "Add yasnippet-capf to `completion-at-point-functions'."
@@ -1681,12 +1668,16 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; visual non-functional changes
 ;;;; packages
 (straight-use-package 'per-buffer-theme)
+(straight-use-package 'minions)
 ;;;; config
 (use-package font-core
   :config
   (set-frame-font "JetBrains Mono 10" nil t)
   (setopt line-spacing 1))
 
+(use-package minions
+  :init
+  (minions-mode 1))
 
 
 (use-package simple
@@ -1695,8 +1686,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ((helpful-mode info-mode special-mode) . visual-line-mode)
   :init
   (setopt
-   visual-line-fringe-indicators '(nill nill))
-  :diminish visual-line-mode)
+   visual-line-fringe-indicators '(nill nill)))
 
 
 (use-package bookmark
@@ -1720,7 +1710,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                                    ((:theme . modus-operandi)
                                     (:font "JetBrains Mono 10")
                                     (:modes c-ts-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
@@ -1738,8 +1728,7 @@ If NOERROR, inhibit error messages when we can't find the node."
           which-key-allow-multiple-replacements t
           which-key-popup-type 'minibuffer
           )
-  (which-key-mode)
-  :diminish which-key-mode
+  (which-key-mode) :diminish which-key-mode
   )
 ;;; calc
 ;;;; packages
@@ -1773,12 +1762,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   (ispell-minor-keymap
    "C-c d" 'ispell-word
    "RET" nil
-   "SPC" nil)
-  :diminish ispell-minor-mode)
+   "SPC" nil))
 
 (use-package flyspell
-  :hook ((org-mode LaTeX-mode) . flyspell-mode)
-  :diminish flyspell-mode)
+  :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
 ;;;; packages
 (straight-use-package 'vterm)
@@ -1845,7 +1832,6 @@ If NOERROR, inhibit error messages when we can't find the node."
      truncate-string-ellipsis "..."))
   (add-to-list 'custom-enabled-themes 'tango-dark)
   (load-theme 'tango-dark)
-  (blink-cursor-mode 0)
-  :diminish outline-minor-mode)
+  (blink-cursor-mode 0))
 
 
