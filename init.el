@@ -237,6 +237,7 @@
   "-" 'text-scale-adjust
   "b" 'my-ibuffer
   "&" 'async-shell-command
+  "!" 'compile
   )
 
 ;;;; my-second-leader-evil-map
@@ -1812,7 +1813,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package emacs
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
-  ((org-mode prog-mode LaTeX-mode) . electric-pair-local-mode)
+  ((org-mode prog-mode LaTeX-mode fundamental-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
