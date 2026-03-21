@@ -1037,7 +1037,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'py-isort)
 (straight-use-package '(slime-star :type git :host github :repo "mmontone/slime-star"))
 (straight-use-package '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
-(straight-use-package 'eglot-python-preset)
+;; (straight-use-package 'eglot-python-preset)
 (straight-use-package 'treesit-auto)
 (straight-use-package 'mason)
 (straight-use-package 'pet)
@@ -1456,8 +1456,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    corfu-preview-current 'nil
    corfu-preselect 'first
    corfu-auto t
-   corfu-auto-prefix 2
-   corfu-auto-delay 0.3
+   corfu-auto-prefix 1
+   corfu-auto-delay 0.2
    corfu-min-width 80
    corfu-max-width corfu-min-width
    corfu-count 14
