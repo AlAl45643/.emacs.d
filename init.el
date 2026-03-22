@@ -291,6 +291,8 @@
   (cond
    ((and (featurep 'slime-py) (or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode)))
     (call-interactively #'slime-py-eval-statement-at-point))
+   ((and (featurep 'edebug) edebug-mode)
+    (call-interactively #'edebug-eval-last-sexp))
    (t (call-interactively #'eval-last-sexp))))
 
 (defun my-eval-region ()
@@ -1030,6 +1032,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   (setopt
    TeX-auto-save t
    TeX-parse-self t))
+
+(use-package latex
+  :config
+  (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table))
 
 ;;; python
 ;;;; packages
