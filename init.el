@@ -412,7 +412,7 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
-   ((and (featurep 'eglot) (eglot--managed-mode) (eglot-server-capable :documentFormattingProvider))
+   ((and (featurep 'eglot) eglot--managed-mode (eglot-server-capable :documentFormattingProvider))
     (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
