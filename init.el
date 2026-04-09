@@ -390,6 +390,7 @@
 (straight-use-package 'evil-multiedit)
 (straight-use-package 'posframe)
 (straight-use-package 'avy)
+(straight-use-package 'evim)
 ;;;; config
 (defun smart-tab ()
   (interactive)
@@ -540,8 +541,13 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 (use-package evil-collection-unimpaired)
 
 
-(use-package evil-mc
-  :hook (evil-mode . global-evil-mc-mode))
+(use-package evim
+  :hook (evil-mode . evim-setup-global-keys)
+  :config
+  (setopt
+   evim-leader-key "\\ .")
+  (which-key-add-key-based-replacements "\\ ." "evim")
+  )
 
 (use-package evil-owl
   :hook (evil-mode . evil-owl-mode)
@@ -560,17 +566,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (if evil-visual-state-minor-mode
       (set-window-point (selected-window) (- (point) 1))))
 
-(use-package evil-multiedit
-  :hook (evil-mode . evil-multiedit-mode)
-  :config
-  (evil-multiedit-default-keybinds)
-  (advice-add 'evil-multiedit-match-and-next :before #'my-evil-multiedit-maintain-visual-cursor-advice)
-  (advice-add 'evil-multiedit-match-and-prev :before #'my-evil-multiedit-maintain-visual-cursor-advice)
-  :general-config
-  (general-unbind iedit-mode-keymap
-    "TAB"
-    "<tab>"
-    "<backtab>"))
 
 (use-package evil-surround
   :hook (evil-mode . global-evil-surround-mode))
@@ -1819,7 +1814,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package emacs
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
-  ((org-mode prog-mode LaTeX-mode fundamental-mode) . electric-pair-local-mode)
+  ((prog-mode LaTeX-mode fundamental-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
@@ -1845,12 +1840,25 @@ If NOERROR, inhibit error messages when we can't find the node."
    inhibit-splash-screen 1
    shift-select-mode nil
    async-shell-command-buffer 'rename-buffer
-   blink-matching-paren nil)
-  (setq-default truncate-lines t)
+   blink-matching-paren nil
+   bidi-inhibit-bpa t
+   redisplay-skip-fontification-on-input t
+   highlight-nonselected-windows nil
+   kill-do-not-save-duplicates t)
+  (setq-default
+   truncate-lines t
+   bidi-display-reordering 'left-to-right
+   bidi-paragraph-direction 'left-to-right
+   cursor-in-non-selected-windows nil)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
   (global-auto-revert-mode 1)
   (savehist-mode 1)
+  (save-place-mode 1)
+  (advice-add 'save-place-find-file-hook :after
+              (lambda (&rest _)
+                (when buffer-file-name (ignore-errors (recenter)))))
+
   (with-eval-after-load 'mule-util
     (setq
      truncate-string-ellipsis "..."))
