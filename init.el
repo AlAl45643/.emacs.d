@@ -238,6 +238,7 @@
   "b" 'my-ibuffer
   "&" 'async-shell-command
   "!" 'compile
+  "w" 'window-toggle-side-windows
   )
 
 ;;;; my-second-leader-evil-map
@@ -1022,15 +1023,23 @@ If NOERROR, inhibit error messages when we can't find the node."
    (lambda ()
      (ignore-errors (mason-install "texlab")))))
 
+(use-package eglot
+  :hook
+  (LaTeX-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(LaTeX-mode . ("texlab")))
+  )
+
 (use-package tex
   :init
   (setopt
    TeX-auto-save t
    TeX-parse-self t))
 
-(use-package latex
-  :config
-  (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table))
+;; (use-package latex
+;;   :config
+;;   (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table))
 
 ;;; python
 ;;;; packages
@@ -1049,6 +1058,13 @@ If NOERROR, inhibit error messages when we can't find the node."
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "ty")))))
+
+(use-package eglot
+  :hook
+  (python-ts-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) "ty" "server")))
 
 (defun my-python-repl ()
   "Go to Python REPL and create it if needed."
@@ -1123,6 +1139,13 @@ If NOERROR, inhibit error messages when we can't find the node."
    (lambda ()
      (ignore-errors (mason-install "csharp-language-server")))))
 
+(use-package eglot
+  :hook
+  (csharp-ts-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((csharp-mode csharp-ts-mode) "csharp-ls" "-f" "metadata-uris"))
+  )
 (use-package sharper
   :general-config
   ('normal sharper--project-packages-mode-map
@@ -1163,6 +1186,10 @@ If NOERROR, inhibit error messages when we can't find the node."
    (lambda ()
      (ignore-errors (mason-install "clangd")))))
 
+(use-package eglot
+  :hook
+  (c-ts-mode . eglot-ensure))
+
 ;;; javascript
 ;;;;; packages
 (straight-use-package 'js2-mode)
@@ -1184,6 +1211,54 @@ If NOERROR, inhibit error messages when we can't find the node."
   :mode ("\\.sql\\'" . sql-mode))
 ;;; yaml
 (straight-use-package 'yaml-mode)
+(straight-use-package 'treesit-auto)
+;;;; config
+(use-package yaml-mode
+  :mode ("\\.yml\\'" . yaml-mode)
+  :mode ("\\.yaml\\'" . yaml-mode)
+  )
+(use-package treesit-auto
+  :init
+  (delete 'yaml treesit-auto-langs))
+;;; java
+;;;; packages
+(straight-use-package 'mason)
+(use-package mason
+  :demand t
+  :config
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "jdtls")))))
+
+(defun jdtls-reload-project-config (&optional server)
+  "Tell jdtls to reload the server configuration.  Useful after build system
+changes."
+  (interactive)
+  (let ((truename (file-truename (or buffer-file-name
+                                     (ignore-errors
+                                       (buffer-file-name
+                                        (buffer-base-buffer))))))
+        (srv (or server (eglot-current-server))))
+    (jsonrpc-notify srv
+                    :java/projectConfigurationUpdate
+                    `(:uri ,(eglot-path-to-uri truename :truenamep t)))))
+(use-package eglot
+  :hook
+  (java-ts-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               `((java-mode java-ts-mode) .
+                 (,(expand-file-name (concat user-emacs-directory "mason/bin/jdtls"))
+                  ,(concat "--jvm-arg=-javaagent:"
+                           (expand-file-name (concat user-emacs-directory "mason/packages/jdtls/lombok.jar")))
+                  "-data" ,(expand-file-name "~/.cache/emacs/jdtls-workspace")
+                  :initializationOptions
+                  (:bundles
+                   [,(expand-file-name
+                      (concat user-emacs-directory "bin/java-debug-0.53.1/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-0.53.1.jar"))])))))
+
+
+;;;; config
 ;;; debugging
 ;;;;; packages
 (straight-use-package 'dape)
@@ -1312,11 +1387,6 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package eglot
   :init
   (load "project.elc")
-  :hook
-  (csharp-ts-mode . eglot-ensure)
-  (python-ts-mode . eglot-ensure)
-  (LaTeX-mode . eglot-ensure)
-  (c-ts-mode . eglot-ensure)
   :config
   (setopt
    eglot-connect-timeout 60)
@@ -1325,12 +1395,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (add-hook 'eglot-managed-mode-hook #'my-file-completion-for-eglot 100)
   ;; if lsp-server returns many completions then turn off but if it doesn't then turn it on
   ;; This line causes function to delete or add characters when exiting https://github.com/minad/cape/issues/81
-  ;;  (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster)
-  (add-to-list 'eglot-server-programs
-               '(LaTeX-mode . ("texlab")))
-  (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) "ty" "server"))
-  )
+  ;; (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster))
+)
 
 (defvar eldoc-ratio 0.30)
 
@@ -1755,7 +1821,7 @@ If NOERROR, inhibit error messages when we can't find the node."
       (message "Size of all marked files: %s"
                (progn 
                  (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
-                  (match-string 1))))))
+                 (match-string 1))))))
 
 (use-package dired
   :init
