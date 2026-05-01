@@ -662,7 +662,9 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                               )))
    org-latex-packages-alist '(("" "cancel" t ("pdflatex"))))
   :config
-  (run-at-time "24:01" nil 'my-org-agenda-to-appt))
+  (run-at-time "24:01" nil 'my-org-agenda-to-appt)
+  (modify-syntax-entry ?< ".")
+  (modify-syntax-entry ?> "."))
 
 
 (defun my-org-pomodoro-choose-break-time (arg)
