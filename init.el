@@ -539,8 +539,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    evil-collection-key-blacklist '("M-h" "M-j" "M-k" "M-l")))
 
 
-(use-package evil-collection-unimpaired)
-
 
 (use-package evim
   :hook (evil-mode . evim-setup-global-keys)
@@ -548,6 +546,16 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (setopt
    evim-leader-key "\\ .")
   (which-key-add-key-based-replacements "\\ ." "evim")
+  (defun evim-esc ()
+    "Toggle from extend->cursor->normal"
+    (interactive)
+    (when (evim-active-p)
+      (if (evim-cursor-mode-p)
+          (evim-exit)
+        (evim--enter-cursor-mode))))
+  :general-config
+  (evim-mode-map
+   "<escape>" 'evim-esc)
   )
 
 (use-package evil-owl
@@ -663,8 +671,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-latex-packages-alist '(("" "cancel" t ("pdflatex"))))
   :config
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
-  (modify-syntax-entry ?< ".")
-  (modify-syntax-entry ?> "."))
+  (modify-syntax-entry ?< "." org-mode-syntax-table)
+  (modify-syntax-entry ?> "." org-mode-syntax-table))
 
 
 (defun my-org-pomodoro-choose-break-time (arg)
@@ -742,9 +750,11 @@ kill the current timer, this may be a break or a running pomodoro."
   (setopt
    org-pomodoro-ask-upon-killing t
    org-pomodoro-finished-sound (concat user-emacs-directory "finished.wav")
-   org-pomodoro-length 30
-   org-pomodoro-short-break-length 7
-   org-pomodoro-long-break-length 15
+   ;; 30 15 11 7
+   ;; 15 8 6 4
+   org-pomodoro-length 15 
+   org-pomodoro-short-break-length 4
+   org-pomodoro-long-break-length 8
    org-pomodoro-start-sound (concat user-emacs-directory "bell.wav")
    org-pomodoro-start-sound-p t)
   :config
@@ -885,10 +895,27 @@ kill the current timer, this may be a break or a running pomodoro."
 (straight-use-package 'org)
 (straight-use-package 'pdf-tools)
 (straight-use-package 'devdocs)
+(straight-use-package 'saveplace-pdf-view)
 ;;;;; config
 (use-package pdf-tools
   :init
-  (pdf-tools-install t))
+  (pdf-tools-install t)
+  :general-config
+  ('(normal visual) pdf-annot-minor-mode-map
+   "<return>" '("pdf-annot-mark-highlight". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
+   "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
+   "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
+   "C-c 3" '("pdf-annot-mark-sentence". (lambda () (interactive) (pdf-annot-add-underline-markup-annotation (pdf-view-active-region t) "DarkViolet")))
+   "C-c 4" '("pdf-annot-mark-argument" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "red")))
+   "r" 'pdf-annot-delete
+   "d" 'pdf-annot-delete
+   "t" 'pdf-annot-add-text-annotation)
+  )
+
+(use-package saveplace-pdf-view
+  :after (:any doc-view pdf-tools)
+  :demand t)
+
 (use-package org
   :demand t)
 
@@ -917,7 +944,9 @@ kill the current timer, this may be a break or a running pomodoro."
            "o" 'org-remark-open
            "]m" 'org-remark-view-next
            "[m" 'org-remark-view-prev
-           "r" 'org-remark-delete) :diminish org-remark-global-tracking-mode :diminish org-remark-mode
+           "r" 'org-remark-delete
+           "d" 'org-remark-delete)
+  :diminish org-remark-global-tracking-mode :diminish org-remark-mode
   )
 
 (defun my-file-extension (filename)
@@ -1398,7 +1427,7 @@ changes."
   ;; if lsp-server returns many completions then turn off but if it doesn't then turn it on
   ;; This line causes function to delete or add characters when exiting https://github.com/minad/cape/issues/81
   ;; (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster))
-)
+  )
 
 (defvar eldoc-ratio 0.30)
 
@@ -1713,9 +1742,9 @@ changes."
   (setq display-buffer-alist
         '(("\\*Ibuffer\\*"
            (display-buffer-reuse-mode-window display-buffer-in-direction)
-           (window . root)
-           (window-width . 0.50)
-           (direction . left))
+           (slide . left)
+           (slot . -1)
+           (window-width . 0.50))
           ((or "\\*info\\*" (major-mode . eww-mode) "\\*devdocs\\*")
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
@@ -1733,9 +1762,9 @@ changes."
            (window-height . 0.50))
           ((or "^\\*docker.+\\*$" (derived-mode . magit-mode) "\\*Remember\\*")
            (display-buffer-reuse-window display-buffer-in-direction)
-           (window . root)
-           (window-width . 0.50)
-           (direction . left))
+           (slide . left)
+           (slot . 0)
+           (window-width . 0.50))
           )))
 
 
@@ -1882,7 +1911,7 @@ changes."
 (use-package emacs
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
-  ((prog-mode LaTeX-mode fundamental-mode) . electric-pair-local-mode)
+  ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
