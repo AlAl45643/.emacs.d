@@ -59,6 +59,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
+(straight-use-package 'el-patch)
 
 (use-package use-package-core
   :custom
@@ -369,6 +370,11 @@
   "d" 'delete-file
   "c" 'copy-file)
 
+(+general-global-menu! "window" "w"
+  "h" 'windmove-display-left
+  "l" 'windmove-display-right
+  "j" 'windmove-display-down
+  "k" 'windmove-display-up)
 
 ;;;; simulation keys
 (general-def '(normal visual) 'override
@@ -672,7 +678,84 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :config
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
   (modify-syntax-entry ?< "." org-mode-syntax-table)
-  (modify-syntax-entry ?> "." org-mode-syntax-table))
+  (modify-syntax-entry ?> "." org-mode-syntax-table)
+  (el-patch-defun org-metaright (&optional _arg)
+    "Demote heading, list item at point or move table column right.
+
+In front of a drawer or a block keyword, indent it correctly.
+
+Calls `org-do-demote', `org-indent-item', `org-table-move-column',
+`org-indent-drawer' or `org-indent-block' depending on context.
+With no specific context, calls the Emacs default `forward-word'.
+See the individual commands for more information.
+
+This function runs the functions in `org-metaright-hook' one by
+one as a first step, and exits immediately if a function from the
+hook returns non-nil.  In the absence of a specific context, the
+function runs `org-metaright-final-hook' using the same logic."
+    (interactive "P")
+    (cond
+     ((run-hook-with-args-until-success 'org-metaright-hook))
+     ((org-at-table-p) (call-interactively 'org-table-move-column))
+     ((org-at-drawer-p) (call-interactively 'org-indent-drawer))
+     ((org-at-block-p) (call-interactively 'org-indent-block))
+     ((org-with-limited-levels
+       (or (org-at-heading-p)
+	   (and (org-region-active-p)
+	        (save-excursion
+		  (goto-char (region-beginning))
+		  (org-at-heading-p)))))
+      (when (org-check-for-hidden 'headlines) (org-hidden-tree-error))
+      (call-interactively 'org-do-demote))
+     ;; At an inline task.
+     ((org-at-heading-p)
+      (call-interactively 'org-inlinetask-demote))
+     ((or (org-at-item-p)
+	  (and (org-region-active-p)
+	       (save-excursion
+	         (goto-char (region-beginning))
+	         (org-at-item-p))))
+      (when (org-check-for-hidden 'items) (org-hidden-tree-error))
+      (call-interactively 'org-indent-item))
+     ((run-hook-with-args-until-success 'org-metaright-final-hook))
+     (t (call-interactively (el-patch-swap 'forward-word 'down-list)))))
+  (el-patch-defun org-metaleft (&optional _arg)
+  "Promote heading, list item at point or move table column left.
+
+Calls `org-do-promote', `org-outdent-item' or `org-table-move-column',
+depending on context.  With no specific context, calls the Emacs
+default `backward-word'.  See the individual commands for more
+information.
+
+This function runs the functions in `org-metaleft-hook' one by
+one as a first step, and exits immediately if a function from the
+hook returns non-nil.  In the absence of a specific context, the
+function runs `org-metaleft-final-hook' using the same logic."
+  (interactive "P")
+  (cond
+   ((run-hook-with-args-until-success 'org-metaleft-hook))
+   ((org-at-table-p) (org-call-with-arg 'org-table-move-column 'left))
+   ((org-with-limited-levels
+     (or (org-at-heading-p)
+	 (and (org-region-active-p)
+	      (save-excursion
+		(goto-char (region-beginning))
+		(org-at-heading-p)))))
+    (when (org-check-for-hidden 'headlines) (org-hidden-tree-error))
+    (call-interactively 'org-do-promote))
+   ;; At an inline task.
+   ((org-at-heading-p)
+    (call-interactively 'org-inlinetask-promote))
+   ((or (org-at-item-p)
+	(and (org-region-active-p)
+	     (save-excursion
+	       (goto-char (region-beginning))
+	       (org-at-item-p))))
+    (when (org-check-for-hidden 'items) (org-hidden-tree-error))
+    (call-interactively 'org-outdent-item))
+   ((run-hook-with-args-until-success 'org-metaleft-final-hook))
+   (t (call-interactively (el-patch-swap 'backward-word 'backward-up-list)))))
+  )
 
 
 (defun my-org-pomodoro-choose-break-time (arg)
@@ -702,47 +785,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
         (org-clock-out))))
 
 (defvar my-killed-pomodoro-time 30 "Value when pomdoro is killed.")
-(defun my-org-pomodoro (&optional arg)
-  "Start a new pomodoro or stop the current one.
 
-When no timer is running for `org-pomodoro` a new pomodoro is started and
-the current task is clocked in.  Otherwise EMACS will ask whether we´d like to
-kill the current timer, this may be a break or a running pomodoro."
-  (interactive "P")
-
-  (when (and org-pomodoro-last-clock-in
-             org-pomodoro-expiry-time
-             (org-pomodoro-expires-p)
-             (y-or-n-p "Reset pomodoro count? "))
-    (setq org-pomodoro-count 0))
-  (setq org-pomodoro-last-clock-in (current-time))
-
-  (cond
-   ;; possibly break from overtime
-   ((and (org-pomodoro-active-p) (eq org-pomodoro-state :overtime))
-    (org-pomodoro-finished))
-   ;; Maybe kill running pomodoro
-   ((org-pomodoro-active-p)
-    (if (or (not org-pomodoro-ask-upon-killing)
-            (y-or-n-p "There is already a running timer.  Would you like to stop it? "))
-        (progn (setq my-killed-pomodoro-time (/ (org-pomodoro-remaining-seconds) 60)) (org-pomodoro-kill))
-      (message "Alright, keep up the good work!")))
-   ;; or start and clock in pomodoro
-   (t
-    (cond
-     ((equal arg '(16))
-      (call-interactively 'org-clock-in-last))
-     ((memq major-mode (list 'org-mode 'org-journal-mode))
-      (org-clock-in))
-     ((eq major-mode 'org-agenda-mode)
-      (org-with-point-at (org-get-at-bol 'org-hd-marker)
-        (call-interactively 'org-clock-in)))
-     (t (let ((current-prefix-arg '(4)))
-          (call-interactively 'org-clock-in))))
-    (if (equal arg '(4))
-        (let ((org-pomodoro-length my-killed-pomodoro-time))
-          (org-pomodoro-start :pomodoro))
-      (org-pomodoro-start :pomodoro)))))
 
 (use-package org-pomodoro
   :hook (org-pomodoro-break-finished . my-org-pomodoro-resume-after-break)
@@ -758,7 +801,50 @@ kill the current timer, this may be a break or a running pomodoro."
    org-pomodoro-start-sound (concat user-emacs-directory "bell.wav")
    org-pomodoro-start-sound-p t)
   :config
-  (advice-add 'org-pomodoro :override #'my-org-pomodoro)
+  (el-patch-defun org-pomodoro (&optional arg)
+    "Start a new pomodoro or stop the current one.
+
+When no timer is running for `org-pomodoro` a new pomodoro is started and
+the current task is clocked in.  Otherwise EMACS will ask whether we´d like to
+kill the current timer, this may be a break or a running pomodoro."
+    (interactive "P")
+
+    (when (and org-pomodoro-last-clock-in
+               org-pomodoro-expiry-time
+               (org-pomodoro-expires-p)
+               (y-or-n-p "Reset pomodoro count? "))
+      (setq org-pomodoro-count 0))
+    (setq org-pomodoro-last-clock-in (current-time))
+
+    (cond
+     ;; possibly break from overtime
+     ((and (org-pomodoro-active-p) (eq org-pomodoro-state :overtime))
+      (org-pomodoro-finished))
+     ;; Maybe kill running pomodoro
+     ((org-pomodoro-active-p)
+      (if (or (not org-pomodoro-ask-upon-killing)
+              (y-or-n-p "There is already a running timer.  Would you like to stop it? "))
+          (el-patch-wrap 2 0 (progn (setq my-killed-pomodoro-time (/ (org-pomodoro-remaining-seconds) 60)) (org-pomodoro-kill)))
+        (message "Alright, keep up the good work!")))
+     ;; or start and clock in pomodoro
+     (t
+      (cond
+       (el-patch-remove ((equal arg '(4))
+                         (let ((current-prefix-arg '(4)))
+                           (call-interactively 'org-clock-in))))
+       ((equal arg '(16))
+        (call-interactively 'org-clock-in-last))
+       ((memq major-mode (list 'org-mode 'org-journal-mode))
+        (el-patch-swap (call-interactively 'org-clock-in) (org-clock-in)))
+       ((eq major-mode 'org-agenda-mode)
+        (org-with-point-at (org-get-at-bol 'org-hd-marker)
+          (call-interactively 'org-clock-in)))
+       (t (let ((current-prefix-arg '(4)))
+            (call-interactively 'org-clock-in))))
+      (el-patch-wrap 3 0 (if (equal arg '(4))
+                             (let ((org-pomodoro-length my-killed-pomodoro-time))
+                               (org-pomodoro-start :pomodoro))
+                           (org-pomodoro-start :pomodoro))))))
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
   (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice))
 
@@ -956,8 +1042,8 @@ kill the current timer, this may be a break or a running pomodoro."
         file-extension-list)
     nil))
 
-(defun my-Info-find-node (filename nodename &optional no-going-back strict-case
-                                   noerror)
+(el-patch-defun Info-find-node (filename nodename &optional no-going-back strict-case
+                                         noerror)
   "Go to an Info node specified as separate FILENAME and NODENAME.
 NO-GOING-BACK is non-nil if recovering from an error in this function;
 it says do not attempt further (recursive) error recovery.
@@ -978,20 +1064,18 @@ If NOERROR, inhibit error messages when we can't find the node."
        (push (list Info-current-file Info-current-node (point))
              Info-history))
   
-  (if-let* ((filename filename)
-            (extension (my-file-extension filename))
-            (info (not (member "info" extension))))
-      (let ((buffer (find-file-noselect filename)))
-        (switch-to-buffer buffer)
-        (require 'general)
-        (general-def 'normal 'local
-          "u" 'info))
-    (Info-find-node-2 filename nodename no-going-back strict-case)
-    ))
+  (el-patch-wrap 3 0 (if-let* ((filename filename)
+                               (extension (my-file-extension filename))
+                               (info (not (member "info" extension))))
+                         (let ((buffer (find-file-noselect filename)))
+                           (switch-to-buffer buffer)
+                           (require 'general)
+                           (general-def 'normal 'local
+                             "u" 'info))
+                       (Info-find-node-2 filename nodename no-going-back strict-case))))
 
 (use-package info
   :config
-  (advice-add 'Info-find-node :override #'my-Info-find-node)
   (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
   (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
   )
@@ -1741,10 +1825,10 @@ changes."
   :config
   (setq display-buffer-alist
         '(("\\*Ibuffer\\*"
-           (display-buffer-reuse-mode-window display-buffer-in-direction)
-           (slide . left)
-           (slot . -1)
-           (window-width . 0.50))
+           (display-buffer-reuse-mode-window display-buffer-in-side-window)
+           (window . root)
+           (window-width . 0.50)
+           (direction . left))
           ((or "\\*info\\*" (major-mode . eww-mode) "\\*devdocs\\*")
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
@@ -1762,9 +1846,9 @@ changes."
            (window-height . 0.50))
           ((or "^\\*docker.+\\*$" (derived-mode . magit-mode) "\\*Remember\\*")
            (display-buffer-reuse-window display-buffer-in-direction)
-           (slide . left)
-           (slot . 0)
-           (window-width . 0.50))
+           (window . root)
+           (window-width . 0.50)
+           (direction . left))
           )))
 
 
