@@ -984,6 +984,8 @@ kill the current timer, this may be a break or a running pomodoro."
 (straight-use-package 'saveplace-pdf-view)
 ;;;;; config
 (use-package pdf-tools
+  :hook
+  (pdf-view-mode . pdf-view-roll-minor-mode)
   :init
   (pdf-tools-install t)
   :general-config
