@@ -88,6 +88,7 @@
     (pop-to-buffer (python-shell-get-buffer)))
    ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode)) (sharper-transient-run))
    ((equal major-mode 'LaTeX-mode) (call-interactively #'TeX-command-master))
+   ((equal major-mode 'sql-mode) (call-interactively #'sql-send-buffer))
    (t (message "No program to run"))))
 
 (defun my-eval-expression ()
@@ -1647,7 +1648,7 @@ changes."
    corfu-preview-current 'nil
    corfu-preselect 'first
    corfu-auto t
-   corfu-auto-prefix 1
+   corfu-auto-prefix 2
    corfu-auto-delay 0.2
    corfu-min-width 80
    corfu-max-width corfu-min-width
