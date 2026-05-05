@@ -1324,8 +1324,15 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 
 ;;; sql
+;;;; packages
+(straight-use-package 'sql-indent)
+;;;; config
 (use-package sql
   :mode ("\\.sql\\'" . sql-mode))
+
+(use-package sql-indent
+  :hook
+  (sql-mode . sqlind-minor-mode))
 ;;; yaml
 (straight-use-package 'yaml-mode)
 (straight-use-package 'treesit-auto)
