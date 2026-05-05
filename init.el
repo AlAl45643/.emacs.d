@@ -1858,7 +1858,13 @@ changes."
 ;;;; packages
 (straight-use-package 'per-buffer-theme)
 (straight-use-package 'minions)
+(straight-use-package 'indent-bars)
+(straight-use-package 'doric-themes)
 ;;;; config
+(use-package indent-bars
+  :hook
+  (prog-mode . indent-bars-mode))
+
 (use-package font-core
   :config
   (set-frame-font "JetBrains Mono 10" nil t)
@@ -1898,7 +1904,10 @@ changes."
                                     (:modes emacs-lisp-mode))
                                    ((:theme . modus-operandi)
                                     (:font "JetBrains Mono 10")
-                                    (:modes c-ts-mode)))
+                                    (:modes c-ts-mode))
+                                   ((:theme . doric-siren)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes sql-mode)))
    per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf"))
   (per-buffer-theme-mode 1))
 
