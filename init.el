@@ -1899,7 +1899,7 @@ changes."
 (use-package per-buffer-theme-mode
   :init
   (setopt
-   per-buffer-theme-default-theme 'tango-dark
+   per-buffer-theme-default-theme 'doric-obsidian
    per-buffer-theme-default-font "JetBrains Mono 10"
    per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
                                     (:font "JetBrains Mono 10")
@@ -2062,8 +2062,29 @@ changes."
   (with-eval-after-load 'mule-util
     (setq
      truncate-string-ellipsis "..."))
-  (add-to-list 'custom-enabled-themes 'tango-dark)
-  (load-theme 'tango-dark)
+  (add-to-list 'custom-enabled-themes 'doric-obsidian)
+  (load-theme 'doric-obsidian)
   (blink-cursor-mode 0))
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("530e730924892af285af79d88339048da48c572a3c974882682eadb9881fb051"
+     default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-habit-alert-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-alert-future-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-clear-face ((t (:background "#e7b416" :foreground "black"))))
+ '(org-habit-clear-future-face ((t (:background "#e7b416" :foreground "black"))))
+ '(org-habit-overdue-face ((t (:background "#cc3232" :foreground "black"))))
+ '(org-habit-overdue-future-face ((t (:background "#cc3232" :foreground "black"))))
+ '(org-habit-ready-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-ready-future-face ((t (:background "#2dc937" :foreground "black")))))
