@@ -1835,7 +1835,7 @@ changes."
   :config
   (setq display-buffer-alist
         '(("\\*Ibuffer\\*"
-           (display-buffer-reuse-mode-window display-buffer-in-side-window)
+           (display-buffer-reuse-mode-window display-buffer-in-direction)
            (window . root)
            (window-width . 0.50)
            (direction . left))
