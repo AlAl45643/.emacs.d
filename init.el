@@ -361,6 +361,11 @@
 (+general-global-menu! "completion" "p"
   "p" 'completion-at-point)
 
+(+general-global-menu! "git" "g"
+  "x" 'diff-hl-revert-hunk
+  "=" 'diff-hl-diff-goto-hunk
+  "s" 'diff-hl-stage-dwim)
+
 (+general-global-menu! "project" "j"
   "f" 'project-find-file
   "s" 'project-switch-to-buffer
@@ -551,7 +556,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook (evil-mode . evim-setup-global-keys)
   :config
   (setopt
-   evim-leader-key "\\ .")
+   evim-leader-key "g .")
   (which-key-add-key-based-replacements "\\ ." "evim")
   (defun evim-esc ()
     "Toggle from extend->cursor->normal"
@@ -1100,6 +1105,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; git
 ;;;; packages
 (straight-use-package 'magit)
+(straight-use-package 'diff-hl)
 ;;;; config
 (use-package magit
   :init
@@ -1114,6 +1120,17 @@ If NOERROR, inhibit error messages when we can't find the node."
            "[ [" 'magit-section-backward))
 
 
+(use-package diff-hl
+  :init
+  (global-diff-hl-mode)
+  (setopt
+   diff-hl-show-staged-changes t)
+  :general-config
+  ('(visual normal)
+   "] g" 'diff-hl-next-hunk
+   "[ g" 'diff-hl-previous-hunk
+   "] G" 'diff-hl-show-hunk-next
+   "[ G" 'diff-hl-show-hunk-previous ))
 ;;; docker
 ;;;; packages
 (straight-use-package 'docker)
@@ -1791,6 +1808,7 @@ changes."
                      (derived-mode-p 'comint-mode)))
      debugger-mode
      compilation-mode
+     diff-mode
      ))
   (popper-mode 1)
   (popper-echo-mode 1))
@@ -1849,7 +1867,7 @@ changes."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -1886,7 +1904,7 @@ changes."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((helpful-mode info-mode special-mode) . visual-line-mode)
+  ((helpful-mode info-mode special-mode diff-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill)))
@@ -2052,6 +2070,7 @@ changes."
    cursor-in-non-selected-windows nil)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
+  (winner-mode 1)
   (global-auto-revert-mode 1)
   (savehist-mode 1)
   (save-place-mode 1)
