@@ -1801,6 +1801,7 @@ changes."
      "^\\* docker.+ up"
      "^\\* docker.+ exec"
      "^\\* docker vterm"
+     "\\* docker container logs"
      "\\*slime-repl uv-python"
      "\\*Racket"
      "\\*sldb"
@@ -1868,7 +1869,7 @@ changes."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
