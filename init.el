@@ -1134,6 +1134,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; docker
 ;;;; packages
 (straight-use-package 'docker)
+(straight-use-package 'dockerfile-mode)
 ;;;; config
 (use-package docker
   :init
@@ -2031,7 +2032,7 @@ changes."
 
 (use-package emacs
   :hook
-  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode) . (lambda () (setq display-line-numbers 'visual)))
+  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode yaml-mode) . (lambda () (setq display-line-numbers 'visual)))
   ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
@@ -2082,8 +2083,9 @@ changes."
     (setq
      truncate-string-ellipsis "..."))
   (add-to-list 'custom-enabled-themes 'doric-obsidian)
-  (load-theme 'doric-obsidian)
-  (blink-cursor-mode 0))
+  (load-theme 'doric-obsidian t)
+  (blink-cursor-mode 0)
+  (put 'list-timers 'disabled nil))
 
 
 (custom-set-variables
