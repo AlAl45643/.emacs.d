@@ -312,6 +312,23 @@
     (call-interactively #'slime-eval-buffer))
    (t (call-interactively #'eval-buffer))))
 
+(defun my-last-message (&optional num)
+  (or num (setq num 1))
+  (if (= num 0)
+      (current-message)
+    (save-excursion
+      (set-buffer "*Messages*")
+      (save-excursion
+    (forward-line (- 1 num))
+    (backward-char)
+    (let ((end (point)))
+      (forward-line 0)
+      (buffer-substring-no-properties (point) end))))))
+
+(defun my-copy-last-message (&optional num)
+  (interactive "*p")
+  (kill-new (my-last-message num)))
+
 (general-define-key
  :keymaps 'override
  :states '(insert normal hybrid motion visual operator)
@@ -381,6 +398,9 @@
   "l" 'windmove-display-right
   "j" 'windmove-display-down
   "k" 'windmove-display-up)
+
+(+general-global-menu! "text" "t"
+  "m" 'my-copy-last-message)
 
 ;;;; simulation keys
 (general-def '(normal visual) 'override
