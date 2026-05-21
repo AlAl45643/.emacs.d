@@ -637,6 +637,34 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
     (org-match-sparse-tree)
     ))
 
+(defvar my-annoying-timer (list))
+
+
+(defun my-create-annoying-sound ()
+  "Play an annoying sound if org-pomdoro is not started, else cancel `my-annoying-timer'."
+  (require 'org-pomodoro)
+  (if (and (eq org-pomodoro-state :none) (not (org-clocking-p)))
+      (start-process "play-sound" nil "aplay" (concat (expand-file-name user-emacs-directory) "bell.wav"))
+    (cancel-timer (pop my-annoying-timer))))
+
+
+(defun my-create-annoying-timer (time)
+  "Create an annoying timer that repeats until pomodoro is started."
+  (require 'diary-lib)
+  (let ((hhmm (diary-entry-time time))
+        (now (decode-time)))
+    (when (>= hhmm 0)
+      (setq time (encode-time 0 (% hhmm 100) (/ hhmm 100)
+                              (decoded-time-day now)
+                              (decoded-time-month now)
+                              (decoded-time-year now)
+                              (decoded-time-zone now)))
+      )
+    (unless (time-less-p time (current-time))
+      (let ((timer (run-at-time time 1 #'my-create-annoying-sound)))
+        (push timer my-annoying-timer)))))
+
+
 (use-package org
   :hook (org-agenda-finalize . my-org-agenda-to-appt)
   :general-config
