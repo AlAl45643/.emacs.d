@@ -233,7 +233,7 @@
   "0" 'my-window-bookmark-previous
   "1" 'my-window-bookmark-home
   "2" 'my-window-bookmark-dape
-  "o" 'my-online-search
+  "o" 'org-noter
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
@@ -244,11 +244,6 @@
   )
 
 ;;;; my-second-leader-evil-map
-(defun my-online-search (x)
-  "Search duckduckgo with X"
-  (interactive "sSearch: ")
-  (browse-url (concat "https://duckduckgo.com/?q=" x))
-  )
 
 (defun my-test-code ()
   "Run test cases for program."
