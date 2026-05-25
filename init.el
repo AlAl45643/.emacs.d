@@ -319,11 +319,11 @@
     (save-excursion
       (set-buffer "*Messages*")
       (save-excursion
-    (forward-line (- 1 num))
-    (backward-char)
-    (let ((end (point)))
-      (forward-line 0)
-      (buffer-substring-no-properties (point) end))))))
+        (forward-line (- 1 num))
+        (backward-char)
+        (let ((end (point)))
+          (forward-line 0)
+          (buffer-substring-no-properties (point) end))))))
 
 (defun my-copy-last-message (&optional num)
   (interactive "*p")
@@ -666,7 +666,14 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 
 (use-package org
-  :hook (org-agenda-finalize . my-org-agenda-to-appt)
+  :hook
+  (org-agenda-finalize . my-org-agenda-to-appt)
+  (org-metaleft-final . (lambda () (interactive) (call-interactively #'backward-up-list) t))
+  (org-metaright-final . (lambda () (interactive) (call-interactively #'down-list) t))
+  (org-metaup-final . (lambda () (interactive) (call-interactively #'backward-list) t))
+  (org-metadown-final . (lambda () (interactive) (call-interactively #'forward-list) t))
+  (org-shiftmetaup-final . (lambda () (interactive) (call-interactively #'backward-sexp) t))
+  (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'forward-sexp) t))
   :general-config
   (org-mode-map
    "C-<tab>" 'org-cycle
@@ -722,7 +729,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                              :message
                                              "you need to install the programs: docker."
                                              :image-input-type "dvi" :image-output-type "png"
-                                             :image-size-adjust (1.5 . 1.5) :latex-compiler
+                                             :image-size-adjust (2.0 . 2.0) :latex-compiler
                                              ("docker cp %f latex:/workdir/%b.tex && docker exec latex latex -interaction nonstopmode /workdir/%b.tex && docker cp latex:/workdir/%b.dvi /tmp/%b.dvi")
                                              :image-converter ("docker exec latex dvipng -D %D -T tight /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O")
                                              :transparent-image-converter
@@ -733,82 +740,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
   (modify-syntax-entry ?< "." org-mode-syntax-table)
   (modify-syntax-entry ?> "." org-mode-syntax-table)
-  (el-patch-defun org-metaright (&optional _arg)
-    "Demote heading, list item at point or move table column right.
-
-In front of a drawer or a block keyword, indent it correctly.
-
-Calls `org-do-demote', `org-indent-item', `org-table-move-column',
-`org-indent-drawer' or `org-indent-block' depending on context.
-With no specific context, calls the Emacs default `forward-word'.
-See the individual commands for more information.
-
-This function runs the functions in `org-metaright-hook' one by
-one as a first step, and exits immediately if a function from the
-hook returns non-nil.  In the absence of a specific context, the
-function runs `org-metaright-final-hook' using the same logic."
-    (interactive "P")
-    (cond
-     ((run-hook-with-args-until-success 'org-metaright-hook))
-     ((org-at-table-p) (call-interactively 'org-table-move-column))
-     ((org-at-drawer-p) (call-interactively 'org-indent-drawer))
-     ((org-at-block-p) (call-interactively 'org-indent-block))
-     ((org-with-limited-levels
-       (or (org-at-heading-p)
-	   (and (org-region-active-p)
-	        (save-excursion
-		  (goto-char (region-beginning))
-		  (org-at-heading-p)))))
-      (when (org-check-for-hidden 'headlines) (org-hidden-tree-error))
-      (call-interactively 'org-do-demote))
-     ;; At an inline task.
-     ((org-at-heading-p)
-      (call-interactively 'org-inlinetask-demote))
-     ((or (org-at-item-p)
-	  (and (org-region-active-p)
-	       (save-excursion
-	         (goto-char (region-beginning))
-	         (org-at-item-p))))
-      (when (org-check-for-hidden 'items) (org-hidden-tree-error))
-      (call-interactively 'org-indent-item))
-     ((run-hook-with-args-until-success 'org-metaright-final-hook))
-     (t (call-interactively (el-patch-swap 'forward-word 'down-list)))))
-  (el-patch-defun org-metaleft (&optional _arg)
-  "Promote heading, list item at point or move table column left.
-
-Calls `org-do-promote', `org-outdent-item' or `org-table-move-column',
-depending on context.  With no specific context, calls the Emacs
-default `backward-word'.  See the individual commands for more
-information.
-
-This function runs the functions in `org-metaleft-hook' one by
-one as a first step, and exits immediately if a function from the
-hook returns non-nil.  In the absence of a specific context, the
-function runs `org-metaleft-final-hook' using the same logic."
-  (interactive "P")
-  (cond
-   ((run-hook-with-args-until-success 'org-metaleft-hook))
-   ((org-at-table-p) (org-call-with-arg 'org-table-move-column 'left))
-   ((org-with-limited-levels
-     (or (org-at-heading-p)
-	 (and (org-region-active-p)
-	      (save-excursion
-		(goto-char (region-beginning))
-		(org-at-heading-p)))))
-    (when (org-check-for-hidden 'headlines) (org-hidden-tree-error))
-    (call-interactively 'org-do-promote))
-   ;; At an inline task.
-   ((org-at-heading-p)
-    (call-interactively 'org-inlinetask-promote))
-   ((or (org-at-item-p)
-	(and (org-region-active-p)
-	     (save-excursion
-	       (goto-char (region-beginning))
-	       (org-at-item-p))))
-    (when (org-check-for-hidden 'items) (org-hidden-tree-error))
-    (call-interactively 'org-outdent-item))
-   ((run-hook-with-args-until-success 'org-metaleft-final-hook))
-   (t (call-interactively (el-patch-swap 'backward-word 'backward-up-list)))))
   )
 
 
@@ -1036,6 +967,7 @@ kill the current timer, this may be a break or a running pomodoro."
 (straight-use-package 'pdf-tools)
 (straight-use-package 'devdocs)
 (straight-use-package 'saveplace-pdf-view)
+(straight-use-package 'org-noter)
 ;;;;; config
 (use-package pdf-tools
   :hook
@@ -1150,6 +1082,15 @@ If NOERROR, inhibit error messages when we can't find the node."
            "i" 'devdocs-lookup)
   )
 
+(use-package org-noter
+  :init
+  (setopt
+   org-noter-auto-save-last-location t)
+  :general
+  ('(visual normal) org-noter-doc-mode-map
+   "i" 'org-noter-insert-note
+   "q" 'org-noter-kill-session)
+  )
 ;;; git
 ;;;; packages
 (straight-use-package 'magit)
@@ -1172,7 +1113,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :init
   (global-diff-hl-mode)
   (setopt
-   diff-hl-show-staged-changes t)
+   diff-hl-show-staged-changes nil)
   :general-config
   ('(visual normal)
    "] g" 'diff-hl-next-hunk
@@ -1954,7 +1895,7 @@ changes."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((helpful-mode info-mode special-mode diff-mode) . visual-line-mode)
+  ((helpful-mode info-mode diff-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill)))
@@ -1984,7 +1925,7 @@ changes."
                                    ((:theme . doric-siren)
                                     (:font "JetBrains Mono 10")
                                     (:modes sql-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*"))
   (per-buffer-theme-mode 1))
 
 ;;; which key
@@ -2112,7 +2053,7 @@ changes."
    bidi-inhibit-bpa t
    redisplay-skip-fontification-on-input t
    highlight-nonselected-windows nil
-   kill-do-not-save-duplicates t)
+   inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started"))
   (setq-default
    truncate-lines t
    bidi-display-reordering 'left-to-right
