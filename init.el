@@ -730,7 +730,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                              :transparent-image-converter
                                              ("docker exec latex dvipng -D %D -T tight -bg Transparent /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O"
                                               )))
-   org-latex-packages-alist '(("" "cancel" t ("pdflatex"))))
+   org-latex-packages-alist '(("" "cancel" t ("pdflatex")))
+   org-imenu-depth 1)
   :config
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
   (modify-syntax-entry ?< "." org-mode-syntax-table)
@@ -979,6 +980,11 @@ kill the current timer, this may be a break or a running pomodoro."
    "r" 'pdf-annot-delete
    "d" 'pdf-annot-delete
    "t" 'pdf-annot-add-text-annotation)
+  ('(normal visual) pdf-view-mode-map
+   "C-f" 'pdf-view-next-page
+   "C-b" 'pdf-view-previous-page
+   "C-e" 'pdf-roll-scroll-forward
+   "C-y" 'pdf-roll-scroll-backward)
   )
 
 (use-package saveplace-pdf-view
@@ -1777,6 +1783,7 @@ changes."
      "Output\\*$"
      "\\*Async Shell Command\\*"
      "\\*eshell\\*"
+     "\\*Outline"
      "\\*dotnet"
      "events\\*"
      "\\*shell\\*"
@@ -1853,7 +1860,7 @@ changes."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
