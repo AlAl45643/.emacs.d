@@ -1107,14 +1107,34 @@ If NOERROR, inhibit error messages when we can't find the node."
            "i" 'devdocs-lookup)
   )
 
+(defvar org-noter-toggle-sync nil)
+
+(defun org-noter-toggle-sync ()
+  "Toggle `org-noter-toggle-sync'"
+  (interactive)
+  (if org-noter-toggle-sync
+      (progn (message "Off")
+             (setq org-noter-toggle-sync nil))
+    (message "On")
+    (setq org-noter-toggle-sync t)))
+
+(defun org-noter-toggle-advice (orig-fun &rest args)
+  (if org-noter-toggle-sync
+      (apply orig-fun args)
+    nil))
+
 (use-package org-noter
   :init
   (setopt
-   org-noter-auto-save-last-location t)
+   org-noter-auto-save-last-location t
+   org-noter-disable-narrowing t)
   :general
   ('(visual normal) org-noter-doc-mode-map
    "i" 'org-noter-insert-note
-   "q" 'org-noter-kill-session)
+   "q" 'org-noter-kill-session
+   "c" 'org-noter-toggle-sync)
+  :config
+  (advice-add 'org-noter--doc-location-change-handler :around #'org-noter-toggle-advice)
   )
 ;;; git
 ;;;; packages
