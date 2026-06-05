@@ -215,6 +215,7 @@
 
 (main-leader-definer
   "s" 'switch-to-buffer
+  "e" 'popper-cycle
   "r" 'my-run-program
   "t" 'popper-toggle
   "p" 'org-pomodoro
@@ -375,7 +376,7 @@
 
 (+general-global-menu! "git" "g"
   "x" 'diff-hl-revert-hunk
-  "=" 'diff-hl-diff-goto-hunk
+  "d" 'diff-hl-diff-goto-hunk
   "s" 'diff-hl-stage-dwim)
 
 (+general-global-menu! "project" "j"
@@ -852,6 +853,7 @@ kill the current timer, this may be a break or a running pomodoro."
 ;;;;; packages
 (straight-use-package 'plantuml-mode)
 (straight-use-package 'graphviz-dot-mode)
+(straight-use-package '(org-mindmap :type git :host github :repo "krvkir/org-mindmap"))
 ;;;;; config
 (use-package org
   :config
@@ -865,6 +867,28 @@ kill the current timer, this may be a break or a running pomodoro."
   :config
   (if (not (file-exists-p org-plantuml-jar-path))
       (plantuml-download-jar)))
+
+(use-package org-mindmap
+  :after org
+  :init
+  (require 'org-mindmap)
+  :general
+  (org-mode-map
+   "C-c m c" 'org-mindmap-insert-child
+   "C-c m s" 'org-mindmap-insert-sibling
+   "C-c m r" 'org-mindmap-insert-root
+   "C-c m d" 'org-mindmap-delete-node
+   "C-c m v" 'org-mindmap-switch-layout
+   "C-c m m" 'org-mindmap-list-to-mindmap
+   "C-c m l" 'org-mindmap-to-list)
+  :config
+  (defun my-org-mindmap-tab-advice (orig-fun &rest args)
+    (let ((node (org-mindmap-find-node-at-point)))
+      (if node
+          (org-mindmap-insert-child)
+        (apply orig-fun args))))
+  (advice-add 'smart-tab :around #'my-org-mindmap-tab-advice))
+
 ;;;; org babel racket
 ;;;;; packages
 (straight-use-package '(ob-racket :type git :host github :repo "hasu/emacs-ob-racket"
@@ -1177,6 +1201,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'treesit-auto)
 (straight-use-package 'mason)
 (straight-use-package 'pet)
+(straight-use-package 'cape)
 ;;;; config
 (use-package mason
   :demand t
@@ -1184,6 +1209,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (mason-ensure
    (lambda ()
      (ignore-errors (mason-install "ty")))))
+
 
 (use-package eglot
   :hook
@@ -1221,7 +1247,11 @@ If NOERROR, inhibit error messages when we can't find the node."
    "C-c ?" 'my-python-eldoc-at-point)
   ('normal python-ts-mode-map
            "=" (general-key-dispatch 'evil-indent
-                 "=" 'my-format-buffer)))
+                 "=" 'my-format-buffer))
+  :config
+  (advice-add 'python-shell-completion-at-point :around
+              (lambda (fun &optional arg)
+                (cape-wrap-noninterruptible (lambda () (funcall fun arg))))))
 
 ;; (use-package eglot-python-preset
 ;;   :after eglot
