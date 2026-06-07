@@ -16,7 +16,10 @@
 /projects
 /racket-mode/
 /semanticdb/
-/straight/
+/straight/build/
+/straight/modified/
+/straight/repos/
+/straight/build-cache.el
 /tramp
 /transient/
 /tree-sitter/
