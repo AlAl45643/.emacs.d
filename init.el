@@ -1837,9 +1837,49 @@ changes."
   (marginalia-mode))
 ;;; windows
 ;;;; packages
+(straight-use-package '(space-tree :type git :host github :repo "chiply/space-tree"))
 (straight-use-package 'popper)
 (straight-use-package 'burly)
 ;;;; config
+(use-package space-tree
+  :demand t
+  :config
+  (space-tree-init)
+  :general
+  ('normal
+   "s 1" #'space-tree-to-1
+   "s 2" #'space-tree-to-2
+   "s 3" #'space-tree-to-3
+   "s 4" #'space-tree-to-4
+   "s 5" #'space-tree-to-5
+   "s 6" #'space-tree-to-6
+   "s 7" #'space-tree-to-7
+   "s 8" #'space-tree-to-8
+   "s 9" #'space-tree-to-9
+
+   ;; Second level (within current top-level space)
+   "s a" #'space-tree-sub-1
+   "s s" #'space-tree-sub-2
+   "s d" #'space-tree-sub-3
+   "s f" #'space-tree-sub-4
+   "s g" #'space-tree-sub-5
+
+   ;; Third level (within current second-level space)
+   "s A" #'space-tree-sub-sub-1
+   "s S" #'space-tree-sub-sub-2
+   "s D" #'space-tree-sub-sub-3
+   "s F" #'space-tree-sub-sub-4
+   "s G" #'space-tree-sub-sub-5
+
+   ;; Navigation
+   "C-S-<iso-lefttab>"   #'space-tree-switch-space-by-name
+   "C-<tab>"     #'space-tree-go-to-last-space
+   "C-M-<tab>"   #'space-tree-go-right
+   "C-M-S-<tab>" #'space-tree-go-left
+
+   ;; Delete current space (the command defaults to the current address)
+   "s _" #'space-tree-delete-space))
+
 (use-package popper
   :init
   (setopt
@@ -2121,7 +2161,8 @@ changes."
    bidi-inhibit-bpa t
    redisplay-skip-fontification-on-input t
    highlight-nonselected-windows nil
-   inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started"))
+   inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started")
+   mode-line-percent-position nil)
   (setq-default
    truncate-lines t
    bidi-display-reordering 'left-to-right
@@ -2151,9 +2192,17 @@ changes."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(bmkp-last-as-first-bookmark-file "/home/alal/.emacs.d/bookmarks")
  '(custom-safe-themes
    '("530e730924892af285af79d88339048da48c572a3c974882682eadb9881fb051"
-     default)))
+     default))
+ '(safe-local-variable-values
+   '((eval unless (string-search "Sun" (current-time-string))
+           (my-create-annoying-timer "8:00pm")
+           (my-create-annoying-timer "6:30pm")
+           (my-create-annoying-timer "2:30pm")
+           (my-create-annoying-timer "12:00pm")
+           (my-create-annoying-timer "8:30am")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
