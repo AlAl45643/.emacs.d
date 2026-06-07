@@ -112,53 +112,15 @@
     (call-interactively #'slime-eval-defun))
    (t (call-interactively #'eval-defun))))
 
-(defun my-browse-csharp-docs (x)
-  "Browse csharp docs by searching duckduckgo with site: learn.microsoft.com."
-  (interactive "sSearch: ")
-  (browse-url (browse-url (concat "https://duckduckgo.com/?q=" x "+site%3Alearn.microsoft.com"))))
-
-(defun my-browse-python-docs (x)
-  "Browse python docs by search duckduckgo with site: docs.python.org"
-  (interactive "sSearch: ")
-  (browse-url (concat "https://duckduckgo.com/?q=" x "+site%3Adocs.python.org")))
 
 
-(defun my-browse-documentation ()
-  "Browse documentation for mode."
-  (interactive)
-  (cond
-   ((equal major-mode 'emacs-lisp-mode)
-    (info-other-window "elisp"))
-   ((or (equal major-mode 'csharp-mode) (equal major-mode 'csharp-ts-mode))
-    (call-interactively #'my-browse-csharp-docs))
-   ((equal major-mode (or 'php-ts-mode php-mode))
-    (php-browse-manual))
-   ((or (equal major-mode 'python-ts-mode) (equal major-mode 'python-mode))
-    (call-interactively #'my-browse-python-docs))))
 
-(defvar my-previous-window-bookmark "prev")
 
-(defvar my-issues-org-template 
-  "
-1. Go through errors mentally
-2. Create hypothesis for error
-3. Test hypothesis with debugger
-4. Write down failed hypothesis
-5. Repeat 2-4 until you find the problem
-6. Come up with a task to fix the problem
-")
-
-(defun my-window-bookmark-previous ()
-  "Move to previous bookmark"
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump my-previous-window-bookmark))
 
 (defun my-window-bookmark-home ()
   "Move to home bookmark."
   (interactive)
   (bookmark-maybe-load-default-file)
-  (burly-bookmark-windows my-previous-window-bookmark)
   ;; work around to get org-agenda buffer working in bookmarks
   (org-agenda-list)
   (bookmark-jump "Burly: home")
@@ -166,41 +128,7 @@
     (org-agenda-goto-today)
     (call-interactively #'evil-scroll-line-to-top)))
 
-(defun my-window-bookmark-dape ()
-  "Move to dape bookmark."
-  (interactive)
-  (burly-bookmark-windows my-previous-window-bookmark)
-  (save-window-excursion
-    (call-interactively #'dape-info))
-  (delete-other-windows)
-  (let ((left (selected-window))
-        (right (split-window-right))
-        (middle (split-window-right)))
-    (with-selected-window left
-      (switch-to-buffer "*dape-info Scope*"))
-    (with-selected-window right
-      (if (project-current)
-          (let* ((root (project-root (project-current)))
-                 (issues (concat root "issues.org")))
-            (if (f-file-p issues)
-                (find-file issues)
-              (find-file issues)
-              (insert my-issues-org-template)))
-        (let ((issues "./issues.org"))
-          (if (f-file-p issues)
-              (find-file issues)
-            (find-file issues)
-            (insert my-issues-org-template)))))
-    (select-window middle)))
 
-
-(defun my-ibuffer ()
-  "Ensure ibuffer works accordig to display-buffer-alist"
-  (interactive)
-  (save-window-excursion
-    (call-interactively #'ibuffer))
-  (display-buffer "*Ibuffer*")
-  (select-window (get-buffer-window "*Ibuffer*")))
 
 
 (general-define-key
@@ -228,17 +156,15 @@
   "k" 'kill-buffer
   "v" 'my-eval-expression
   "a" 'org-agenda-list
-  "u" 'my-browse-documentation
   "c" 'visual-line-mode
   "m" 'make-frame-command
-  "0" 'my-window-bookmark-previous
   "1" 'my-window-bookmark-home
   "2" 'my-window-bookmark-dape
   "o" 'org-noter
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
-  "b" 'my-ibuffer
+  "b" 'ibuffer
   "&" 'async-shell-command
   "!" 'compile
   "w" 'window-toggle-side-windows
@@ -270,13 +196,6 @@
    (t (message "%s" "No code actions at point."))))
 
 
-(defun my-cycle-theme ()
-  "Cycle through preferred themes."
-  (interactive)
-  (cond ((equal custom-enabled-themes '(modus-vivendi)) (disable-theme 'modus-vivendi) (load-theme 'tango-dark))
-        ((equal custom-enabled-themes '(tango-dark)) (disable-theme 'tango-dark) (load-theme 'modus-operandi-tinted))
-        ((equal custom-enabled-themes '(modus-operandi-tinted)) (disable-theme 'modus-operandi-tinted) (load-theme 'modus-vivendi-tinted))
-        ((equal custom-enabled-themes '(modus-vivendi-tinted)) (disable-theme 'modus-vivendi-tinted) (load-theme 'modus-vivendi))))
 
 
 (defun my-code-rename ()
@@ -308,22 +227,6 @@
     (call-interactively #'slime-eval-buffer))
    (t (call-interactively #'eval-buffer))))
 
-(defun my-last-message (&optional num)
-  (or num (setq num 1))
-  (if (= num 0)
-      (current-message)
-    (save-excursion
-      (set-buffer "*Messages*")
-      (save-excursion
-        (forward-line (- 1 num))
-        (backward-char)
-        (let ((end (point)))
-          (forward-line 0)
-          (buffer-substring-no-properties (point) end))))))
-
-(defun my-copy-last-message (&optional num)
-  (interactive "*p")
-  (kill-new (my-last-message num)))
 
 (general-define-key
  :keymaps 'override
@@ -363,9 +266,9 @@
   "f" 'consult-find)
 
 (+general-global-menu! "miscellaneous" "s"
-  "t" 'my-cycle-theme
-  "n" 'remember-notes
-  "c" 'calc)
+  "c" 'calc
+  "p" 'straight-visit-package)
+
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
   "b" 'my-eval-buffer
@@ -395,8 +298,6 @@
   "j" 'windmove-display-down
   "k" 'windmove-display-up)
 
-(+general-global-menu! "text" "t"
-  "m" 'my-copy-last-message)
 
 ;;;; simulation keys
 (general-def '(normal visual) 'override
@@ -413,12 +314,9 @@
 (straight-use-package 'combobulate nil t)
 (straight-use-package 'evil-collection)
 (straight-use-package 'evil-owl)
-(straight-use-package 'evil-mc)
 (straight-use-package 'evil-commentary)
 (straight-use-package 'evil-surround)
-(straight-use-package 'evil-multiedit)
 (straight-use-package 'posframe)
-(straight-use-package 'avy)
 (straight-use-package 'evim)
 ;;;; config
 (defun smart-tab ()
@@ -599,10 +497,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 (use-package evil-commentary
   :hook (prog-mode . evil-commentary-mode))
 
-(defun my-evil-multiedit-maintain-visual-cursor-advice (func &rest args)
-  (if evil-visual-state-minor-mode
-      (set-window-point (selected-window) (- (point) 1))))
-
 
 (use-package evil-surround
   :hook (evil-mode . global-evil-surround-mode))
@@ -673,8 +567,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'forward-sexp) t))
   :general-config
   (org-mode-map
-   "C-<tab>" 'org-cycle
-   "C-<iso-lefttab>" 'org-shifttab
    "C-c t" 'org-match-sparse-tree-heading)
   :init
   (require 'org-habit)
@@ -1062,7 +954,6 @@ kill the current timer, this may be a break or a running pomodoro."
            "[m" 'org-remark-view-prev
            "r" 'org-remark-delete
            "d" 'org-remark-delete)
-  :diminish org-remark-global-tracking-mode :diminish org-remark-mode
   )
 
 (defun my-file-extension (filename)
@@ -1160,7 +1051,8 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package magit
   :init
   (setopt
-   magit-define-global-key-bindings 'recommended)
+   magit-define-global-key-bindings 'recommended
+   magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   :general-config
   ('(visual normal) magit-mode-map
    "] ]" 'magit-section-forward
@@ -1266,11 +1158,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   (interactive)
   (call-interactively 'eldoc-doc-buffer)
   (eldoc-display-in-buffer `((,(python-eldoc-function))) nil)
-  )
-
-(defun my-run-ruff ()
-  (interactive)
-  (shell-command (concat "ruff format " (buffer-name)))
   )
 
 (use-package python
@@ -1597,43 +1484,13 @@ changes."
   ;; (advice-add #'eglot-completion-at-point :around #'cape-wrap-buster))
   )
 
-(defvar eldoc-ratio 0.30)
-
-(defun my-buffer-distance (string buffer)
-  "Get Levenshtein distance of STRING and BUFFER."
-  (string-distance string (tramp-get-buffer-string buffer)))
-
-(defun my-buffer-length (buffer)
-  "Get string length of BUFFER."
-  (length (tramp-get-buffer-string buffer)))
-
-(defun my-eldoc-docs-string (list)
-  "Get all strings in eldoc LIST and concat them."
-  (let (value)
-    (dolist (elt list value)
-      (setq value (concat value (substring-no-properties (car elt)))))))
-
-(defun my-save-eldoc-point-advice (orig-fun docs interactive)
-  "Advise `eldoc-display-in-buffer' to save eldoc window position if window is active and DOCS is similar."
-  (if (and eldoc--doc-buffer
-           docs
-           (get-buffer-window (eldoc-doc-buffer))
-           (< (/ (float (my-buffer-distance (my-eldoc-docs-string docs) (eldoc-doc-buffer))) (my-buffer-length (eldoc-doc-buffer))) eldoc-ratio))
-      (let* ((eldoc (eldoc-doc-buffer))
-             (window (get-buffer-window eldoc))
-             (start (window-start window)))
-        (funcall orig-fun docs interactive)
-        (set-window-start window start))
-    (funcall orig-fun docs interactive)
-    ))
 
 (use-package eldoc
   :init
   (setopt
    eldoc-echo-area-prefer-doc-buffer t
    eldoc-echo-area-use-multiline-p nil)
-  :config
-  (advice-add 'eldoc-display-in-buffer :around #'my-save-eldoc-point-advice))
+  )
 
 
 (use-package yasnippet
@@ -1951,16 +1808,7 @@ changes."
    window-sides-slots '(2 2 2 2))
   :config
   (setq display-buffer-alist
-        '(("\\*Ibuffer\\*"
-           (display-buffer-reuse-mode-window display-buffer-in-direction)
-           (window . root)
-           (window-width . 0.50)
-           (direction . left))
-          ((or "\\*info\\*" (major-mode . eww-mode) "\\*devdocs\\*")
-           (display-buffer-reuse-window display-buffer-in-side-window)
-           (side . right)
-           (slot . 0)
-           (window-width . my-fit-window-to-right-side))
+        '(
           ("\\*helpful\\|\\*Help\\*\\|\\*eldoc\\*\\|\\*persisted eldoc\\*"
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
@@ -1971,11 +1819,7 @@ changes."
            (side . bottom)
            (slot . 0)
            (window-height . 0.50))
-          ((or "^\\*docker.+\\*$" (derived-mode . magit-mode) "\\*Remember\\*")
-           (display-buffer-reuse-window display-buffer-in-direction)
-           (window . root)
-           (window-width . 0.50)
-           (direction . left))
+          
           )))
 
 
@@ -2016,7 +1860,7 @@ changes."
 (use-package per-buffer-theme-mode
   :init
   (setopt
-   per-buffer-theme-default-theme 'doric-obsidian
+   per-buffer-theme-default-theme 'modus-vivendi
    per-buffer-theme-default-font "JetBrains Mono 10"
    per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
                                     (:font "JetBrains Mono 10")
@@ -2051,7 +1895,7 @@ changes."
           which-key-allow-multiple-replacements t
           which-key-popup-type 'minibuffer
           )
-  (which-key-mode) :diminish which-key-mode
+  (which-key-mode) 
   )
 ;;; calc
 ;;;; packages
@@ -2080,8 +1924,7 @@ changes."
    dired-kill-when-opening-new-dired-buffer t)
   :general-config
   (dired-mode-map
-   "C-c s" 'dired-get-size)
-  )
+   "C-c s" 'dired-get-size))
 
 ;;; grammar
 ;;;; config
@@ -2182,7 +2025,7 @@ changes."
     (setq
      truncate-string-ellipsis "..."))
   (add-to-list 'custom-enabled-themes 'doric-obsidian)
-  (load-theme 'doric-obsidian t)
+  (load-theme 'modus-vivendi t)
   (blink-cursor-mode 0)
   (put 'list-timers 'disabled nil))
 
