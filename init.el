@@ -619,6 +619,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 (straight-use-package 'org-pomodoro)
 (straight-use-package 'evil)
 (straight-use-package 'evil-org)
+(straight-use-package 'anki-editor)
 ;;;;; config
 (defun my-org-agenda-to-appt ()
   "Erase all reminders and rebuilt reminders for today from the agenda."
@@ -842,6 +843,22 @@ kill the current timer, this may be a break or a running pomodoro."
   (evil-org-agenda-set-keys)
   (evil-org-set-key-theme '(navigation insert textobjects additional calendar shift todo heading)))
 
+
+(defun my-anki-editor-make-heading-note ()
+  "Set note type and note deck for heading at point."
+  (interactive)
+  (call-interactively #'anki-editor-set-deck)
+  (call-interactively #'anki-editor-set-note-type))
+
+(use-package anki
+  :hook (org-mode . anki-editor-mode)
+  :general
+  (org-mode-map
+   "C-c ?" 'anki-editor-ui
+   "C-c h" 'my-anki-editor-make-heading-note
+   "C-c I" 'anki-editor-insert-note
+   "C-c i" 'anki-editor-insert-default-note
+   "C-c p" 'anki-editor-push-new-notes))
 
 
 ;;;; org shell
@@ -1126,8 +1143,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package org-noter
   :init
   (setopt
-   org-noter-auto-save-last-location t
-   org-noter-disable-narrowing t)
+   org-noter-auto-save-last-location t)
   :general
   ('(visual normal) org-noter-doc-mode-map
    "i" 'org-noter-insert-note
