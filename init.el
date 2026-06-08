@@ -1703,30 +1703,30 @@ changes."
   :config
   (space-tree-init)
   :general
-  ('normal
-   "s 1" #'space-tree-to-1
-   "s 2" #'space-tree-to-2
-   "s 3" #'space-tree-to-3
-   "s 4" #'space-tree-to-4
-   "s 5" #'space-tree-to-5
-   "s 6" #'space-tree-to-6
-   "s 7" #'space-tree-to-7
-   "s 8" #'space-tree-to-8
-   "s 9" #'space-tree-to-9
+  ('normal 
+   "s-1" #'space-tree-to-1
+   "s-2" #'space-tree-to-2
+   "s-3" #'space-tree-to-3
+   "s-4" #'space-tree-to-4
+   "s-5" #'space-tree-to-5
+   "s-6" #'space-tree-to-6
+   "s-7" #'space-tree-to-7
+   "s-8" #'space-tree-to-8
+   "s-9" #'space-tree-to-9
 
    ;; Second level (within current top-level space)
-   "s a" #'space-tree-sub-1
-   "s s" #'space-tree-sub-2
-   "s d" #'space-tree-sub-3
-   "s f" #'space-tree-sub-4
-   "s g" #'space-tree-sub-5
+   "s-a" #'space-tree-sub-1
+   "s-s" #'space-tree-sub-2
+   "s-d" #'space-tree-sub-3
+   "s-f" #'space-tree-sub-4
+   "s-g" #'space-tree-sub-5
 
    ;; Third level (within current second-level space)
-   "s A" #'space-tree-sub-sub-1
-   "s S" #'space-tree-sub-sub-2
-   "s D" #'space-tree-sub-sub-3
-   "s F" #'space-tree-sub-sub-4
-   "s G" #'space-tree-sub-sub-5
+   "s-A" #'space-tree-sub-sub-1
+   "s-S" #'space-tree-sub-sub-2
+   "s-D" #'space-tree-sub-sub-3
+   "s-F" #'space-tree-sub-sub-4
+   "s-G" #'space-tree-sub-sub-5
 
    ;; Navigation
    "C-S-<iso-lefttab>"   #'space-tree-switch-space-by-name
