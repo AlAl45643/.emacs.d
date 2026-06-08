@@ -1735,7 +1735,7 @@ changes."
    "C-M-S-<tab>" #'space-tree-go-left
 
    ;; Delete current space (the command defaults to the current address)
-   "s _" #'space-tree-delete-space))
+   "s-_" #'space-tree-delete-space))
 
 (use-package popper
   :init
