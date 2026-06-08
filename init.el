@@ -743,7 +743,7 @@ kill the current timer, this may be a break or a running pomodoro."
   (call-interactively #'anki-editor-set-note-type))
 
 (use-package anki
-  :hook (org-mode . anki-editor-mode)
+  ;; :hook (org-mode . anki-editor-mode)
   :general
   (org-mode-map
    "C-c ?" 'anki-editor-ui
