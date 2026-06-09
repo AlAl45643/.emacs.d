@@ -168,8 +168,6 @@
   "&" 'async-shell-command
   "!" 'compile
   "w" 'window-toggle-side-windows
-  "." 'embark-act
-  ";" 'embark-dwim
   )
 
 ;;;; my-second-leader-evil-map
@@ -1812,6 +1810,11 @@ changes."
   :config
   (setq display-buffer-alist
         '(
+          ((or "\\*info\\*" (major-mode . eww-mode) "\\*devdocs\\*")
+           (display-buffer-reuse-window display-buffer-in-side-window)
+           (side . right)
+           (slot . 0)
+           (window-width . my-fit-window-to-right-side))
           ("\\*helpful\\|\\*Help\\*\\|\\*eldoc\\*\\|\\*persisted eldoc\\*"
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . right)
@@ -1974,6 +1977,9 @@ changes."
 ;;;; config
 (use-package embark
   :general
+  ('(insert normal hybrid motion visual operator)
+   "C-." 'embark-act
+   "C-;" 'embark-dwim)
   (help-map
    ;; ("C-." . embark-act)         ;; pick some comfortable binding
    ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
