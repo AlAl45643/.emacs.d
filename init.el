@@ -557,46 +557,39 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
         (push timer my-annoying-timer)))))
 
 
-;; shift all timestamps of type scheduled, or at a certain time, by hours
-;; How do we shift hours?
-;; org-timestamp-up
-;; org-timestamp
-;; How do we find timestamps positions?
-;; org-timestamp-regexp
-;; 
 
-(defun my-org-shift-match-timestamps (match shift)
-  "Shift timestamps that match `match' time by `shift' hours."
-  (interactive "sMatch: \nnShift: ")
+(defun my-org-shift-match-timestamps (match hour min)
+  "Shift timestamps that match `match' time by `hour' hours and `min' minutes."
+  (interactive "sMatch: \nnHours: \nnMins: ")
   (with-current-buffer "TODO.org"
     (goto-char 0)
-    (let ((org-display-custom-times t))
-      (while-let
-          ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'active))))
-           (timestamp (match-string 0))
-           (time (org-time-string-to-time timestamp))
-           (match-time (parse-time-string match 1))
-           (time-hour (string-to-number (format-time-string "%H" time)))
-           (time-min (string-to-number (format-time-string "%M" time)))
-           (match-time-hour (decoded-time-hour match-time))
-           (match-time-min (decoded-time-minute match-time)))
-        (when (and (eql match-time-min time-min)
-                   (eql match-time-hour time-hour))
-          (org-timestamp-change shift 'hour))
-        ))))
+    (while-let
+        ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'active))))
+         (timestamp (match-string 0))
+         (time (org-time-string-to-time timestamp))
+         (match-time (parse-time-string match 1))
+         (time-hour (string-to-number (format-time-string "%H" time)))
+         (time-min (string-to-number (format-time-string "%M" time)))
+         (match-time-hour (decoded-time-hour match-time))
+         (match-time-min (decoded-time-minute match-time)))
+      (when (and (eql match-time-min time-min)
+                 (eql match-time-hour time-hour))
+        (org-timestamp-change hour 'hour)
+        (org-timestamp-change min 'minute))
+      )))
 
-(defun my-org-shift-scheduled-timestamps (shift)
-  "Shift scheduled timestamps by `shift' hours."
-  (interactive "nShift: ")
+(defun my-org-shift-scheduled-timestamps (hour min)
+  "Shift scheduled timestamps by `hour' hours and `min' minutes."
+  (interactive "nHour: \nnMins: ")
   (with-current-buffer "TODO.org"
     (goto-char 0)
-    (let ((org-display-custom-times t))
-      (while-let
-          ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'scheduled))))
-           (timestamp (match-string 0))
-           (time (org-time-string-to-time timestamp)))
-        (org-timestamp-change shift 'hour)
-        ))))
+    (while-let
+        ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'scheduled))))
+         (timestamp (match-string 0))
+         (time (org-time-string-to-time timestamp)))
+      (org-timestamp-change hour 'hour)
+      (org-timestamp-change min 'minute)
+      )))
 
 (use-package org
   :hook
