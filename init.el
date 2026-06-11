@@ -1313,10 +1313,62 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; javascript
 ;;;;; packages
-(straight-use-package 'js2-mode)
+(straight-use-package 'mason)
+(straight-use-package 'project)
+(straight-use-package 'eglot-typescript-preset)
 ;;;;; config
-(use-package js2-mode
-  :mode ("\\.js\\'" . js2-mode))
+(use-package ts
+  :mode ("\\.tsx\\'" . js-ts-mode)
+  :hook
+  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure))
+
+(use-package eglot-typescript-preset
+  :init
+  (setopt
+   eglot-typescript-preset-lsp-server 'rass))
+
+(use-package mason
+  :demand t
+  :config
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "typescript-language-server"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "eslint-lsp"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "tailwindcss-language-server")))))
+
+(use-package combobulate
+  :init
+  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
+  (setopt
+   combobulate-flash-node nil)
+  :hook 
+  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
+  :general-config
+  ('(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map)
+   "M-h" 'combobulate-navigate-up
+   "M-j" 'combobulate-navigate-next
+   "M-k" 'combobulate-navigate-previous
+   "M-l" 'combobulate-navigate-down
+   "M-w" 'combobulate-navigate-logical-next
+   "M-b" 'combobulate-navigate-logical-previous
+   "M-n" 'combobulate-navigate-sequence-next
+   "M-p" 'combobulate-navigate-sequence-previous
+   "<up>" 'combobulate-splice-up
+   "<down>" 'combobulate-splice-down
+   "<left>" 'combobulate-splice-self
+   "<right>" 'combobulate-splice-parent
+   "M-P" 'combobulate-drag-up
+   "M-N" 'combobulate-drag-down
+   "M-v" 'combobulate-mark-node-dwim
+   "M-X" 'combobulate-kill-node-dwim
+   "<deletechar>" 'combobulate-kill-node-dwim))
+
 ;;; emacs lisp
 ;;;; config
 (defun my-elisp-imenu ()

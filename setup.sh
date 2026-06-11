@@ -2,9 +2,6 @@
 mkdir bin
 cd bin
 
-# setup C#
-wget https://github.com/SofusA/csharp-language-server/releases/download/5.1.0-1.25501.2/csharp-language-server-x86_64-unknown-linux-gnu.tar.gz
-tar -xf csharp-language-server-x86_64-unknown-linux-gnu.tar.gz
 
 wget https://github.com/Samsung/netcoredbg/releases/download/3.1.2-1054/netcoredbg-linux-amd64.tar.gz
 tar -xf netcoredbg-linux-amd64.tar.gz
@@ -20,14 +17,25 @@ export DOTNET_ROOT=\$HOME/.dotnet
 export PATH=\$PATH:\$DOTNET_ROOT:\$DOTNET_ROOT/tools
 EOL
 
-# setup LaTeX
-wget https://github.com/latex-lsp/texlab/releases/download/v5.23.1/texlab-x86_64-linux.tar.gz
-tar -xf texlab-x86_64-linux.tar.gz
+# setup java
+wget https://github.com/microsoft/java-debug/archive/refs/tags/0.53.1.zip
+unzip 0.53.1.zip
+cd java-debug-0.53.1
+./mvnw clean install
+cd ../
+rm 0.53.1.zip
+mv java-debug-0.53.1 jdtls
+
+# setup sql
+sudo dnf install go
 
 # setup python
 sudo dnf install pip
-pip install "python-lsp-server[all]"
 pip install "debugpy"
+pip install "uv"
+
+# setup rass
+uv tool install "rassumfrassum"
 
 # setup vterm
 sudo dnf install cmake libtool libvterm
