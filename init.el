@@ -556,6 +556,47 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
         (push timer my-annoying-timer)))))
 
 
+;; shift all timestamps of type scheduled, or at a certain time, by hours
+;; How do we shift hours?
+;; org-timestamp-up
+;; org-timestamp
+;; How do we find timestamps positions?
+;; org-timestamp-regexp
+;; 
+
+(defun my-org-shift-match-timestamps (match shift)
+  "Shift timestamps that match `match' time by `shift' hours."
+  (interactive "sMatch: \nnShift: ")
+  (with-current-buffer "TODO.org"
+    (goto-char 0)
+    (let ((org-display-custom-times t))
+      (while-let
+          ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'active))))
+           (timestamp (match-string 0))
+           (time (org-time-string-to-time timestamp))
+           (match-time (parse-time-string match 1))
+           (time-hour (string-to-number (format-time-string "%H" time)))
+           (time-min (string-to-number (format-time-string "%M" time)))
+           (match-time-hour (decoded-time-hour match-time))
+           (match-time-min (decoded-time-minute match-time)))
+        (when (and (eql match-time-min time-min)
+                   (eql match-time-hour time-hour))
+          (org-timestamp-change shift 'hour))
+        ))))
+
+(defun my-org-shift-scheduled-timestamps (shift)
+  "Shift scheduled timestamps by `shift' hours."
+  (interactive "nShift: ")
+  (with-current-buffer "TODO.org"
+    (goto-char 0)
+    (let ((org-display-custom-times t))
+      (while-let
+          ((timestamp-pos (ignore-errors (re-search-forward (org-re-timestamp 'scheduled))))
+           (timestamp (match-string 0))
+           (time (org-time-string-to-time timestamp)))
+        (org-timestamp-change shift 'hour)
+        ))))
+
 (use-package org
   :hook
   (org-agenda-finalize . my-org-agenda-to-appt)
@@ -750,7 +791,7 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c h" 'my-anki-editor-make-heading-note
    "C-c I" 'anki-editor-insert-note
    "C-c i" 'anki-editor-insert-default-note
-   "C-c p" 'anki-editor-push-new-notes))
+   "C-c p" 'anki-editor-push-notes))
 
 
 ;;;; org shell
