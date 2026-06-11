@@ -164,6 +164,7 @@
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
+  "0" '("text-scale-adjust-0" . (lambda () (interactive) (text-scale-decrease 0)))
   "b" 'ibuffer
   "&" 'async-shell-command
   "!" 'compile
