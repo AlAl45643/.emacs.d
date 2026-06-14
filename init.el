@@ -814,26 +814,26 @@ kill the current timer, this may be a break or a running pomodoro."
   (if (not (file-exists-p org-plantuml-jar-path))
       (plantuml-download-jar)))
 
-(use-package org-mindmap
-  :after org
-  :init
-  (require 'org-mindmap)
-  :general
-  (org-mode-map
-   "C-c m c" 'org-mindmap-insert-child
-   "C-c m s" 'org-mindmap-insert-sibling
-   "C-c m r" 'org-mindmap-insert-root
-   "C-c m d" 'org-mindmap-delete-node
-   "C-c m v" 'org-mindmap-switch-layout
-   "C-c m m" 'org-mindmap-list-to-mindmap
-   "C-c m l" 'org-mindmap-to-list)
-  :config
-  (defun my-org-mindmap-tab-advice (orig-fun &rest args)
-    (let ((node (org-mindmap-find-node-at-point)))
-      (if node
-          (org-mindmap-insert-child)
-        (apply orig-fun args))))
-  (advice-add 'smart-tab :around #'my-org-mindmap-tab-advice))
+;; (use-package org-mindmap
+;;   :after org
+;;   :init
+;;   (require 'org-mindmap)
+;;   :general
+;;   (org-mode-map
+;;    "C-c m c" 'org-mindmap-insert-child
+;;    "C-c m s" 'org-mindmap-insert-sibling
+;;    "C-c m r" 'org-mindmap-insert-root
+;;    "C-c m d" 'org-mindmap-delete-node
+;;    "C-c m v" 'org-mindmap-switch-layout
+;;    "C-c m m" 'org-mindmap-list-to-mindmap
+;;    "C-c m l" 'org-mindmap-to-list)
+;;   :config
+;;   (defun my-org-mindmap-tab-advice (orig-fun &rest args)
+;;     (let ((node (org-mindmap-find-node-at-point)))
+;;       (if node
+;;           (org-mindmap-insert-child)
+;;         (apply orig-fun args))))
+;;   (advice-add 'smart-tab :around #'my-org-mindmap-tab-advice))
 
 ;;;; org babel racket
 ;;;;; packages
