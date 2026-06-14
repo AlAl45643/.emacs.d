@@ -602,6 +602,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'forward-sexp) t))
   :general-config
   (org-mode-map
+   "C-<tab>" 'org-cycle
+   "C-<iso-lefttab>" 'org-shifttab
    "C-c t" 'org-match-sparse-tree-heading)
   :init
   (require 'org-habit)
@@ -664,8 +666,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :config
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
   (modify-syntax-entry ?< "." org-mode-syntax-table)
-  (modify-syntax-entry ?> "." org-mode-syntax-table)
-  )
+  (modify-syntax-entry ?> "." org-mode-syntax-table))
 
 
 (defun my-org-pomodoro-choose-break-time (arg)
@@ -785,7 +786,8 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c h" 'my-anki-editor-make-heading-note
    "C-c I" 'anki-editor-insert-note
    "C-c i" 'anki-editor-insert-default-note
-   "C-c p" 'anki-editor-push-notes))
+   "C-c p" 'anki-editor-push-notes
+   "C-c r" 'anki-editor-delete-note-at-point))
 
 
 ;;;; org shell
@@ -851,6 +853,10 @@ kill the current timer, this may be a break or a running pomodoro."
 (use-package org
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((python . t))))
+;;;; org babel javascript
+(use-package org
+  :config
+  (org-babel-do-load-languages 'org-babel-load-languages '((js . t))))
 ;;; better help 
 ;;;;; packages
 (straight-use-package 'helpful)
