@@ -788,7 +788,8 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c I" 'anki-editor-insert-note
    "C-c i" 'anki-editor-insert-default-note
    "C-c p" 'anki-editor-push-notes
-   "C-c r" 'anki-editor-delete-note-at-point))
+   "C-c r" 'anki-editor-delete-note-at-point
+   "C-c n" 'anki-editor-push-note-at-point))
 
 
 ;;;; org shell
@@ -1966,6 +1967,10 @@ changes."
    per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes inferior-python-mode python-ts-mode python-mode))
+                                   ((:theme . doric-almond)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode))
                                    ((:theme . modus-vivendi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes csharp-mode csharp-ts-mode))
@@ -2164,7 +2169,6 @@ changes."
   (with-eval-after-load 'mule-util
     (setq
      truncate-string-ellipsis "..."))
-  (add-to-list 'custom-enabled-themes 'doric-obsidian)
   (load-theme 'modus-vivendi t)
   (blink-cursor-mode 0)
   (put 'list-timers 'disabled nil))
