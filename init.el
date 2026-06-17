@@ -406,8 +406,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "g d" 'xref-find-definitions
    "g D" 'xref-find-definitions-other-window
    "C-w C-v" 'my-evil-window-vsplit-left
-   "C-S-f" 'scroll-other-window
-   "C-S-b" 'scroll-other-window-down)
+   )
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
@@ -418,6 +417,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-j" 'forward-list
    "M-k" 'backward-list
    "M-l" 'down-list
+   "C-S-f" 'scroll-other-window
+   "C-S-b" 'scroll-other-window-down
    )
   )
 
@@ -1481,7 +1482,7 @@ changes."
    "<f7>" 'dape-step-in
    "<f8>" 'dape-next)
   (python-ts-mode-map
-   "C-c b" 'dape-breakpoint-remove-all
+   "C-c B" 'dape-breakpoint-remove-all
    "C-c r" 'dape-repl
    "C-c b" 'dape-breakpoint-toggle
    "C-c e" 'dape-breakpoint-expression
@@ -1491,7 +1492,7 @@ changes."
    "C-c q" 'dape-quit
    "C-c w" 'my-dape-watch-dwim)
   (csharp-ts-mode-map
-   "C-c b" 'dape-breakpoint-remove-all
+   "C-c B" 'dape-breakpoint-remove-all
    "C-c r" 'dape-repl
    "C-c b" 'dape-breakpoint-toggle
    "C-c e" 'dape-breakpoint-expression
