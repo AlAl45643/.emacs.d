@@ -1987,469 +1987,240 @@ changes."
   :config
   (setopt project-mode-line t)
   (setq mode-line-modes
-        (remove '(:propertize ("" minor-mode-alist) mouse-face mode-line-highlight
-                              help-echo
-                              "Minor mode\nmouse-1: Display minor mode menu\nmouse-2: Show help for minor mode\nmouse-3: Toggle minor modes"
-                              local-map
-                              (keymap
-                               (header-line keymap
-                                            (down-mouse-3 menu-item "Menu Bar"
-                                                          (keymap
-                                                           (orgtbl-mode menu-item
-                                                                        "Org Table Mode"
-                                                                        orgtbl-mode
-                                                                        :button
-                                                                        (:toggle
-                                                                         . orgtbl-mode))
-                                                           (abbrev-mode menu-item
-                                                                        "Abbrev (Abbrev)"
-                                                                        abbrev-mode
-                                                                        :help
-                                                                        "Automatically expand abbreviations"
-                                                                        :button
-                                                                        (:toggle
-                                                                         . abbrev-mode))
-                                                           (auto-fill-mode menu-item
-                                                                           "Auto fill (Fill)"
-                                                                           auto-fill-mode
-                                                                           :help
-                                                                           "Automatically insert new lines"
-                                                                           :button
-                                                                           (:toggle
-                                                                            . auto-fill-function))
-                                                           (auto-revert-mode menu-item
-                                                                             "Auto revert (ARev)"
-                                                                             auto-revert-mode
-                                                                             :help
-                                                                             "Revert the buffer when the file on disk changes"
-                                                                             :button
-                                                                             (:toggle
-                                                                              bound-and-true-p
-                                                                              auto-revert-mode))
-                                                           (auto-revert-tail-mode
-                                                            menu-item
-                                                            "Auto revert tail (Tail)"
-                                                            auto-revert-tail-mode
-                                                            :help
-                                                            "Revert the tail of the buffer when the file on disk grows"
-                                                            :enable (buffer-file-name)
-                                                            :button
-                                                            (:toggle bound-and-true-p
-                                                                     auto-revert-tail-mode))
-                                                           (completion-preview-mode
-                                                            menu-item
-                                                            "Completion Preview (CP)"
-                                                            completion-preview-mode
-                                                            :help
-                                                            "Show preview of completion suggestions as you type"
-                                                            :enable
-                                                            completion-at-point-functions
-                                                            :button
-                                                            (:toggle bound-and-true-p
-                                                                     completion-preview-mode))
-                                                           (flyspell-mode menu-item
-                                                                          "Flyspell (Fly)"
-                                                                          flyspell-mode
-                                                                          :help
-                                                                          "Spell checking on the fly"
-                                                                          :button
-                                                                          (:toggle
-                                                                           bound-and-true-p
-                                                                           flyspell-mode))
-                                                           (font-lock-mode menu-item
-                                                                           "Font Lock"
-                                                                           font-lock-mode
-                                                                           :help
-                                                                           "Syntax coloring"
-                                                                           :button
-                                                                           (:toggle
-                                                                            . font-lock-mode))
-                                                           (glasses-mode menu-item
-                                                                         "Glasses (o^o)"
-                                                                         glasses-mode
-                                                                         :help
-                                                                         "Insert virtual separators to make long identifiers easy to read"
-                                                                         :button
-                                                                         (:toggle
-                                                                          bound-and-true-p
-                                                                          glasses-mode))
-                                                           (hide-ifdef-mode menu-item
-                                                                            "Hide ifdef (Ifdef)"
-                                                                            hide-ifdef-mode
-                                                                            :help
-                                                                            "Show/Hide code within #ifdef constructs"
-                                                                            :button
-                                                                            (:toggle
-                                                                             bound-and-true-p
-                                                                             hide-ifdef-mode))
-                                                           (highlight-changes-mode
-                                                            menu-item
-                                                            "Highlight changes (Chg)"
-                                                            highlight-changes-mode
-                                                            :help
-                                                            "Show changes in the buffer in a distinctive color"
-                                                            :button
-                                                            (:toggle bound-and-true-p
-                                                                     highlight-changes-mode))
-                                                           (outline-minor-mode
-                                                            menu-item "Outline (Outl)"
-                                                            outline-minor-mode :help
-                                                            "" :button
-                                                            (:toggle bound-and-true-p
-                                                                     outline-minor-mode))
-                                                           (overwrite-mode menu-item
-                                                                           "Overwrite (Ovwrt)"
-                                                                           overwrite-mode
-                                                                           :help
-                                                                           "Overwrite mode: typed characters replace existing text"
-                                                                           :button
-                                                                           (:toggle
-                                                                            . overwrite-mode))
-                                                           "Minor Modes")
-                                                          :filter
-                                                          bindings--sort-menu-keymap))
-                               (mode-line keymap
-                                          (down-mouse-3 menu-item "Menu Bar"
-                                                        (keymap
-                                                         (orgtbl-mode menu-item
-                                                                      "Org Table Mode"
-                                                                      orgtbl-mode
-                                                                      :button
-                                                                      (:toggle
-                                                                       . orgtbl-mode))
-                                                         (abbrev-mode menu-item
-                                                                      "Abbrev (Abbrev)"
-                                                                      abbrev-mode
-                                                                      :help
-                                                                      "Automatically expand abbreviations"
-                                                                      :button
-                                                                      (:toggle
-                                                                       . abbrev-mode))
-                                                         (auto-fill-mode menu-item
-                                                                         "Auto fill (Fill)"
-                                                                         auto-fill-mode
-                                                                         :help
-                                                                         "Automatically insert new lines"
-                                                                         :button
-                                                                         (:toggle
-                                                                          . auto-fill-function))
-                                                         (auto-revert-mode menu-item
-                                                                           "Auto revert (ARev)"
-                                                                           auto-revert-mode
-                                                                           :help
-                                                                           "Revert the buffer when the file on disk changes"
-                                                                           :button
-                                                                           (:toggle
-                                                                            bound-and-true-p
-                                                                            auto-revert-mode))
-                                                         (auto-revert-tail-mode
-                                                          menu-item
-                                                          "Auto revert tail (Tail)"
-                                                          auto-revert-tail-mode :help
-                                                          "Revert the tail of the buffer when the file on disk grows"
-                                                          :enable (buffer-file-name)
-                                                          :button
-                                                          (:toggle bound-and-true-p
-                                                                   auto-revert-tail-mode))
-                                                         (completion-preview-mode
-                                                          menu-item
-                                                          "Completion Preview (CP)"
-                                                          completion-preview-mode
-                                                          :help
-                                                          "Show preview of completion suggestions as you type"
-                                                          :enable
-                                                          completion-at-point-functions
-                                                          :button
-                                                          (:toggle bound-and-true-p
-                                                                   completion-preview-mode))
-                                                         (flyspell-mode menu-item
-                                                                        "Flyspell (Fly)"
-                                                                        flyspell-mode
-                                                                        :help
-                                                                        "Spell checking on the fly"
-                                                                        :button
-                                                                        (:toggle
-                                                                         bound-and-true-p
-                                                                         flyspell-mode))
-                                                         (font-lock-mode menu-item
-                                                                         "Font Lock"
-                                                                         font-lock-mode
-                                                                         :help
-                                                                         "Syntax coloring"
-                                                                         :button
-                                                                         (:toggle
-                                                                          . font-lock-mode))
-                                                         (glasses-mode menu-item
-                                                                       "Glasses (o^o)"
-                                                                       glasses-mode
-                                                                       :help
-                                                                       "Insert virtual separators to make long identifiers easy to read"
-                                                                       :button
-                                                                       (:toggle
-                                                                        bound-and-true-p
-                                                                        glasses-mode))
-                                                         (hide-ifdef-mode menu-item
-                                                                          "Hide ifdef (Ifdef)"
-                                                                          hide-ifdef-mode
-                                                                          :help
-                                                                          "Show/Hide code within #ifdef constructs"
-                                                                          :button
-                                                                          (:toggle
-                                                                           bound-and-true-p
-                                                                           hide-ifdef-mode))
-                                                         (highlight-changes-mode
-                                                          menu-item
-                                                          "Highlight changes (Chg)"
-                                                          highlight-changes-mode :help
-                                                          "Show changes in the buffer in a distinctive color"
-                                                          :button
-                                                          (:toggle bound-and-true-p
-                                                                   highlight-changes-mode))
-                                                         (outline-minor-mode menu-item
-                                                                             "Outline (Outl)"
-                                                                             outline-minor-mode
-                                                                             :help ""
-                                                                             :button
-                                                                             (:toggle
-                                                                              bound-and-true-p
-                                                                              outline-minor-mode))
-                                                         (overwrite-mode menu-item
-                                                                         "Overwrite (Ovwrt)"
-                                                                         overwrite-mode
-                                                                         :help
-                                                                         "Overwrite mode: typed characters replace existing text"
-                                                                         :button
-                                                                         (:toggle
-                                                                          . overwrite-mode))
-                                                         "Minor Modes")
-                                                        :filter
-                                                        bindings--sort-menu-keymap)
-                                          (mouse-2 . mode-line-minor-mode-help)
-                                          (down-mouse-1 . mouse-minor-mode-menu)))) mode-line-modes))
+        (seq-remove-at-position mode-line-modes 5))
   (setq-default
-   mode-line-format '("%e" mode-line-buffer-identification (project-mode-line project-mode-line-format) (vc-mode vc-mode) "  ") mode-lines-modes mode-line-misc-info)
+   mode-line-format '("%e" mode-line-front-space
+                     ;; (:propertize
+                     ;;  ("" mode-line-mule-info mode-line-client mode-line-modified
+                     ;;   mode-line-remote mode-line-window-dedicated)
+                     ;;  display (min-width (6.0)))
+                     mode-line-frame-identification mode-line-buffer-identification "   "
+                     ;; mode-line-position
+                     (project-mode-line project-mode-line-format)
+                     (vc-mode vc-mode) "   " mode-line-modes mode-line-misc-info
+                     mode-line-end-spaces)))
 
 
 
 ;;; which key
-  (use-package which-key
-    :init
-    (setopt which-key-sort-order #'which-key-key-order-alpha
-            which-key-sort-uppercase-first nil
-            which-key-add-column-padding 1
-            which-key-max-display-columns nil
-            which-key-min-display-lines 6
-            which-key-side-window-slot -10
-            which-key-max-description-length nil
-            which-key-idle-delay 0.5
-            which-key-separator ":"
-            which-key-allow-multiple-replacements t
-            which-key-popup-type 'minibuffer
-            )
-    (which-key-mode) 
-    )
+(use-package which-key
+  :init
+  (setopt which-key-sort-order #'which-key-key-order-alpha
+          which-key-sort-uppercase-first nil
+          which-key-add-column-padding 1
+          which-key-max-display-columns nil
+          which-key-min-display-lines 6
+          which-key-side-window-slot -10
+          which-key-max-description-length nil
+          which-key-idle-delay 0.5
+          which-key-separator ":"
+          which-key-allow-multiple-replacements t
+          which-key-popup-type 'minibuffer
+          )
+  (which-key-mode) 
+  )
 ;;; calc
 ;;;; packages
-  (straight-use-package 'casual-suite)
+(straight-use-package 'casual-suite)
 ;;;; config
-  (use-package casual-suite
-    :general
-    ('normal calc-mode-map
-             "?" 'casual-calc-tmenu))
+(use-package casual-suite
+  :general
+  ('normal calc-mode-map
+           "?" 'casual-calc-tmenu))
 
 ;;; file manager
 
-  (defun dired-get-size ()
-    (interactive)
-    (let ((files (dired-get-marked-files)))
-      (with-temp-buffer
-        (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
-        (message "Size of all marked files: %s"
-                 (progn 
-                   (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
-                   (match-string 1))))))
+(defun dired-get-size ()
+  (interactive)
+  (let ((files (dired-get-marked-files)))
+    (with-temp-buffer
+      (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
+      (message "Size of all marked files: %s"
+               (progn 
+                 (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
+                 (match-string 1))))))
 
-  (use-package dired
-    :init
-    (setopt
-     dired-kill-when-opening-new-dired-buffer t)
-    :general-config
-    (dired-mode-map
-     "C-c s" 'dired-get-size))
+(use-package dired
+  :init
+  (setopt
+   dired-kill-when-opening-new-dired-buffer t)
+  :general-config
+  (dired-mode-map
+   "C-c s" 'dired-get-size))
 
 ;;; grammar
 ;;;; config
-  (use-package ispell
-    :hook ((prog-mode org-mode LaTeX-mode) . ispell-minor-mode)
-    :init
-    (setopt
-     ispell-program-name "hunspell"
-     ispell-dictionary "en_US")
-    :config
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "en_US")
-    :general-config
-    (ispell-minor-keymap
-     "C-c d" 'ispell-word
-     "RET" nil
-     "SPC" nil))
+(use-package ispell
+  :hook ((prog-mode org-mode LaTeX-mode) . ispell-minor-mode)
+  :init
+  (setopt
+   ispell-program-name "hunspell"
+   ispell-dictionary "en_US")
+  :config
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "en_US")
+  :general-config
+  (ispell-minor-keymap
+   "C-c d" 'ispell-word
+   "RET" nil
+   "SPC" nil))
 
-  (use-package flyspell
-    :hook ((org-mode LaTeX-mode) . flyspell-mode))
+(use-package flyspell
+  :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
 ;;;; packages
-  (straight-use-package 'vterm)
+(straight-use-package 'vterm)
 ;;;; config
-  (use-package vterm
-    :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
+(use-package vterm
+  :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
 
-  (use-package eshell
-    :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
-           (((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))))
-    :init
-    (setopt
-     password-cache-expiry 3600
-     eshell-prefer-lisp-functions t
-     ;; password-cache 5
-     password-cache-expiry 3600)
-    :config
-    (require 'em-tramp))
+(use-package eshell
+  :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
+         (((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))))
+  :init
+  (setopt
+   password-cache-expiry 3600
+   eshell-prefer-lisp-functions t
+   ;; password-cache 5
+   password-cache-expiry 3600)
+  :config
+  (require 'em-tramp))
 
 ;;; embark
 ;;;; packages
-  (straight-use-package 'embark)
-  (straight-use-package 'embark-consult)
+(straight-use-package 'embark)
+(straight-use-package 'embark-consult)
 ;;;; config
-  (use-package embark
-    :general
-    ('(insert normal hybrid motion visual operator)
-     "C-." 'embark-act
-     "C-;" 'embark-dwim)
-    (help-map
-     ;; ("C-." . embark-act)         ;; pick some comfortable binding
-     ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
-     "B" 'embark-bindings) ;; alternative for `describe-bindings'
+(use-package embark
+  :general
+  ('(insert normal hybrid motion visual operator)
+   "C-." 'embark-act
+   "C-;" 'embark-dwim)
+  (help-map
+   ;; ("C-." . embark-act)         ;; pick some comfortable binding
+   ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
+   "B" 'embark-bindings) ;; alternative for `describe-bindings'
 
-    :init
+  :init
 
-    ;; Optionally replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command)
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
 
-    ;; Show the Embark target at point via Eldoc. You may adjust the
-    ;; Eldoc strategy, if you want to see the documentation from
-    ;; multiple providers. Beware that using this can be a little
-    ;; jarring since the message shown in the minibuffer can be more
-    ;; than one line, causing the modeline to move up and down:
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
 
-    ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-    ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
-    ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
-    ;; (context-menu-mode 1)
-    ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
+  ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
+  ;; (context-menu-mode 1)
+  ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
 
-    :config
-    ;; Hide the mode line of the Embark live/completions buffers
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                   nil
-                   (window-parameters (mode-line-format . none)))))
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
-  ;; Consult users will also want the embark-consult package.
+;; Consult users will also want the embark-consult package.
 
 ;;; emacs
-  (defun my-ctrl-g ()
-    (interactive)
-    (if (minibufferp)
-        (abort-recursive-edit)
-      (keyboard-quit)))
+(defun my-ctrl-g ()
+  (interactive)
+  (if (minibufferp)
+      (abort-recursive-edit)
+    (keyboard-quit)))
 
-  (use-package emacs
-    :hook
-    ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode yaml-mode) . (lambda () (setq display-line-numbers 'visual)))
-    ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
-    :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
-    :general-config
-    ('(normal insert) 
-     "C-g" 'my-ctrl-g)
-    :config
-    (setopt
-     use-short-answers t
-     undo-limit 400000
-     undo-strong-limit 3000000
-     undo-outer-limit 48000000
-     native-comp-async-report-warnings-error nil
-     backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/")))
-     indent-tabs-mode nil ;; treat tabs as spaces
-     x-stretch-cursor t
-     window-combination-resize t
-     sentence-end-double-space nil
-     doc-view-resolution 200
-     enable-recursive-minibuffers t
-     read-extended-command-predicate #'command-completion-default-include-p
-     minibuffer-prompt-properties
-     '(read-only t cursor-intangible t face minibuffer-prompt)
-     auto-save-visited-interval 1
-     inhibit-splash-screen 1
-     shift-select-mode nil
-     async-shell-command-buffer 'rename-buffer
-     blink-matching-paren nil
-     bidi-inhibit-bpa t
-     redisplay-skip-fontification-on-input t
-     highlight-nonselected-windows nil
-     inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started")
-     mode-line-percent-position nil)
-    (setq-default
-     truncate-lines t
-     bidi-display-reordering 'left-to-right
-     bidi-paragraph-direction 'left-to-right
-     cursor-in-non-selected-windows nil)
-    (scroll-bar-mode -1)
-    (auto-save-visited-mode 1)
-    (winner-mode 1)
-    (global-auto-revert-mode 1)
-    (savehist-mode 1)
-    (save-place-mode 1)
-    (advice-add 'save-place-find-file-hook :after
-                (lambda (&rest _)
-                  (when buffer-file-name (ignore-errors (recenter)))))
+(use-package emacs
+  :hook
+  ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode yaml-mode) . (lambda () (setq display-line-numbers 'visual)))
+  ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
+  :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
+  :general-config
+  ('(normal insert) 
+   "C-g" 'my-ctrl-g)
+  :config
+  (setopt
+   use-short-answers t
+   undo-limit 400000
+   undo-strong-limit 3000000
+   undo-outer-limit 48000000
+   native-comp-async-report-warnings-error nil
+   backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/")))
+   indent-tabs-mode nil ;; treat tabs as spaces
+   x-stretch-cursor t
+   window-combination-resize t
+   sentence-end-double-space nil
+   doc-view-resolution 200
+   enable-recursive-minibuffers t
+   read-extended-command-predicate #'command-completion-default-include-p
+   minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)
+   auto-save-visited-interval 1
+   inhibit-splash-screen 1
+   shift-select-mode nil
+   async-shell-command-buffer 'rename-buffer
+   blink-matching-paren nil
+   bidi-inhibit-bpa t
+   redisplay-skip-fontification-on-input t
+   highlight-nonselected-windows nil
+   inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started")
+   mode-line-percent-position nil)
+  (setq-default
+   truncate-lines t
+   bidi-display-reordering 'left-to-right
+   bidi-paragraph-direction 'left-to-right
+   cursor-in-non-selected-windows nil)
+  (scroll-bar-mode -1)
+  (auto-save-visited-mode 1)
+  (winner-mode 1)
+  (global-auto-revert-mode 1)
+  (savehist-mode 1)
+  (save-place-mode 1)
+  (advice-add 'save-place-find-file-hook :after
+              (lambda (&rest _)
+                (when buffer-file-name (ignore-errors (recenter)))))
 
-    (with-eval-after-load 'mule-util
-      (setq
-       truncate-string-ellipsis "..."))
-    (load-theme 'modus-vivendi t)
-    (blink-cursor-mode 0)
-    (put 'list-timers 'disabled nil))
+  (with-eval-after-load 'mule-util
+    (setq
+     truncate-string-ellipsis "..."))
+  (load-theme 'modus-vivendi t)
+  (blink-cursor-mode 0)
+  (put 'list-timers 'disabled nil))
 
 
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(bmkp-last-as-first-bookmark-file "/home/alal/.emacs.d/bookmarks")
-   '(custom-safe-themes
-     '("b243ec44629b75034c83be3fa411662f89582223012e8f4110a82dc40bf8561a"
-       "57496b1da377e22301a964a691534c6f782642c8df57453c2971685c6de08ba1"
-       "530e730924892af285af79d88339048da48c572a3c974882682eadb9881fb051"
-       default))
-   '(safe-local-variable-values
-     '((eval unless (string-search "Sun" (current-time-string))
-             (my-create-annoying-timer "8:00pm")
-             (my-create-annoying-timer "6:30pm")
-             (my-create-annoying-timer "2:30pm")
-             (my-create-annoying-timer "12:00pm")
-             (my-create-annoying-timer "8:30am")))))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(org-habit-alert-face ((t (:background "#2dc937" :foreground "black"))))
-   '(org-habit-alert-future-face ((t (:background "#2dc937" :foreground "black"))))
-   '(org-habit-clear-face ((t (:background "#e7b416" :foreground "black"))))
-   '(org-habit-clear-future-face ((t (:background "#e7b416" :foreground "black"))))
-   '(org-habit-overdue-face ((t (:background "#cc3232" :foreground "black"))))
-   '(org-habit-overdue-future-face ((t (:background "#cc3232" :foreground "black"))))
-   '(org-habit-ready-face ((t (:background "#2dc937" :foreground "black"))))
-   '(org-habit-ready-future-face ((t (:background "#2dc937" :foreground "black")))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(bmkp-last-as-first-bookmark-file "/home/alal/.emacs.d/bookmarks")
+ '(custom-safe-themes
+   '("b243ec44629b75034c83be3fa411662f89582223012e8f4110a82dc40bf8561a"
+     "57496b1da377e22301a964a691534c6f782642c8df57453c2971685c6de08ba1"
+     "530e730924892af285af79d88339048da48c572a3c974882682eadb9881fb051"
+     default))
+ '(safe-local-variable-values
+   '((eval unless (string-search "Sun" (current-time-string))
+           (my-create-annoying-timer "8:00pm")
+           (my-create-annoying-timer "6:30pm")
+           (my-create-annoying-timer "2:30pm")
+           (my-create-annoying-timer "12:00pm")
+           (my-create-annoying-timer "8:30am")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-habit-alert-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-alert-future-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-clear-face ((t (:background "#e7b416" :foreground "black"))))
+ '(org-habit-clear-future-face ((t (:background "#e7b416" :foreground "black"))))
+ '(org-habit-overdue-face ((t (:background "#cc3232" :foreground "black"))))
+ '(org-habit-overdue-future-face ((t (:background "#cc3232" :foreground "black"))))
+ '(org-habit-ready-face ((t (:background "#2dc937" :foreground "black"))))
+ '(org-habit-ready-future-face ((t (:background "#2dc937" :foreground "black")))))
