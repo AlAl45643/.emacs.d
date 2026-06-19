@@ -42,6 +42,18 @@
 ;; should M or S or C have meanings?
 ;;; core
 ;;;; packages
+(defun fuzzbomb-startup--emacs-uptime-micro ()
+  "Return the uptime in seconds and microseconds."
+  (format-time-string "%-S.%3N seconds" (time-since before-init-time)))
+
+(add-hook 'window-setup-hook
+          (lambda ()
+            (message "End window-setup-hook: %s"
+                     (fuzzbomb-startup--emacs-uptime-micro)))
+                                        ; This goes against the general advice to avoid depth values of 100.
+                                        ; But here, doing it last is the whole point!
+          100)
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -60,6 +72,7 @@
 
 (straight-use-package 'use-package)
 (straight-use-package 'el-patch)
+
 
 (use-package use-package-core
   :custom
@@ -260,6 +273,7 @@
   "d" 'dape
   "n" 'my-code-rename
   "k" 'docker
+  "e" 'eglot
   )
 
 (+general-global-menu! "consult" "c"
@@ -1322,7 +1336,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :mode ("\\.tsx\\'" . js-ts-mode)
   :hook
   ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure))
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure))
 
 (use-package eglot-typescript-preset
   :init
@@ -1349,7 +1363,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    combobulate-flash-node nil)
   :hook 
   ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
   :general-config
   ('(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map)
    "M-h" 'combobulate-navigate-up
@@ -1970,7 +1984,7 @@ changes."
                                    ((:theme . doric-almond)
                                     (:font "JetBrains Mono 10")
                                     (:modes astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-     js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode))
+                                            js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode))
                                    ((:theme . modus-vivendi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes csharp-mode csharp-ts-mode))
@@ -1990,15 +2004,15 @@ changes."
         (seq-remove-at-position mode-line-modes 5))
   (setq-default
    mode-line-format '("%e" mode-line-front-space
-                     ;; (:propertize
-                     ;;  ("" mode-line-mule-info mode-line-client mode-line-modified
-                     ;;   mode-line-remote mode-line-window-dedicated)
-                     ;;  display (min-width (6.0)))
-                     mode-line-frame-identification mode-line-buffer-identification "   "
-                     ;; mode-line-position
-                     (project-mode-line project-mode-line-format)
-                     (vc-mode vc-mode) "   " mode-line-modes mode-line-misc-info
-                     mode-line-end-spaces)))
+                      ;; (:propertize
+                      ;;  ("" mode-line-mule-info mode-line-client mode-line-modified
+                      ;;   mode-line-remote mode-line-window-dedicated)
+                      ;;  display (min-width (6.0)))
+                      mode-line-frame-identification mode-line-buffer-identification "   "
+                      ;; mode-line-position
+                      (project-mode-line project-mode-line-format)
+                      (vc-mode vc-mode) "   " mode-line-modes mode-line-misc-info
+                      mode-line-end-spaces)))
 
 
 
@@ -2134,6 +2148,8 @@ changes."
   (if (minibufferp)
       (abort-recursive-edit)
     (keyboard-quit)))
+
+
 
 (use-package emacs
   :hook
