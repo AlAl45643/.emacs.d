@@ -1812,7 +1812,7 @@ changes."
   :config
   (space-tree-init)
   :general
-  ('normal 
+  ('(normal insert) 
    "s-1" #'space-tree-to-1
    "s-2" #'space-tree-to-2
    "s-3" #'space-tree-to-3
