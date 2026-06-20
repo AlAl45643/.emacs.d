@@ -495,6 +495,9 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       (if (evim-cursor-mode-p)
           (evim-exit)
         (evim--enter-cursor-mode))))
+  (if (eq warning-suppress-log-types nil)
+      (setopt warning-suppress-log-types '((org-element org-element-cache)))
+    (add-to-list warning-suppress-log-types '(org-element org-element-cache)))
   :general-config
   (evim-mode-map
    "<escape>" 'evim-esc)
