@@ -2221,6 +2221,8 @@ changes."
                           (down-mouse-1 . mouse-minor-mode-menu)))) mode-line-modes))
   (setq-default
    mode-line-format '("%e" mode-line-front-space
+                      (:propertize
+                       ("" mode-line-modified))
                       ;; (:propertize
                       ;;  ("" mode-line-mule-info mode-line-client mode-line-modified
                       ;;   mode-line-remote mode-line-window-dedicated)
