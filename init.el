@@ -444,32 +444,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    avy-case-fold-search nil))
 
 
-(use-package combobulate
-  :init
-  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
-  (setopt
-   combobulate-flash-node nil)
-  :hook 
-  (python-ts-mode . combobulate-mode)
-  :general-config
-  ('(normal insert visual) combobulate-python-map
-   "M-h" 'combobulate-navigate-up
-   "M-j" 'combobulate-navigate-next
-   "M-k" 'combobulate-navigate-previous
-   "M-l" 'combobulate-navigate-down
-   "M-w" 'combobulate-navigate-logical-next
-   "M-b" 'combobulate-navigate-logical-previous
-   "M-n" 'combobulate-navigate-sequence-next
-   "M-p" 'combobulate-navigate-sequence-previous
-   "<up>" 'combobulate-splice-up
-   "<down>" 'combobulate-splice-down
-   "<left>" 'combobulate-splice-self
-   "<right>" 'combobulate-splice-parent
-   "M-P" 'combobulate-drag-up
-   "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim
-   "M-X" 'combobulate-kill-node-dwim
-   "<deletechar>" 'combobulate-kill-node-dwim))
 
 
 (use-package evil-collection
@@ -1190,6 +1164,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (straight-use-package 'mason)
 (straight-use-package 'pet)
 (straight-use-package 'cape)
+(straight-use-package 'combobulate)
 ;;;; config
 (use-package mason
   :demand t
@@ -1265,6 +1240,32 @@ If NOERROR, inhibit error messages when we can't find the node."
   (setq slime-contribs '(slime-py slime-fancy slime-star slime-asdf slime-sprof slime-tramp))
   )
 
+(use-package combobulate
+  :init
+  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
+  (setopt
+   combobulate-flash-node nil)
+  :hook 
+  (python-ts-mode . combobulate-mode)
+  :general-config
+  ('(normal insert visual) combobulate-python-map
+   "M-h" 'combobulate-navigate-up
+   "M-j" 'combobulate-navigate-next
+   "M-k" 'combobulate-navigate-previous
+   "M-l" 'combobulate-navigate-down
+   "M-w" 'combobulate-navigate-logical-next
+   "M-b" 'combobulate-navigate-logical-previous
+   "M-n" 'combobulate-navigate-sequence-next
+   "M-p" 'combobulate-navigate-sequence-previous
+   "<up>" 'combobulate-splice-up
+   "<down>" 'combobulate-splice-down
+   "<left>" 'combobulate-splice-self
+   "<right>" 'combobulate-splice-parent
+   "M-P" 'combobulate-drag-up
+   "M-N" 'combobulate-drag-down
+   "M-v" 'combobulate-mark-node-dwim
+   "M-X" 'combobulate-kill-node-dwim
+   "<deletechar>" 'combobulate-kill-node-dwim))
 
 ;;; csharp
 ;;;; packages
