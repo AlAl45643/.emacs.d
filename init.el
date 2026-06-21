@@ -41,7 +41,49 @@
 ;; C-S-j C-S-k next grouping or scroll
 ;; should M or S or C have meanings?
 ;;; core
-;;;; packages
+(defvar elpaca-installer-version 0.12)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca-activate)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+
 (defun fuzzbomb-startup--emacs-uptime-micro ()
   "Return the uptime in seconds and microseconds."
   (format-time-string "%-S.%3N seconds" (time-since before-init-time)))
@@ -54,31 +96,17 @@
                                         ; But here, doing it last is the whole point!
           100)
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
-(straight-use-package 'el-patch)
+(use-package el-patch
+  :ensure (:wait t))
 
 
 (use-package use-package-core
   :custom
   (use-package-always-defer t))
+
 (use-package general
-  :straight t
+  :ensure (:wait t)
   :config
   (general-evil-setup)
   (general-auto-unbind-keys)
@@ -282,7 +310,8 @@
 
 (+general-global-menu! "miscellaneous" "s"
   "c" 'calc
-  "p" 'straight-visit-package)
+  "p" 'elpaca-visit
+  )
 
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
@@ -323,17 +352,6 @@
   "C-," (general-simulate-key "C-c")
   "C-<menu>" (general-simulate-key "C-c"))
 ;;; evil suite
-;;;; packages
-(straight-use-package 'evil)
-(straight-use-package 'avy)
-(straight-use-package 'combobulate nil t)
-(straight-use-package 'evil-collection)
-(straight-use-package 'evil-owl)
-(straight-use-package 'evil-commentary)
-(straight-use-package 'evil-surround)
-(straight-use-package 'posframe)
-(straight-use-package 'evim)
-;;;; config
 (defun smart-tab ()
   (interactive)
   (cond ((buffer-local-value 'vertico--input (current-buffer)) (vertico-insert))
@@ -366,6 +384,7 @@
     (backward-delete-char-untabify 1)))
 
 (use-package evil 
+  :ensure t
   :demand t
   :init
   (setopt
@@ -437,6 +456,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   )
 
 (use-package avy
+  :ensure t
   :init
   (setopt
    avy-all-windows nil
@@ -447,6 +467,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 
 (use-package evil-collection
+  :ensure t
   :hook (evil-mode . evil-collection-init)
   :init
   (setopt
@@ -457,6 +478,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 
 (use-package evim
+  :ensure t
   :hook (evil-mode . evim-setup-global-keys)
   :config
   (setopt
@@ -478,6 +500,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   )
 
 (use-package evil-owl
+  :ensure t
   :hook (evil-mode . evil-owl-mode)
   :init
   (setopt
@@ -488,26 +511,20 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (evil-owl-extra-posframe-args '(:width 50 :height 20)))
 
 (use-package evil-commentary
+  :ensure t
   :hook (prog-mode . evil-commentary-mode))
 
 
 (use-package evil-surround
+  :ensure t
   :hook (evil-mode . global-evil-surround-mode))
+(use-package posframe
+  :ensure t)
 ;;; org
-;;;; packages
-(straight-use-package 'org)
-
-;;;; config
 (use-package org
   :mode ("\\.org\\'" . org-mode))
 
 ;;;; org tasks and notes
-;;;;; packages
-(straight-use-package 'org-pomodoro)
-(straight-use-package 'evil)
-(straight-use-package 'evil-org)
-(straight-use-package 'anki-editor)
-;;;;; config
 (defun my-org-agenda-to-appt ()
   "Erase all reminders and rebuilt reminders for today from the agenda."
   (interactive)
@@ -691,6 +708,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
 
 
 (use-package org-pomodoro
+  :ensure t
   :hook (org-pomodoro-break-finished . my-org-pomodoro-resume-after-break)
   :init
   (setopt
@@ -751,10 +769,9 @@ kill the current timer, this may be a break or a running pomodoro."
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
   (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice))
 
-(use-package evil
-  :demand t)
 
 (use-package evil-org
+  :ensure t
   :hook (org-mode . evil-org-mode)
   :init
   (evil-mode 1)
@@ -770,7 +787,8 @@ kill the current timer, this may be a break or a running pomodoro."
   (call-interactively #'anki-editor-set-deck)
   (call-interactively #'anki-editor-set-note-type))
 
-(use-package anki
+(use-package anki-editor
+  :ensure t
   ;; :hook (org-mode . anki-editor-mode)
   :general
   (org-mode-map
@@ -783,22 +801,17 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c n" 'anki-editor-push-note-at-point))
 
 
-;;;; org shell
-;;;;; config
+;;;; org babel
 (use-package org
-  :config
-  (org-babel-do-load-languages 'org-babel-load-languages '((shell . t))))
-;;;; org babel diagrams
-;;;;; packages
-(straight-use-package 'plantuml-mode)
-(straight-use-package 'graphviz-dot-mode)
-(straight-use-package '(org-mindmap :type git :host github :repo "krvkir/org-mindmap"))
-;;;;; config
-(use-package org
+  :after ob-racket
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
-                                                           (dot . t))))
+                                                           (dot . t)
+                                                           (racket . t)
+                                                           (python . t)
+                                                           (js . t))))
 (use-package plantuml-mode
+  :ensure t
   :init
   (setopt
    org-plantuml-jar-path (concat user-emacs-directory "plantuml.jar")
@@ -806,6 +819,9 @@ kill the current timer, this may be a break or a running pomodoro."
   :config
   (if (not (file-exists-p org-plantuml-jar-path))
       (plantuml-download-jar)))
+
+(use-package graphviz-dot-mode
+  :ensure t)
 
 ;; (use-package org-mindmap
 ;;   :after org
@@ -828,34 +844,16 @@ kill the current timer, this may be a break or a running pomodoro."
 ;;         (apply orig-fun args))))
 ;;   (advice-add 'smart-tab :around #'my-org-mindmap-tab-advice))
 
-;;;; org babel racket
-;;;;; packages
-(straight-use-package '(ob-racket :type git :host github :repo "hasu/emacs-ob-racket"
-                                  :files ("*.el" "*.rkt")))
-(straight-use-package 'racket-mode)
-;;;;; config
-(use-package org
-  :config
-  (org-babel-do-load-languages 'org-babel-load-languages '((racket . t))))
 
 (use-package ob-racket
+  :ensure (:host github :repo "hasu/emacs-ob-racket")
   :hook (ob-racket-pre-runtime-library-load-hook . ob-racket-raco-make-runtime-library))
 
-;;;; org babel python
-;;;;; config
-(use-package org
-  :config
-  (org-babel-do-load-languages 'org-babel-load-languages '((python . t))))
-;;;; org babel javascript
-(use-package org
-  :config
-  (org-babel-do-load-languages 'org-babel-load-languages '((js . t))))
+(use-package racket-mode
+  :ensure t)
 ;;; better help 
-;;;;; packages
-(straight-use-package 'helpful)
-(straight-use-package 'evil)
-(straight-use-package 'elisp-demos)
-;;;;; config
+
+
 (defun my-persist-eldoc (interactive)
   (interactive (list t))
   (let ((mode major-mode))
@@ -902,10 +900,9 @@ kill the current timer, this may be a break or a running pomodoro."
   (interactive)
   (save-selected-window (call-interactively 'helpful-function)))
 
-(use-package evil
-  :demand t)
 
 (use-package helpful
+  :ensure t
   :demand t
   :init
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
@@ -923,16 +920,13 @@ kill the current timer, this may be a break or a running pomodoro."
 
 
 
+(use-package elisp-demos
+  :ensure t)
 ;;; better docs
-;;;;; packages
-(straight-use-package 'org-remark)
-(straight-use-package 'org)
-(straight-use-package 'pdf-tools)
-(straight-use-package 'devdocs)
-(straight-use-package 'saveplace-pdf-view)
-(straight-use-package 'org-noter)
-;;;;; config
+
+
 (use-package pdf-tools
+  :ensure t
   :hook
   (pdf-view-mode . pdf-view-roll-minor-mode)
   :init
@@ -955,6 +949,7 @@ kill the current timer, this may be a break or a running pomodoro."
   )
 
 (use-package saveplace-pdf-view
+  :ensure t
   :after (:any doc-view pdf-tools)
   :demand t)
 
@@ -962,6 +957,7 @@ kill the current timer, this may be a break or a running pomodoro."
   :demand t)
 
 (use-package org-remark
+  :ensure t
   :hook
   (Info-mode . org-remark-info-mode)
   :config
@@ -1037,6 +1033,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 
 (use-package devdocs
+  :ensure t
   :general
   (help-map
    "D" 'devdocs-peruse)
@@ -1066,6 +1063,7 @@ If NOERROR, inhibit error messages when we can't find the node."
     nil))
 
 (use-package org-noter
+  :ensure t
   :init
   (setopt
    org-noter-auto-save-last-location t)
@@ -1078,11 +1076,12 @@ If NOERROR, inhibit error messages when we can't find the node."
   (advice-add 'org-noter--doc-location-change-handler :around #'org-noter-toggle-advice)
   )
 ;;; git
-;;;; packages
-(straight-use-package 'magit)
-(straight-use-package 'diff-hl)
-;;;; config
+
+(use-package transient
+  :ensure t)
+
 (use-package magit
+  :ensure t
   :init
   (setopt
    magit-define-global-key-bindings 'recommended
@@ -1097,6 +1096,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 
 (use-package diff-hl
+  :ensure t
   :init
   (global-diff-hl-mode)
   (setopt
@@ -1108,32 +1108,54 @@ If NOERROR, inhibit error messages when we can't find the node."
    "] G" 'diff-hl-show-hunk-next
    "[ G" 'diff-hl-show-hunk-previous ))
 ;;; docker
-;;;; packages
-(straight-use-package 'docker)
-(straight-use-package 'dockerfile-mode)
-;;;; config
+
 (use-package docker
+  :ensure t
   :init
   (setopt
    docker-command "docker"))
-;;; php
-;;;;; packages
-(straight-use-package 'php-mode)
-;;;;; config
-(use-package php-mode
-  :mode ("\\.php\\'" . php-ts-mode)
-  )
-;;; latex
-;;;; packages
-(straight-use-package 'auctex)
-(straight-use-package 'mason)
-;;;; config
+(use-package dockerfile-mode
+  :ensure t)
+;;; language servers
 (use-package mason
+  :ensure t
   :demand t
   :config
   (mason-ensure
    (lambda ()
-     (ignore-errors (mason-install "texlab")))))
+     (ignore-errors (mason-install "texlab"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "ty"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "csharp-language-server"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "clangd"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "typescript-language-server"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "eslint-lsp"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "tailwindcss-language-server"))))
+  (mason-ensure
+   (lambda ()
+     (ignore-errors (mason-install "jdtls")))))
+;;; php
+
+
+(use-package php-mode
+  :ensure t
+  :mode ("\\.php\\'" . php-ts-mode)
+  )
+;;; latex
+
+
+
 
 (use-package eglot
   :hook
@@ -1149,29 +1171,16 @@ If NOERROR, inhibit error messages when we can't find the node."
    TeX-auto-save t
    TeX-parse-self t))
 
+(use-package auctex
+  :ensure t)
 ;; (use-package latex
 ;;   :config
 ;;   (modify-syntax-entry ?$ "\"" LaTeX-mode-syntax-table))
 
 ;;; python
-;;;; packages
-(straight-use-package 'slime)
-(straight-use-package 'py-isort)
-(straight-use-package '(slime-star :type git :host github :repo "mmontone/slime-star"))
-(straight-use-package '(swanky-python :type git :host codeberg :repo "sczi/swanky-python"))
-;; (straight-use-package 'eglot-python-preset)
-(straight-use-package 'treesit-auto)
-(straight-use-package 'mason)
-(straight-use-package 'pet)
-(straight-use-package 'cape)
-(straight-use-package 'combobulate)
-;;;; config
-(use-package mason
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "ty")))))
+
+
+
 
 
 (use-package eglot
@@ -1221,34 +1230,71 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;   (eglot-python-preset-setup))
 
 (use-package pet
+  :ensure t
   :init
   (add-hook 'python-base-mode-hook 'pet-mode -10))
+
 (use-package treesit-auto
+  :ensure t
   :demand t
   :init
   (setopt
    treesit-font-lock-level 4)
   :config
+  (delete 'yaml treesit-auto-langs)
   (global-treesit-auto-mode))
 
 
-(use-package swanky-python
+(use-package py-isort
+  :ensure t)
+
+(use-package slime-star
+  :ensure (:host github :repo "mmontone/slime-star"))
+
+(use-package slime
+  :ensure (:host github :repo "slime/slime" :tag "v2.32"))
+
+(use-package slime-py
+  :ensure (:host codeberg :repo "sczi/swanky-python" :files (:defaults "slimy-python/*"))
   :init
   (setq inferior-lisp-program "sbcl")
-  (add-to-list 'load-path (concat user-emacs-directory "straight/repos/slime-star/"))
-  (add-to-list 'load-path (concat user-emacs-directory "straight/repos/swanky-python/slimy-python/"))
+  ;; (add-to-list 'load-path (concat user-emacs-directory "straight/repos/slime-star/"))
+  ;; (add-to-list 'load-path (concat user-emacs-directory "straight/repos/swanky-python/slimy-python/"))
   (setq slime-contribs '(slime-py slime-fancy slime-star slime-asdf slime-sprof slime-tramp))
   )
 
 (use-package combobulate
+  :ensure (:host github :repo "mickeynp/combobulate")
   :init
-  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
+  ;; TODO
+  (add-to-list 'load-path (concat user-emacs-directory "/elpaca/sources/combobulate"))
   (setopt
    combobulate-flash-node nil)
   :hook 
-  (python-ts-mode . combobulate-mode)
+  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode python-ts-mode) . combobulate-mode)
   :general-config
   ('(normal insert visual) combobulate-python-map
+   "M-h" 'combobulate-navigate-up
+   "M-j" 'combobulate-navigate-next
+   "M-k" 'combobulate-navigate-previous
+   "M-l" 'combobulate-navigate-down
+   "M-a" 'combobulate-navigate-beginning-of-defun
+   "M-e" 'combobulate-navigate-end-of-defun
+   "M-w" 'combobulate-navigate-logical-next
+   "M-b" 'combobulate-navigate-logical-previous
+   "M-n" 'combobulate-navigate-sequence-next
+   "M-p" 'combobulate-navigate-sequence-previous
+   "<up>" 'combobulate-splice-up
+   "<down>" 'combobulate-splice-down
+   "<left>" 'combobulate-splice-self
+   "<right>" 'combobulate-splice-parent
+   "M-P" 'combobulate-drag-up
+   "M-N" 'combobulate-drag-down
+   "M-v" 'combobulate-mark-node-dwim
+   "M-X" 'combobulate-kill-node-dwim
+   "<deletechar>" 'combobulate-kill-node-dwim)
+  ('(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map)
    "M-h" 'combobulate-navigate-up
    "M-j" 'combobulate-navigate-next
    "M-k" 'combobulate-navigate-previous
@@ -1270,16 +1316,9 @@ If NOERROR, inhibit error messages when we can't find the node."
    "<deletechar>" 'combobulate-kill-node-dwim))
 
 ;;; csharp
-;;;; packages
-(straight-use-package 'mason)
-(straight-use-package 'sharper)
-;;;; config
-(use-package mason
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "csharp-language-server")))))
+
+
+
 
 (use-package eglot
   :hook
@@ -1289,6 +1328,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                '((csharp-mode csharp-ts-mode) "csharp-ls" "-f" "metadata-uris"))
   )
 (use-package sharper
+  :ensure t
   :general-config
   ('normal sharper--project-packages-mode-map
            "g r" 'sharper--project-packages-refresh
@@ -1312,32 +1352,24 @@ If NOERROR, inhibit error messages when we can't find the node."
   )
 
 (use-package csharp-mode
+
   :general-config
   (csharp-ts-mode-map
    "C-c s" 'sharper-main-transient))
 
 
 ;;; c
-;;;; packages
-(straight-use-package 'mason)
-;;;; config 
-(use-package mason
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "clangd")))))
+
+ 
+
 
 (use-package eglot
   :hook
   (c-ts-mode . eglot-ensure))
 
 ;;; javascript
-;;;;; packages
-(straight-use-package 'mason)
-(straight-use-package 'project)
-(straight-use-package 'eglot-typescript-preset)
-;;;;; config
+
+
 (use-package ts
   :mode ("\\.tsx\\'" . js-ts-mode)
   :hook
@@ -1345,93 +1377,45 @@ If NOERROR, inhibit error messages when we can't find the node."
                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure))
 
 (use-package eglot-typescript-preset
+  :ensure t
   :init
   (setopt
    eglot-typescript-preset-lsp-server 'rass))
 
-(use-package mason
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "typescript-language-server"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "eslint-lsp"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "tailwindcss-language-server")))))
 
-(use-package combobulate
-  :init
-  (add-to-list 'load-path (concat user-emacs-directory "/straight/repos/combobulate"))
-  (setopt
-   combobulate-flash-node nil)
-  :hook 
-  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
-  :general-config
-  ('(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map)
-   "M-h" 'combobulate-navigate-up
-   "M-j" 'combobulate-navigate-next
-   "M-k" 'combobulate-navigate-previous
-   "M-l" 'combobulate-navigate-down
-   "M-a" 'combobulate-navigate-beginning-of-defun
-   "M-e" 'combobulate-navigate-end-of-defun
-   "M-w" 'combobulate-navigate-logical-next
-   "M-b" 'combobulate-navigate-logical-previous
-   "M-n" 'combobulate-navigate-sequence-next
-   "M-p" 'combobulate-navigate-sequence-previous
-   "<up>" 'combobulate-splice-up
-   "<down>" 'combobulate-splice-down
-   "<left>" 'combobulate-splice-self
-   "<right>" 'combobulate-splice-parent
-   "M-P" 'combobulate-drag-up
-   "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim
-   "M-X" 'combobulate-kill-node-dwim
-   "<deletechar>" 'combobulate-kill-node-dwim))
+
 
 ;;; emacs lisp
-;;;; config
+
 (defun my-elisp-imenu ()
   "Set up imenu for elisp."
   (setq imenu-generic-expression (append (list  (list "Use Package" "(use-package \\(.+\\)" 1)) imenu-generic-expression)))
 
 (use-package elisp-mode
+
   :hook (emacs-lisp-mode . my-elisp-imenu))
 
 
 ;;; sql
-;;;; packages
-(straight-use-package 'sql-indent)
-;;;; config
+
+
 (use-package sql
   :mode ("\\.sql\\'" . sql-mode))
 
 (use-package sql-indent
+  :ensure t
   :hook
   (sql-mode . sqlind-minor-mode))
 ;;; yaml
-(straight-use-package 'yaml-mode)
-(straight-use-package 'treesit-auto)
-;;;; config
+
 (use-package yaml-mode
+  :ensure t
   :mode ("\\.yml\\'" . yaml-mode)
   :mode ("\\.yaml\\'" . yaml-mode)
   )
-(use-package treesit-auto
-  :init
-  (delete 'yaml treesit-auto-langs))
 ;;; java
-;;;; packages
-(straight-use-package 'mason)
-(use-package mason
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "jdtls")))))
+
+
 
 (defun jdtls-reload-project-config (&optional server)
   "Tell jdtls to reload the server configuration.  Useful after build system
@@ -1461,17 +1445,17 @@ changes."
                       (concat user-emacs-directory "bin/java-debug-0.53.1/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-0.53.1.jar"))])))))
 
 
-;;;; config
+
 ;;; debugging
-;;;;; packages
-(straight-use-package 'dape)
-;;;;; config
+
+
 (defun my-dape-watch-dwim ()
   "Call dape-watch-dwim without opening dape-info watch."
   (interactive)
   (save-window-excursion (call-interactively #'dape-watch-dwim)))
 
 (use-package dape
+  :ensure t
   :hook 
   (kill-emacs . dape-breakpoint-save)
   (after-init . dape-breakpoint-load)
@@ -1565,14 +1549,8 @@ changes."
 
 
 ;;; language server completion backends documentation output
-;;;;; packages
-(straight-use-package 'cape)
-(straight-use-package 'yasnippet)
-(straight-use-package 'yasnippet-snippets)
-(straight-use-package 'yasnippet-capf)
-(straight-use-package 'markdown-mode)
-(straight-use-package 'orderless)
-;;;;; config
+
+
 (defvar my-eglot-completion-functions (list #'yasnippet-capf #'eglot-completion-at-point)
   "The list of completion functions to combine to replace `eglot-completion-at-point'.")
 
@@ -1611,6 +1589,7 @@ changes."
 
 
 (use-package yasnippet
+  :ensure t
   :init
   (setopt
    yas-also-auto-indent-first-line t)
@@ -1622,14 +1601,13 @@ changes."
    "C-<tab>" 'yas-next-field
    "C-<iso-lefttab>" 'yas-prev-field))
 
+(use-package yasnippet-snippets
+  :ensure t)
+(use-package markdown-mode
+  :ensure t)
 ;;; default completion backends 
-;;;; packages
-(straight-use-package 'cape)
-(straight-use-package 'yasnippet)
-(straight-use-package 'yasnippet-snippets)
-(straight-use-package 'yasnippet-capf)
-(straight-use-package 'orderless)
-;;;; config
+
+
 (defun my-hippie-expand-advice (orig-fun &rest args)
   (let ((case-fold-search nil))
     (apply orig-fun args)))
@@ -1641,17 +1619,6 @@ changes."
   (advice-add 'hippie-expand :around #'my-hippie-expand-advice)
   )
 
-(use-package yasnippet
-  :init
-  (setopt
-   yas-also-auto-indent-first-line t)
-  (yas-global-mode 1)
-  :general-config
-  (yas-keymap
-   "<tab>" nil
-   "TAB" nil
-   "C-<tab>" 'yas-next-field
-   "C-<iso-lefttab>" 'yas-prev-field))
 
 (defun my-yasnippet-add-completion-functions ()
   "Add yasnippet-capf to `completion-at-point-functions'."
@@ -1662,32 +1629,29 @@ changes."
   )
 
 (use-package yasnippet-capf
+  :ensure t
   :hook ((prog-mode org-mode) . my-yasnippet-add-completion-functions)
   )
 
 (use-package cape
+  :ensure t
   :init
   (add-to-list 'completion-at-point-functions #'cape-file))
 
 ;;; completion middle end
-;;;; packages
-(straight-use-package 'orderless)
-;;;; config
+
+
 (use-package orderless
+  :ensure t
   :init
   (setopt
    completion-styles '(orderless partial-completion basic)
    completion-category-defaults nil
    completion-category-overrides '((file (styles partial-completion)))))
 ;;; completion frontends
-;;;; packages
-(straight-use-package 'consult)
-(straight-use-package 'vertico)
-(straight-use-package 'corfu)
-(straight-use-package 'kind-icon)
-(straight-use-package 'marginalia)
-;;;; config
+
 (use-package corfu
+  :ensure t
   :init
   (setopt
    corfu-cycle t
@@ -1721,6 +1685,7 @@ changes."
    "C-S-k" 'corfu-popupinfo-scroll-down))
 
 (use-package vertico
+  :ensure t
   :init
   (setopt
    vertico-cycle t)
@@ -1740,10 +1705,12 @@ changes."
    "C-f" 'evil-forward-char))
 
 (use-package consult
+  :ensure t
   :init
   (setopt completion-in-region-function 'consult-completion-in-region))
 
 (use-package kind-icon
+  :ensure t
   :init
   (setopt
    kind-icon-mapping
@@ -1807,15 +1774,16 @@ changes."
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
   )
 (use-package marginalia
+  :ensure t
   :init
   (marginalia-mode))
 ;;; windows
-;;;; packages
-(straight-use-package '(space-tree :type git :host github :repo "chiply/space-tree"))
-(straight-use-package 'popper)
-(straight-use-package 'burly)
-;;;; config
+
+(use-package burly
+  :ensure t)
+
 (use-package space-tree
+  :ensure (:host github :repo "chiply/space-tree")
   :demand t
   :config
   (space-tree-init)
@@ -1855,6 +1823,7 @@ changes."
    "s-_" #'space-tree-delete-space))
 
 (use-package popper
+  :ensure t
   :init
   (setopt
    popper-display-control 'user
@@ -1949,13 +1918,10 @@ changes."
 
 
 ;;; visual non-functional changes
-;;;; packages
-(straight-use-package 'per-buffer-theme)
-;; (straight-use-package 'minions)
-(straight-use-package 'indent-bars)
-(straight-use-package 'doric-themes)
-;;;; config
+
+
 (use-package indent-bars
+  :ensure t
   :hook
   (prog-mode . indent-bars-mode))
 
@@ -1982,7 +1948,8 @@ changes."
   :init
   (setopt bookmark-fringe-mark nil))
 
-(use-package per-buffer-theme-mode
+(use-package per-buffer-theme
+  :ensure (:host github :repo "emacsmirror/per-buffer-theme")
   :init
   (setopt
    per-buffer-theme-default-theme 'modus-vivendi
@@ -2006,11 +1973,252 @@ changes."
    per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*"))
   (per-buffer-theme-mode 1))
 
+(use-package doric-themes
+  :ensure t)
+
 (use-package emacs
-  :config
+  :init
   (setopt project-mode-line t)
   (setq mode-line-modes
-        (seq-remove-at-position mode-line-modes 5))
+        (delete '(:propertize ("" minor-mode-alist) mouse-face mode-line-highlight
+              help-echo
+              "Minor mode\nmouse-1: Display minor mode menu\nmouse-2: Show help for minor mode\nmouse-3: Toggle minor modes"
+              local-map
+              (keymap
+               (header-line keymap
+                            (down-mouse-3 menu-item "Menu Bar"
+                                          (keymap
+                                           (orgtbl-mode menu-item
+                                                        "Org Table Mode"
+                                                        orgtbl-mode
+                                                        :button
+                                                        (:toggle
+                                                         . orgtbl-mode))
+                                           (abbrev-mode menu-item
+                                                        "Abbrev (Abbrev)"
+                                                        abbrev-mode
+                                                        :help
+                                                        "Automatically expand abbreviations"
+                                                        :button
+                                                        (:toggle
+                                                         . abbrev-mode))
+                                           (auto-fill-mode menu-item
+                                                           "Auto fill (Fill)"
+                                                           auto-fill-mode
+                                                           :help
+                                                           "Automatically insert new lines"
+                                                           :button
+                                                           (:toggle
+                                                            . auto-fill-function))
+                                           (auto-revert-mode menu-item
+                                                             "Auto revert (ARev)"
+                                                             auto-revert-mode
+                                                             :help
+                                                             "Revert the buffer when the file on disk changes"
+                                                             :button
+                                                             (:toggle
+                                                              bound-and-true-p
+                                                              auto-revert-mode))
+                                           (auto-revert-tail-mode
+                                            menu-item
+                                            "Auto revert tail (Tail)"
+                                            auto-revert-tail-mode
+                                            :help
+                                            "Revert the tail of the buffer when the file on disk grows"
+                                            :enable (buffer-file-name)
+                                            :button
+                                            (:toggle bound-and-true-p
+                                                     auto-revert-tail-mode))
+                                           (completion-preview-mode
+                                            menu-item
+                                            "Completion Preview (CP)"
+                                            completion-preview-mode
+                                            :help
+                                            "Show preview of completion suggestions as you type"
+                                            :enable
+                                            completion-at-point-functions
+                                            :button
+                                            (:toggle bound-and-true-p
+                                                     completion-preview-mode))
+                                           (flyspell-mode menu-item
+                                                          "Flyspell (Fly)"
+                                                          flyspell-mode
+                                                          :help
+                                                          "Spell checking on the fly"
+                                                          :button
+                                                          (:toggle
+                                                           bound-and-true-p
+                                                           flyspell-mode))
+                                           (font-lock-mode menu-item
+                                                           "Font Lock"
+                                                           font-lock-mode
+                                                           :help
+                                                           "Syntax coloring"
+                                                           :button
+                                                           (:toggle
+                                                            . font-lock-mode))
+                                           (glasses-mode menu-item
+                                                         "Glasses (o^o)"
+                                                         glasses-mode
+                                                         :help
+                                                         "Insert virtual separators to make long identifiers easy to read"
+                                                         :button
+                                                         (:toggle
+                                                          bound-and-true-p
+                                                          glasses-mode))
+                                           (hide-ifdef-mode menu-item
+                                                            "Hide ifdef (Ifdef)"
+                                                            hide-ifdef-mode
+                                                            :help
+                                                            "Show/Hide code within #ifdef constructs"
+                                                            :button
+                                                            (:toggle
+                                                             bound-and-true-p
+                                                             hide-ifdef-mode))
+                                           (highlight-changes-mode
+                                            menu-item
+                                            "Highlight changes (Chg)"
+                                            highlight-changes-mode
+                                            :help
+                                            "Show changes in the buffer in a distinctive color"
+                                            :button
+                                            (:toggle bound-and-true-p
+                                                     highlight-changes-mode))
+                                           (outline-minor-mode
+                                            menu-item "Outline (Outl)"
+                                            outline-minor-mode :help
+                                            "" :button
+                                            (:toggle bound-and-true-p
+                                                     outline-minor-mode))
+                                           (overwrite-mode menu-item
+                                                           "Overwrite (Ovwrt)"
+                                                           overwrite-mode
+                                                           :help
+                                                           "Overwrite mode: typed characters replace existing text"
+                                                           :button
+                                                           (:toggle
+                                                            . overwrite-mode))
+                                           "Minor Modes")
+                                          :filter
+                                          bindings--sort-menu-keymap))
+               (mode-line keymap
+                          (down-mouse-3 menu-item "Menu Bar"
+                                        (keymap
+                                         (orgtbl-mode menu-item
+                                                      "Org Table Mode"
+                                                      orgtbl-mode
+                                                      :button
+                                                      (:toggle
+                                                       . orgtbl-mode))
+                                         (abbrev-mode menu-item
+                                                      "Abbrev (Abbrev)"
+                                                      abbrev-mode
+                                                      :help
+                                                      "Automatically expand abbreviations"
+                                                      :button
+                                                      (:toggle
+                                                       . abbrev-mode))
+                                         (auto-fill-mode menu-item
+                                                         "Auto fill (Fill)"
+                                                         auto-fill-mode
+                                                         :help
+                                                         "Automatically insert new lines"
+                                                         :button
+                                                         (:toggle
+                                                          . auto-fill-function))
+                                         (auto-revert-mode menu-item
+                                                           "Auto revert (ARev)"
+                                                           auto-revert-mode
+                                                           :help
+                                                           "Revert the buffer when the file on disk changes"
+                                                           :button
+                                                           (:toggle
+                                                            bound-and-true-p
+                                                            auto-revert-mode))
+                                         (auto-revert-tail-mode
+                                          menu-item
+                                          "Auto revert tail (Tail)"
+                                          auto-revert-tail-mode :help
+                                          "Revert the tail of the buffer when the file on disk grows"
+                                          :enable (buffer-file-name)
+                                          :button
+                                          (:toggle bound-and-true-p
+                                                   auto-revert-tail-mode))
+                                         (completion-preview-mode
+                                          menu-item
+                                          "Completion Preview (CP)"
+                                          completion-preview-mode
+                                          :help
+                                          "Show preview of completion suggestions as you type"
+                                          :enable
+                                          completion-at-point-functions
+                                          :button
+                                          (:toggle bound-and-true-p
+                                                   completion-preview-mode))
+                                         (flyspell-mode menu-item
+                                                        "Flyspell (Fly)"
+                                                        flyspell-mode
+                                                        :help
+                                                        "Spell checking on the fly"
+                                                        :button
+                                                        (:toggle
+                                                         bound-and-true-p
+                                                         flyspell-mode))
+                                         (font-lock-mode menu-item
+                                                         "Font Lock"
+                                                         font-lock-mode
+                                                         :help
+                                                         "Syntax coloring"
+                                                         :button
+                                                         (:toggle
+                                                          . font-lock-mode))
+                                         (glasses-mode menu-item
+                                                       "Glasses (o^o)"
+                                                       glasses-mode
+                                                       :help
+                                                       "Insert virtual separators to make long identifiers easy to read"
+                                                       :button
+                                                       (:toggle
+                                                        bound-and-true-p
+                                                        glasses-mode))
+                                         (hide-ifdef-mode menu-item
+                                                          "Hide ifdef (Ifdef)"
+                                                          hide-ifdef-mode
+                                                          :help
+                                                          "Show/Hide code within #ifdef constructs"
+                                                          :button
+                                                          (:toggle
+                                                           bound-and-true-p
+                                                           hide-ifdef-mode))
+                                         (highlight-changes-mode
+                                          menu-item
+                                          "Highlight changes (Chg)"
+                                          highlight-changes-mode :help
+                                          "Show changes in the buffer in a distinctive color"
+                                          :button
+                                          (:toggle bound-and-true-p
+                                                   highlight-changes-mode))
+                                         (outline-minor-mode menu-item
+                                                             "Outline (Outl)"
+                                                             outline-minor-mode
+                                                             :help ""
+                                                             :button
+                                                             (:toggle
+                                                              bound-and-true-p
+                                                              outline-minor-mode))
+                                         (overwrite-mode menu-item
+                                                         "Overwrite (Ovwrt)"
+                                                         overwrite-mode
+                                                         :help
+                                                         "Overwrite mode: typed characters replace existing text"
+                                                         :button
+                                                         (:toggle
+                                                          . overwrite-mode))
+                                         "Minor Modes")
+                                        :filter
+                                        bindings--sort-menu-keymap)
+                          (mouse-2 . mode-line-minor-mode-help)
+                          (down-mouse-1 . mouse-minor-mode-menu)))) mode-line-modes))
   (setq-default
    mode-line-format '("%e" mode-line-front-space
                       ;; (:propertize
@@ -2043,10 +2251,10 @@ changes."
   (which-key-mode) 
   )
 ;;; calc
-;;;; packages
-(straight-use-package 'casual-suite)
-;;;; config
+
+
 (use-package casual-suite
+  :ensure t
   :general
   ('normal calc-mode-map
            "?" 'casual-calc-tmenu))
@@ -2072,7 +2280,7 @@ changes."
    "C-c s" 'dired-get-size))
 
 ;;; grammar
-;;;; config
+
 (use-package ispell
   :hook ((prog-mode org-mode LaTeX-mode) . ispell-minor-mode)
   :init
@@ -2091,10 +2299,10 @@ changes."
 (use-package flyspell
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
-;;;; packages
-(straight-use-package 'vterm)
-;;;; config
+
+
 (use-package vterm
+  :ensure t
   :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
 
 (use-package eshell
@@ -2110,11 +2318,10 @@ changes."
   (require 'em-tramp))
 
 ;;; embark
-;;;; packages
-(straight-use-package 'embark)
-(straight-use-package 'embark-consult)
-;;;; config
+
+
 (use-package embark
+  :ensure t
   :general
   ('(insert normal hybrid motion visual operator)
    "C-." 'embark-act
@@ -2151,6 +2358,8 @@ changes."
 
 ;; Consult users will also want the embark-consult package.
 
+(use-package embark-consult
+  :ensure t)
 ;;; emacs
 (defun my-ctrl-g ()
   (interactive)
