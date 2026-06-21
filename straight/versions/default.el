@@ -11,7 +11,7 @@
  ("casual-suite" . "c590e78d756bc6b3d43ab5cf8618e41b2a5bc88b")
  ("casual-symbol-overlay" . "1453e7486dd0921f0319f21dd8c8b603e4eb7300")
  ("combobulate" . "17c71802eed2df1a6b25199784806da6763fb90c")
- ("compat" . "97f24af413a38a7f1aaedb29f5aaaa333796a5b4")
+ ("compat" . "ac70b4d347fe22bcd0228c763bf804673086a621")
  ("cond-let" . "79a16e1f2428f0f79f03250b987bc79cd37a029e")
  ("consult" . "540ad1e59ef80b1c8dd712cbbaae8957533ad02c")
  ("corfu" . "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6")
