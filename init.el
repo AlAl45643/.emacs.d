@@ -1253,6 +1253,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    "M-j" 'combobulate-navigate-next
    "M-k" 'combobulate-navigate-previous
    "M-l" 'combobulate-navigate-down
+   "M-a" 'combobulate-navigate-beginning-of-defun
+   "M-e" 'combobulate-navigate-end-of-defun
    "M-w" 'combobulate-navigate-logical-next
    "M-b" 'combobulate-navigate-logical-previous
    "M-n" 'combobulate-navigate-sequence-next
@@ -1374,6 +1376,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    "M-j" 'combobulate-navigate-next
    "M-k" 'combobulate-navigate-previous
    "M-l" 'combobulate-navigate-down
+   "M-a" 'combobulate-navigate-beginning-of-defun
+   "M-e" 'combobulate-navigate-end-of-defun
    "M-w" 'combobulate-navigate-logical-next
    "M-b" 'combobulate-navigate-logical-previous
    "M-n" 'combobulate-navigate-sequence-next
