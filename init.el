@@ -313,7 +313,7 @@
   )
 
 (+general-global-menu! "elpaca" "l"
-  "p" 'elpaca-visit
+  "v" 'elpaca-visit
   "l" 'elpaca-log
   "m" 'elpaca-manager)
 
@@ -1259,11 +1259,11 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure (:host github :repo "slime/slime" :tag "v2.32"))
 
 (use-package slime-py
-  :ensure (:host codeberg :repo "sczi/swanky-python" :files (:defaults "slimy-python/*"))
+  :ensure (:host codeberg :repo "sczi/swanky-python" :files (:defaults "slimy-python/*.el"))
   :init
   (setq inferior-lisp-program "sbcl")
-  ;; (add-to-list 'load-path (concat user-emacs-directory "straight/repos/slime-star/"))
-  ;; (add-to-list 'load-path (concat user-emacs-directory "straight/repos/swanky-python/slimy-python/"))
+  (add-to-list 'load-path (concat user-emacs-directory "elpaca/sources/slime-star/"))
+  (add-to-list 'load-path (concat user-emacs-directory "elpaca/sources/swanky-python/slimy-python/"))
   (setq slime-contribs '(slime-py slime-fancy slime-star slime-asdf slime-sprof slime-tramp))
   )
 
