@@ -310,8 +310,12 @@
 
 (+general-global-menu! "miscellaneous" "s"
   "c" 'calc
-  "p" 'elpaca-visit
   )
+
+(+general-global-menu! "elpaca" "l"
+  "p" 'elpaca-visit
+  "l" 'elpaca-log
+  "m" 'elpaca-manager)
 
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
@@ -1027,8 +1031,8 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 (use-package info
   :config
-  (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
-  (add-to-list 'Info-directory-list (concat user-emacs-directory "straight/" "repos/" "evil/" "doc/" "build/" "texinfo/"))
+  (setq Info-directory-list `(,(concat user-emacs-directory "info/") "/usr/share/info/" "/usr/local/share/info/"))
+  
   )
 
 
