@@ -1026,8 +1026,9 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 (use-package info
   :config
-  (setq Info-directory-list `(,(concat user-emacs-directory "info/") "/usr/share/info/" "/usr/local/share/info/"))
-  
+  (add-to-list 'Info-directory-list "/usr/share/info")
+  (add-to-list 'Info-directory-list "/usr/local/share/info")
+  (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
   )
 
 
@@ -1083,8 +1084,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t
   :init
   (setopt
-   magit-define-global-key-bindings 'recommended
    magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+  :general
+  ("C-c g" 'magit-dispatch
+   "C-c f" 'magit-file-dispatch)
   :general-config
   ('(visual normal) magit-mode-map
    "] ]" 'magit-section-forward
