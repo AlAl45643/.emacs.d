@@ -475,9 +475,47 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook (evil-mode . evil-collection-init)
   :init
   (setopt
+   evil-collection-repl-submit-state 'insert
    evil-collection-setup-minibuffer t
    evil-collection-outline-bind-tab-p t
-   evil-collection-key-blacklist '("M-h" "M-j" "M-k" "M-l")))
+   evil-collection-key-blacklist '("M-h" "M-j" "M-k" "M-l")
+   evil-collection-mode-list '(2048-game ag agent-shell alchemist anaconda-mode apropos arc-mode
+                                         atomic-chrome auto-package-update beginend bluetooth bm
+                                         bookmark (buff-menu "buff-menu") bufler calc calendar cider
+                                         citre cmake-mode color-rg comint company compile consult
+                                         corfu crdt (csv "csv-mode") (custom cus-edit) cus-theme
+                                         dape dashboard daemons deadgrep debbugs debug devdocs
+                                         dictionary diff-hl diff-mode difftastic dired dired-sidebar
+                                         disk-usage distel doc-view docker eat ebib ebuku eca edbi
+                                         edebug ediff eglot elpaca ement explain-pause-mode eldoc
+                                         elfeed elisp-mode elisp-refs elisp-slime-nav embark emms
+                                         emoji epa ert eshell eval-sexp-fu evil-mc eww fanyi finder
+                                         flycheck flymake fj forge free-keys fzfa geiser ggtags
+                                         git-timemachine gited gnus go-mode gptel grep guix
+                                         hackernews helm help helpful hg-histedit hideshow
+                                         hungry-delete hyrolo ibuffer ielm (image image-mode)
+                                         image-dired image+ imenu imenu-list (indent "indent")
+                                         indium info ivy js2-mode kmacro leetcode lispy lms log-edit
+                                         log-view lsp-ui-imenu lua-mode kotlin-mode macrostep man
+                                         (magit magit-submodule) magit-repos magit-section
+                                         magit-todos markdown-mode message minesweeper minibuffer
+                                         monky mpc mpdel mpdired mu4e mu4e-conversation neotree
+                                         newsticker notmuch nov omnisharp org org-agenda org-present
+                                         org-roam osx-dictionary outline ovpn-mode p4
+                                         (package-menu package) pass (pdf pdf-view) popup proced
+                                         (process-menu simple) prodigy profiler p-search
+                                         quickrun racer racket-describe reader realgud reftex
+                                         replace restclient rg ripgrep rjsx-mode robe rtags
+                                         ruby-mode scheme scroll-lock selectrum sh-script
+                                         shell-maker shortdoc simple simple-mpc slime sly
+                                         smerge-mode snake so-long speedbar tab-bar tablist
+                                         tabulated-list tar-mode telega
+                                         (term term ansi-term multi-term) tetris thread tide
+                                         timer-list transmission trashed tuareg typescript-mode
+                                         ultra-scroll vc-annotate vc-dir vc-git vdiff vertico view
+                                         vlf vterm vundo w3m wdired wgrep which-key with-editor
+                                         woman xref xwidget yaml-mode youtube-dl zmusic
+                                         (ztree ztree-diff ztree-dir))))
 
 
 
