@@ -837,8 +837,8 @@ kill the current timer, this may be a break or a running pomodoro."
 (use-package anki-editor
   :ensure t
   :hook (org-noter-notes-mode . anki-editor-mode)
-  :general
-  (anki-editor-mode
+  :general-config
+  (anki-editor-mode-map
    "C-c ?" 'anki-editor-ui
    "C-c h" 'my-anki-editor-make-heading-note
    "C-c I" 'anki-editor-insert-note
