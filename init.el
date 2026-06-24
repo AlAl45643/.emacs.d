@@ -1244,10 +1244,14 @@ If NOERROR, inhibit error messages when we can't find the node."
   (eldoc-display-in-buffer `((,(python-eldoc-function))) nil)
   )
 
+(defun my-override-evil-collection-python (mode &rest _rest)
+  "Keybinds for overriding evil-collection-python."
+  (general-def 'normal python-ts-mode-map
+    "g z" 'my-python-repl))
+
 (use-package python
+  :hook (evil-collection-setup . my-override-evil-collection-python)
   :general-config
-  ('normal python-ts-mode-map
-           "g z" 'my-python-repl)
   (python-ts-mode-map
    "C-c C-n" 'python-shell-send-defun)
   (inferior-python-mode-map
