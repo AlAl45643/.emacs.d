@@ -200,7 +200,7 @@
   "c" 'visual-line-mode
   "m" 'make-frame-command
   "1" 'my-window-bookmark-home
-  "2" 'my-window-bookmark-dape
+  "2" '("my-window-init-bookmark" . (lambda () (interactive) (bookmark-jump "Burly: init")))
   "o" 'org-noter
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
@@ -479,7 +479,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    evil-collection-setup-minibuffer t
    evil-collection-outline-bind-tab-p t
    evil-collection-key-blacklist '("M-h" "M-j" "M-k" "M-l")
-   evil-collection-mode-list '(2048-game ag agent-shell alchemist anaconda-mode apropos arc-mode
+   evil-collection-mode-list '(2048-game ag python agent-shell alchemist anaconda-mode apropos arc-mode
                                          atomic-chrome auto-package-update beginend bluetooth bm
                                          bookmark (buff-menu "buff-menu") bufler calc calendar cider
                                          citre cmake-mode color-rg comint company compile consult
