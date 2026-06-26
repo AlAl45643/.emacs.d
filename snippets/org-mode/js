@@ -2,7 +2,7 @@
 # name: js
 # key: js_
 # --
-#+begin_src js
+#+begin_src js :results value verbatim
     'use strict'
     $0
 #+end_src

@@ -306,7 +306,8 @@
 
 (+general-global-menu! "consult" "c"
   "g" 'consult-grep
-  "f" 'consult-find)
+  "f" 'consult-find
+  "o" 'consult-outline)
 
 (+general-global-menu! "miscellaneous" "s"
   "c" 'calc
@@ -1307,57 +1308,40 @@ If NOERROR, inhibit error messages when we can't find the node."
   (setq slime-contribs '(slime-py slime-fancy slime-star slime-asdf slime-sprof slime-tramp))
   )
 
+
+(defun my-combobulate-keybinds ()
+  (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
+    "M-h" 'combobulate-navigate-up
+    "M-j" 'combobulate-navigate-next
+    "M-k" 'combobulate-navigate-previous
+    "M-l" 'combobulate-navigate-down
+    "M-a" 'combobulate-navigate-beginning-of-defun
+    "M-e" 'combobulate-navigate-end-of-defun
+    "M-w" 'combobulate-navigate-logical-next
+    "M-b" 'combobulate-navigate-logical-previous
+    "M-n" 'combobulate-navigate-sequence-next
+    "M-p" 'combobulate-navigate-sequence-previous
+    "<up>" 'combobulate-splice-up
+    "<down>" 'combobulate-splice-down
+    "<left>" 'combobulate-splice-self
+    "<right>" 'combobulate-splice-parent
+    "M-P" 'combobulate-drag-up
+    "M-N" 'combobulate-drag-down
+    "M-v" 'combobulate-mark-node-dwim
+    "M-X" 'combobulate-kill-node-dwim
+    "<deletechar>" 'combobulate-kill-node-dwim)
+  (evil-normalize-keymaps))
+
 (use-package combobulate
   :ensure (:host github :repo "mickeynp/combobulate")
+  :hook
+  ((python-ts-mode astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
+  ((combobulate-python-minor-mode combobulate-css-minor-mode combobulate-html-minor-mode combobulate-javascript-minor-mode combobulate-typescript-minor-mode) . #'my-combobulate-keybinds)
   :init
-  ;; TODO
-  (add-to-list 'load-path (concat user-emacs-directory "/elpaca/sources/combobulate"))
   (setopt
    combobulate-flash-node nil)
-  :hook 
-  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode python-ts-mode) . combobulate-mode)
-  :general-config
-  ('(normal insert visual) combobulate-python-map
-   "M-h" 'combobulate-navigate-up
-   "M-j" 'combobulate-navigate-next
-   "M-k" 'combobulate-navigate-previous
-   "M-l" 'combobulate-navigate-down
-   "M-a" 'combobulate-navigate-beginning-of-defun
-   "M-e" 'combobulate-navigate-end-of-defun
-   "M-w" 'combobulate-navigate-logical-next
-   "M-b" 'combobulate-navigate-logical-previous
-   "M-n" 'combobulate-navigate-sequence-next
-   "M-p" 'combobulate-navigate-sequence-previous
-   "<up>" 'combobulate-splice-up
-   "<down>" 'combobulate-splice-down
-   "<left>" 'combobulate-splice-self
-   "<right>" 'combobulate-splice-parent
-   "M-P" 'combobulate-drag-up
-   "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim
-   "M-X" 'combobulate-kill-node-dwim
-   "<deletechar>" 'combobulate-kill-node-dwim)
-  ('(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map)
-   "M-h" 'combobulate-navigate-up
-   "M-j" 'combobulate-navigate-next
-   "M-k" 'combobulate-navigate-previous
-   "M-l" 'combobulate-navigate-down
-   "M-a" 'combobulate-navigate-beginning-of-defun
-   "M-e" 'combobulate-navigate-end-of-defun
-   "M-w" 'combobulate-navigate-logical-next
-   "M-b" 'combobulate-navigate-logical-previous
-   "M-n" 'combobulate-navigate-sequence-next
-   "M-p" 'combobulate-navigate-sequence-previous
-   "<up>" 'combobulate-splice-up
-   "<down>" 'combobulate-splice-down
-   "<left>" 'combobulate-splice-self
-   "<right>" 'combobulate-splice-parent
-   "M-P" 'combobulate-drag-up
-   "M-N" 'combobulate-drag-down
-   "M-v" 'combobulate-mark-node-dwim
-   "M-X" 'combobulate-kill-node-dwim
-   "<deletechar>" 'combobulate-kill-node-dwim))
+  )
 
 ;;; csharp
 
