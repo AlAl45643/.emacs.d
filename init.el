@@ -1031,9 +1031,16 @@ kill the current timer, this may be a break or a running pomodoro."
         file-extension-list)
     nil))
 
-(el-patch-defun Info-find-node (filename nodename &optional no-going-back strict-case
-                                         noerror)
-  "Go to an Info node specified as separate FILENAME and NODENAME.
+
+
+(use-package info
+  :config
+  (add-to-list 'Info-directory-list "/usr/share/info")
+  (add-to-list 'Info-directory-list "/usr/local/share/info")
+  (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
+  (el-patch-defun Info-find-node (filename nodename &optional no-going-back strict-case
+                                           noerror)
+    "Go to an Info node specified as separate FILENAME and NODENAME.
 NO-GOING-BACK is non-nil if recovering from an error in this function;
 it says do not attempt further (recursive) error recovery.
 
@@ -1042,32 +1049,27 @@ if none is found it then tries a case-insensitive match (unless
 STRICT-CASE is non-nil).
 
 If NOERROR, inhibit error messages when we can't find the node."
-  (info-initialize)
-  (setq nodename (info--node-canonicalize-whitespace nodename))
-  (setq filename (Info-find-file filename noerror))
-  ;; Go into Info buffer.
-  (or (derived-mode-p 'Info-mode) (info-pop-to-buffer filename))
-  ;; Record the node we are leaving, if we were in one.
-  (and (not no-going-back)
-       Info-current-file
-       (push (list Info-current-file Info-current-node (point))
-             Info-history))
-  
-  (el-patch-wrap 3 0 (if-let* ((filename filename)
-                               (extension (my-file-extension filename))
-                               (info (not (member "info" extension))))
-                         (let ((buffer (find-file-noselect filename)))
-                           (switch-to-buffer buffer)
-                           (require 'general)
-                           (general-def 'normal 'local
-                             "u" 'info))
-                       (Info-find-node-2 filename nodename no-going-back strict-case))))
+    (info-initialize)
+    (setq nodename (info--node-canonicalize-whitespace nodename))
+    (setq filename (Info-find-file filename noerror))
+    ;; Go into Info buffer.
+    (or (derived-mode-p 'Info-mode) (info-pop-to-buffer filename))
+    ;; Record the node we are leaving, if we were in one.
+    (and (not no-going-back)
+         Info-current-file
+         (push (list Info-current-file Info-current-node (point))
+               Info-history))
+    
+    (el-patch-wrap 3 0 (if-let* ((filename filename)
+                                 (extension (my-file-extension filename))
+                                 (info (not (member "info" extension))))
+                           (let ((buffer (find-file-noselect filename)))
+                             (switch-to-buffer buffer)
+                             (require 'general)
+                             (general-def 'normal 'local
+                               "u" 'info))
+                         (Info-find-node-2 filename nodename no-going-back strict-case))))
 
-(use-package info
-  :config
-  (add-to-list 'Info-directory-list "/usr/share/info")
-  (add-to-list 'Info-directory-list "/usr/local/share/info")
-  (add-to-list 'Info-directory-list (concat user-emacs-directory "info/"))
   )
 
 
