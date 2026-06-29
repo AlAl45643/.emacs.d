@@ -84,6 +84,8 @@
   ;; Enable use-package :ensure support for Elpaca.
   (elpaca-use-package-mode))
 
+(setq elpaca-lock-file (concat user-emacs-directory "lock-file"))
+
 (defun fuzzbomb-startup--emacs-uptime-micro ()
   "Return the uptime in seconds and microseconds."
   (format-time-string "%-S.%3N seconds" (time-since before-init-time)))
