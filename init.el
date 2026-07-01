@@ -191,7 +191,7 @@
   "t" 'popper-toggle
   "p" 'org-pomodoro
   "f" 'find-file
-  "l" 'vterm
+  "l" 'ghostel
   "d" 'dired-jump
   "n" 'my-eval-defun
   "i" 'consult-imenu
@@ -478,6 +478,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook (evil-mode . evil-collection-init)
   :init
   (setopt
+   evil-collection-elpaca-want-v nil
+   evil-collection-elpaca-want-movement nil
    evil-collection-repl-submit-state 'insert
    evil-collection-setup-minibuffer t
    evil-collection-outline-bind-tab-p t
@@ -722,7 +724,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                                            (dot . t)
                                                            (python . t)
                                                            (js . t)
-                                                           (racket . t)))
+                                                           (racket . t)
+                                                           (html . t)))
   (run-at-time "24:01" nil 'my-org-agenda-to-appt)
   (modify-syntax-entry ?< "." org-mode-syntax-table)
   (modify-syntax-entry ?> "." org-mode-syntax-table))
@@ -893,6 +896,9 @@ kill the current timer, this may be a break or a running pomodoro."
 
 (use-package racket-mode
   :ensure t)
+
+(use-package ob-html
+  :ensure (:host github :repo "misohena/ob-html"))
 ;;; better help 
 
 
@@ -1881,6 +1887,7 @@ changes."
      "\\*xref\\*"
      "\\*Backtrace\\*"
      "\\*Occur\\*"
+     "\\*ghostel"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
      debugger-mode
@@ -1940,7 +1947,7 @@ changes."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*\\|\\*ghostel" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -2237,6 +2244,18 @@ changes."
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
 
+(use-package ghostel
+  :ensure t
+  :general-config
+  (ghostel-semi-char-mode
+   "C-s" 'consult-line
+   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
+   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
+
+(use-package evil-ghostel
+  :ensure t
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
 
 (use-package vterm
   :ensure t
