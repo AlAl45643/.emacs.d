@@ -391,6 +391,14 @@
                             git :protocol https :inherit t :depth
                             treeless :ref
                             "c5945f28ce47644c828aac1f5f6ec335478d17fb"))
+ (evil-ghostel :source "elpaca-menu-lock-file" :recipe
+               (:package "evil-ghostel" :fetcher github :repo
+                         "dakra/ghostel" :files
+                         ("extensions/evil-ghostel/evil-ghostel.el")
+                         :source "MELPA" :id evil-ghostel :type git
+                         :protocol https :inherit t :depth treeless
+                         :ref
+                         "48d5a219c931a7de969559070d78c1f6d1a71929"))
  (evil-org :source "elpaca-menu-lock-file" :recipe
            (:package "evil-org" :fetcher github :repo
                      "Somelauw/evil-org-mode" :files
@@ -471,6 +479,14 @@
                     :source "MELPA" :id general :wait t :type git
                     :protocol https :inherit t :depth treeless :ref
                     "a48768f85a655fe77b5f45c2880b420da1b1b9c3"))
+ (ghostel :source "elpaca-menu-lock-file" :recipe
+          (:package "ghostel" :fetcher github :repo "dakra/ghostel"
+                    :files
+                    (:defaults "etc" "src" "vendor" "build.zig"
+                               "build.zig.zon" "symbols.map")
+                    :source "MELPA" :id ghostel :type git :protocol
+                    https :inherit t :depth treeless :ref
+                    "48d5a219c931a7de969559070d78c1f6d1a71929"))
  (gntp :source "elpaca-menu-lock-file" :recipe
        (:package "gntp" :repo "tekai/gntp.el" :fetcher github :files
                  ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
@@ -639,6 +655,11 @@
                   :source "MELPA" :id mason :type git :protocol https
                   :inherit t :depth treeless :ref
                   "8dc604d12bea314dba3db89ea29d84b0d1438eeb"))
+ (ob-html :source "elpaca-menu-lock-file" :recipe
+          (:source nil :package "ob-html" :id ob-html :host github
+                   :repo "misohena/ob-html" :type git :protocol https
+                   :inherit t :depth treeless :ref
+                   "d26eb60644d09c79b73d8860ca98b67dad83dda0"))
  (ob-racket :source "elpaca-menu-lock-file" :recipe
             (:source nil :package "ob-racket" :id ob-racket :host
                      github :repo "hasu/emacs-ob-racket" :type git
