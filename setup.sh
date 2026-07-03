@@ -17,21 +17,9 @@ export DOTNET_ROOT=\$HOME/.dotnet
 export PATH=\$PATH:\$DOTNET_ROOT:\$DOTNET_ROOT/tools
 EOL
 
-# setup java
-wget https://github.com/microsoft/java-debug/archive/refs/tags/0.53.1.zip
-unzip 0.53.1.zip
-cd java-debug-0.53.1
-./mvnw clean install
-cd ../
-rm 0.53.1.zip
-mv java-debug-0.53.1 jdtls
-
-# setup sql
-sudo dnf install go
 
 # setup python
 sudo dnf install pip
-pip install "debugpy"
 pip install "uv"
 
 # setup rass
