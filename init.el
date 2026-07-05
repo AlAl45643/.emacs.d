@@ -994,7 +994,29 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-b" 'pdf-view-previous-page
    "C-e" 'pdf-roll-scroll-forward
    "C-y" 'pdf-roll-scroll-backward)
-  )
+  :config
+  (defvar pdf-history-last-page nil)
+  (el-patch-defun pdf-history-push ()
+    "Push the current page on the stack.
+
+This function does nothing, if current stack item already
+represents the current page."
+    (interactive)
+    (el-patch-wrap 3 0 (if-let* ((pdf-history-last-page)
+                                 (item (pdf-history-create-item))
+                                 (adj (<= (abs (- (car item) pdf-history-last-page)) 1)))
+                           nil
+                         (let ((item (pdf-history-create-item)))
+                           (unless (and pdf-history-stack
+                                        (equal (nth pdf-history-index
+                                                    pdf-history-stack) item))
+                             (setq pdf-history-stack
+                                   (last pdf-history-stack
+                                         (- (length pdf-history-stack)
+                                            pdf-history-index))
+                                   pdf-history-index 0)
+                             (push item pdf-history-stack)))))
+  (el-patch-add (setq pdf-history-last-page (car (pdf-history-create-item))))))
 
 (use-package saveplace-pdf-view
   :ensure t
