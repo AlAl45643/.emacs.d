@@ -203,7 +203,7 @@
   "m" 'make-frame-command
   "1" 'my-window-bookmark-home
   "2" '("my-window-init-bookmark" . (lambda () (interactive) (bookmark-jump "Burly: init")))
-  "o" 'org-noter
+  "o" 'consult-outline
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
@@ -994,29 +994,7 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-b" 'pdf-view-previous-page
    "C-e" 'pdf-roll-scroll-forward
    "C-y" 'pdf-roll-scroll-backward)
-  :config
-  (defvar pdf-history-last-page nil)
-  (el-patch-defun pdf-history-push ()
-    "Push the current page on the stack.
-
-This function does nothing, if current stack item already
-represents the current page."
-    (interactive)
-    (el-patch-wrap 3 0 (if-let* ((pdf-history-last-page)
-                                 (item (pdf-history-create-item))
-                                 (adj (<= (abs (- (car item) pdf-history-last-page)) 1)))
-                           nil
-                         (let ((item (pdf-history-create-item)))
-                           (unless (and pdf-history-stack
-                                        (equal (nth pdf-history-index
-                                                    pdf-history-stack) item))
-                             (setq pdf-history-stack
-                                   (last pdf-history-stack
-                                         (- (length pdf-history-stack)
-                                            pdf-history-index))
-                                   pdf-history-index 0)
-                             (push item pdf-history-stack)))))
-  (el-patch-add (setq pdf-history-last-page (car (pdf-history-create-item))))))
+  )
 
 (use-package saveplace-pdf-view
   :ensure t
@@ -1847,6 +1825,25 @@ changes."
   :demand t
   :config
   (space-tree-init)
+  (el-patch-defun space-tree--modeline-string-for-level
+      (parent-address selected-space-number spaces-at-this-level)
+    "Render one level of the modeline lighter as a string.
+
+PARENT-ADDRESS is the address of the parent node, used to look up
+named spaces.  SELECTED-SPACE-NUMBER is the number, at this level,
+that lies on the current address; it is rendered in bold with a
+trailing apostrophe.  SPACES-AT-THIS-LEVEL is the hash table of
+sibling nodes at this level."
+    (mapconcat
+     (lambda (n)
+       (let ((label (or (gethash (append parent-address (list n))
+			         space-tree-space-name-tbl)
+		        (number-to-string n))))
+         (if (equal n selected-space-number)
+	     (propertize (concat label "' ") 'face (el-patch-swap 'bold 'mode-line-highlight))
+	   (concat label " "))))
+     (sort (hash-table-keys spaces-at-this-level) #'<)
+     ""))
   :general
   ('(normal insert) 
    "s-1" #'space-tree-to-1
@@ -2182,7 +2179,8 @@ changes."
                        mode-line-highlight local-map
                        (keymap (mode-line keymap (mouse-2 . mode-line-widen)))))
           ")" #("%]" 0 2 (help-echo "Recursive edit, type C-M-c to get out"))
-          " "))
+          " "
+          (:eval (space-tree-modeline-lighter))))
   (setq-default
    mode-line-format '("%e" mode-line-front-space
                       (:propertize
