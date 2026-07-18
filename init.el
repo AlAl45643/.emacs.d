@@ -191,7 +191,7 @@
   "t" 'popper-toggle
   "p" 'org-pomodoro
   "f" 'find-file
-  "l" 'ghostel
+  "l" 'eshell
   "d" 'dired-jump
   "n" 'my-eval-defun
   "i" 'consult-imenu
@@ -450,6 +450,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
+  ('insert prog-mode-map
+           "S-<return>" 'evil-open-below)
   ('(normal insert) 
    "M-J" 'forward-sexp
    "M-K" 'backward-sexp
@@ -845,13 +847,13 @@ kill the current timer, this may be a break or a running pomodoro."
   :hook (org-noter-notes-mode . anki-editor-mode)
   :general-config
   (anki-editor-mode-map
-   "C-c ?" 'anki-editor-ui
-   "C-c h" 'my-anki-editor-make-heading-note
-   "C-c I" 'anki-editor-insert-note
-   "C-c i" 'anki-editor-insert-default-note
-   "C-c p" 'anki-editor-push-notes
-   "C-c r" 'anki-editor-delete-note-at-point
-   "C-c n" 'anki-editor-push-note-at-point))
+   "C-c a ?" 'anki-editor-ui
+   "C-c a h" 'my-anki-editor-make-heading-note
+   "C-c a I" 'anki-editor-insert-note
+   "C-c a i" 'anki-editor-insert-default-note
+   "C-c a p" 'anki-editor-push-notes
+   "C-c a r" 'anki-editor-delete-note-at-point
+   "C-c a n" 'anki-editor-push-note-at-point))
 
 
 ;;;; org babel
@@ -1121,6 +1123,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    "i" 'org-noter-insert-note
    "q" 'org-noter-kill-session
    "c" 'org-noter-toggle-sync)
+  (org-mode-map
+   "C-c n" 'org-noter)
   :config
   (advice-add 'org-noter--doc-location-change-handler :around #'org-noter-toggle-advice)
   )
@@ -1303,8 +1307,14 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package py-isort
   :ensure t)
 
+
 (use-package slime-star
-  :ensure (:host github :repo "mmontone/slime-star"))
+  :ensure `(:host github :repo "mmontone/slime-star"
+                  :build (:after elpaca-source
+                                 ,(elpaca-defscript +elpaca-update-submodules (:type system)
+                                    ("git" "submodule" "update" "--init" "--recursive")))))
+
+
 
 (use-package slime
   :ensure (:host github :repo "slime/slime" :tag "v2.32"))
@@ -1826,7 +1836,7 @@ changes."
   :config
   (space-tree-init)
   (el-patch-defun space-tree--modeline-string-for-level
-      (parent-address selected-space-number spaces-at-this-level)
+    (parent-address selected-space-number spaces-at-this-level)
     "Render one level of the modeline lighter as a string.
 
 PARENT-ADDRESS is the address of the parent node, used to look up
@@ -2028,7 +2038,7 @@ sibling nodes at this level."
                                    ((:theme . doric-siren)
                                     (:font "JetBrains Mono 10")
                                     (:modes sql-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*"))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*" "*eshell*"))
   (per-buffer-theme-mode 1))
 
 (use-package doric-themes
@@ -2180,7 +2190,8 @@ sibling nodes at this level."
                        (keymap (mode-line keymap (mouse-2 . mode-line-widen)))))
           ")" #("%]" 0 2 (help-echo "Recursive edit, type C-M-c to get out"))
           " "
-          (:eval (space-tree-modeline-lighter))))
+          (:eval (space-tree-modeline-lighter))
+          " "))
   (setq-default
    mode-line-format '("%e" mode-line-front-space
                       (:propertize
