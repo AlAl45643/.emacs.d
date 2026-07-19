@@ -2294,7 +2294,8 @@ sibling nodes at this level."
 
 (use-package eshell
   :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
-         (((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))))
+         ((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))
+         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point))))))
   :init
   (setopt
    password-cache-expiry 3600
