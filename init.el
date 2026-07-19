@@ -362,14 +362,17 @@
 (defun smart-tab ()
   (interactive)
   (cond ((buffer-local-value 'vertico--input (current-buffer)) (vertico-insert))
+        ;; Slime Eval returns weird errors if we use completion so use hippie-expand only
         ((and (minibufferp) (equal (minibuffer-prompt) "Slime Eval: "))
          (hippie-expand nil))
-        ((or (minibufferp) (derived-mode-p 'eshell-mode)) (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
-                         (if res
-                             (completion-at-point)
-                           (hippie-expand nil)))) 
+        ;; necessary because we use vertico in the minibuffer and eshell which requires tab to start completion menu
+        ((or (minibufferp) (derived-mode-p 'eshell-mode))
+         (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
+           (if res
+               (completion-at-point)
+             (hippie-expand nil)))) 
+        ;; if corfu frame is visible use corfu else hippie-expand for quick completion
         ((and (frame-live-p corfu--frame) (frame-visible-p corfu--frame)) (corfu-insert))
-        (mark-active (indent-region (region-beginning) (region-end)))
         ((looking-at "\\_>") (hippie-expand nil))
         (t (indent-for-tab-command))))
 
