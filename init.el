@@ -364,14 +364,10 @@
   (cond ((buffer-local-value 'vertico--input (current-buffer)) (vertico-insert))
         ((and (minibufferp) (equal (minibuffer-prompt) "Slime Eval: "))
          (hippie-expand nil))
-        ((minibufferp) (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
+        ((or (minibufferp) (derived-mode-p 'eshell-mode)) (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
                          (if res
                              (completion-at-point)
                            (hippie-expand nil)))) 
-        ((derived-mode-p 'eshell-mode) (let ((res (run-hook-wrapped 'completion-at-point-functions #'completion--capf-wrapper 'all)))
-                                         (if res
-                                             (completion-at-point)
-                                           (hippie-expand nil))))
         ((and (frame-live-p corfu--frame) (frame-visible-p corfu--frame)) (corfu-insert))
         (mark-active (indent-region (region-beginning) (region-end)))
         ((looking-at "\\_>") (hippie-expand nil))
@@ -2295,7 +2291,7 @@ sibling nodes at this level."
 (use-package eshell
   :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
          ((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))
-         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point))))))
+         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point) t)))))
   :init
   (setopt
    password-cache-expiry 3600
@@ -2303,7 +2299,10 @@ sibling nodes at this level."
    ;; password-cache 5
    password-cache-expiry 3600)
   :config
-  (require 'em-tramp))
+  (require 'em-tramp)
+  :general-config
+  (eshell-hist-mode-map
+   "M-r" 'cape-history))
 
 ;;; embark
 
@@ -2361,6 +2360,7 @@ sibling nodes at this level."
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode yaml-mode) . (lambda () (setq display-line-numbers 'visual)))
   ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
+  (emacs-lisp-mode . (lambda () (setq completion-at-point-functions `(yasnippet-capf ,(cape-capf-nonexclusive #'elisp-completion-at-point) t))))
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
