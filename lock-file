@@ -703,16 +703,17 @@
                  (:before elpaca-build-link elpaca-menu-org--build))
                 :files
                 (:defaults ("etc/styles/" "etc/styles/*" "doc/*.texi"))
-                :source "Org" :id org :type git :protocol https
-                :inherit t :ref
+                :source "elpaca-menu-lock-file" :id org :type git
+                :protocol https :inherit t :ref
                 "25859098cfdb4dc098e29d245859816e01f19110"))
  (org-noter :source "elpaca-menu-lock-file" :recipe
             (:package "org-noter" :fetcher github :repo
                       "org-noter/org-noter" :files
                       ("*.el" "modules"
                        (:exclude "*-test-utils.el" "*-devel.el"))
-                      :source "MELPA" :id org-noter :type git
-                      :protocol https :inherit t :depth treeless :ref
+                      :source "elpaca-menu-lock-file" :id org-noter
+                      :type git :protocol https :inherit t :depth
+                      treeless :ref
                       "ab9628e449d76af8b2e5a9d5fead4e03ca76a03d"))
  (org-pomodoro :source "elpaca-menu-lock-file" :recipe
                (:package "org-pomodoro" :fetcher github :repo
@@ -727,10 +728,10 @@
                        ("https://github.com/nobiot/org-remark"
                         . "org-remark")
                        :tar "1.3.0" :host gnu :files
-                       ("*" (:exclude ".git")) :source "GNU ELPA" :id
-                       org-remark :type git :protocol https :inherit t
-                       :depth treeless :ref
-                       "6f8193c4997c734c39ccf814636c4e5d10eb42d1"))
+                       ("*" (:exclude ".git")) :source
+                       "elpaca-menu-lock-file" :id org-remark :type
+                       git :protocol https :inherit t :depth treeless
+                       :ref "6f8193c4997c734c39ccf814636c4e5d10eb42d1"))
  (pdf-tools :source "elpaca-menu-lock-file" :recipe
             (:package "pdf-tools" :fetcher github :repo
                       "vedang/pdf-tools" :files
@@ -905,7 +906,9 @@
                       :id slime-star :host github :repo
                       "mmontone/slime-star" :type git :protocol https
                       :inherit t :depth treeless :ref
-                      "3681f8585866f30659b47160c8bad08ce3256bce"))
+                      "3681f8585866f30659b47160c8bad08ce3256bce"
+                      :build
+                      (:after elpaca-source +elpaca-update-submodules)))
  (space-tree :source "elpaca-menu-lock-file" :recipe
              (:source "elpaca-menu-lock-file" :package "space-tree"
                       :id space-tree :host github :repo
