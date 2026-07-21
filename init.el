@@ -2274,33 +2274,107 @@ sibling nodes at this level."
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
 
-(use-package ghostel
-  :ensure t
-  :general-config
-  (ghostel-semi-char-mode
-   "C-s" 'consult-line
-   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
-   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
+;; (use-package ghostel
+;;   :ensure t
+;;   :general-config
+;;   (ghostel-semi-char-mode
+;;    "C-s" 'consult-line
+;;    "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
+;;    "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
 
-(use-package evil-ghostel
-  :ensure t
-  :after (ghostel evil)
-  :hook (ghostel-mode . evil-ghostel-mode))
+;; (use-package evil-ghostel
+;;   :ensure t
+;;   :after (ghostel evil)
+;;   :hook (ghostel-mode . evil-ghostel-mode))
 
-(use-package vterm
+;; (use-package vterm
+;;   :ensure t
+;;   :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
+
+;; Bash completion for eshell.
+
+;; Bash completion for eshell.
+;; (use-package bash-completion
+;;   :ensure t)
+
+;; (defun my-eshell-bash-completion-capf-nonexclusive ()
+;;   "Bash completion function for `completion-at-point-functions'.
+
+;; Returns the same list as the one returned by
+;; `bash-completion-dynamic-complete-nocomint' appended with
+;; \(:exclusive no) so that other completion functions are tried
+;; when bash-completion fails to match the text at point."
+;;   (let* ((bol-pos (save-mark-and-excursion
+;;                     (eshell-bol)
+;;                     (point)))
+;;          (compl (bash-completion-dynamic-complete-nocomint
+;;                  bol-pos
+;;                  (point) t)))
+;;     (when compl
+;;       (append compl '(:exclusive no)))))
+
+(use-package eat
   :ensure t
-  :hook (vterm-mode . (lambda () (setq evil-insert-state-modes nil))))
+  :init
+  (el-patch-defun eat--eshell-exec-visual (&rest args)
+    "Run the specified PROGRAM in a terminal emulation buffer.
+
+ARGS are passed to the program.  At the moment, no piping of input is
+allowed."
+    (require 'esh-ext)
+    (require 'esh-util)
+    (let* ((eshell-interpreter-alist nil)
+           (interp (eshell-find-interpreter (car args) (cdr args)))
+           (program (car interp))
+           (el-patch-add (program (if (tramp-tramp-file-p default-directory)
+                                      (tramp-file-name-localname
+                                       (tramp-dissect-file-name (car interp)))
+                                    (car interp))))
+           (args (flatten-tree
+                  (eshell-stringify-list (append (cdr interp)
+                                                 (cdr args)))))
+           (eat-buf
+            (generate-new-buffer
+             (concat "*" (file-name-nondirectory program) "*")))
+           (eshell-buf (current-buffer)))
+      (with-current-buffer eat-buf
+        (switch-to-buffer eat-buf)
+        (eat-mode)
+        (setq-local eshell-parent-buffer eshell-buf)
+        (setq-local eat-kill-buffer-on-exit nil)
+        (eat-exec eat-buf program program nil args)
+        (let ((proc (get-buffer-process eat-buf)))
+          (if (and proc (eq 'run (process-status proc)))
+              (let ((sentinel (process-sentinel proc)))
+                (add-function  :after (var sentinel)
+                               #'eat--eshell-visual-sentinel)
+                (set-process-sentinel proc sentinel))
+            (error "Failed to invoke visual command")))
+        (eat-semi-char-mode)))
+    nil)
+  :hook
+  (eshell-mode . eat-eshell-visual-command-mode)
+  )
 
 (use-package eshell
   :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
          ((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))
-         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point) t)))))
+         ;; (eshell-mode . (lambda () (setq completion-at-point-functions (cape-capf-super (cape-capf-nonexclusive #'pcomplete-completions-at-point) #'my-eshell-bash-completion-capf-nonexclusive)))))
+         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point)))))
+         (eshell-mode . eat-eshell-visual-command-mode))
   :init
   (setopt
    password-cache-expiry 3600
    eshell-prefer-lisp-functions t
    ;; password-cache 5
-   password-cache-expiry 3600)
+   password-cache-expiry 3600
+   eshell-modules-list '(eshell-alias eshell-banner eshell-basic eshell-cmpl eshell-dirs
+                                      eshell-extpipe eshell-glob eshell-hist eshell-ls
+                                      eshell-pred eshell-prompt eshell-script eshell-term
+                                      eshell-unix ;; eshell-elecslash
+                                      )
+   eshell-visual-commands '("vi" "vim" "nvim" "screen" "tmux" "top" "htop" "less" "more" "lynx"
+                            "links" "ncftp" "ncmpcpp" "mutt" "pine" "tin" "trn" "elm" "virsh"))
   :config
   (require 'em-tramp)
   :general-config
