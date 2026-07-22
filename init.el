@@ -2289,35 +2289,36 @@ sibling nodes at this level."
    "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
    "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
   :config
-  ;; (el-patch-defun ghostel-eshell--exec-visual (&rest args)
-;;     "Replacement for `eshell-exec-visual' that dispatches to ghostel.
-;; ARGS are the program name followed by its arguments, as passed by
-;; eshell."
-;;     (require 'esh-ext)
-;;     (require 'esh-util)
-;;     (save-current-buffer
-;;       (let* ((eshell-interpreter-alist nil)
-;;              (interp (eshell-find-interpreter (car args) (cdr args)))
-;;              (program (car interp))
-;;              (prog-args (flatten-tree
-;;                          (eshell-stringify-list
-;;                           (append (cdr interp) (cdr args)))))
-;;              (el-patch-add (prog-args (if (tramp-tramp-file-p default-directory)  
-;;                                           (tramp-file-name-localname              
-;;                                            (tramp-dissect-file-name (car interp)))
-;;                                         (car interp))))                           
-;;              (buf (generate-new-buffer
-;;                    (concat "*" (file-name-nondirectory program) "*"))))
-;;         (switch-to-buffer buf)
-;;         (ghostel-exec buf program prog-args)
-;;         (with-current-buffer buf
-;;           (setq-local ghostel-kill-buffer-on-exit
-;;                       (bound-and-true-p eshell-destroy-buffer-when-process-dies))
-;;           (unless ghostel-eshell-track-title
-;;             (setq-local ghostel-buffer-name-function nil))
-;;           (add-hook 'ghostel-exit-functions
-;;                     #'ghostel-eshell--visual-exit nil t))
-;;         nil)))
+  (el-patch-defun ghostel-eshell--exec-visual (&rest args)
+    "Replacement for `eshell-exec-visual' that dispatches to ghostel.
+ARGS are the program name followed by its arguments, as passed by
+eshell."
+    (require 'esh-ext)
+    (require 'esh-util)
+    (save-current-buffer
+      (let* ((eshell-interpreter-alist nil)
+             (interp (eshell-find-interpreter (car args) (cdr args)))
+             (program (car interp))
+             (el-patch-add (program (if (tramp-tramp-file-p default-directory)  
+                                          (tramp-file-name-localname              
+                                           (tramp-dissect-file-name (car interp)))
+                                        (car interp))))
+             (prog-args (flatten-tree
+                         (eshell-stringify-list
+                          (append (cdr interp) (cdr args)))))
+                                        
+             (buf (generate-new-buffer
+                   (concat "*" (file-name-nondirectory program) "*"))))
+        (switch-to-buffer buf)
+        (ghostel-exec buf program prog-args)
+        (with-current-buffer buf
+          (setq-local ghostel-kill-buffer-on-exit
+                      (bound-and-true-p eshell-destroy-buffer-when-process-dies))
+          (unless ghostel-eshell-track-title
+            (setq-local ghostel-buffer-name-function nil))
+          (add-hook 'ghostel-exit-functions
+                    #'ghostel-eshell--visual-exit nil t))
+        nil)))
   )
 
 (use-package evil-ghostel
