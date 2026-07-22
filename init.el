@@ -172,6 +172,11 @@
     (call-interactively #'evil-scroll-line-to-top)))
 
 
+(defun my-window-bookmark-init ()
+  "Move to init bookmark."
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "Burly: init"))
 
 
 (general-define-key
@@ -202,7 +207,7 @@
   "c" 'visual-line-mode
   "m" 'make-frame-command
   "1" 'my-window-bookmark-home
-  "2" '("my-window-init-bookmark" . (lambda () (interactive) (bookmark-jump "Burly: init")))
+  "2" 'my-window-bookmark-init
   "o" 'consult-outline
   "y" 'evil-avy-goto-char
   "=" 'text-scale-adjust
@@ -2274,18 +2279,51 @@ sibling nodes at this level."
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
 ;;; shells
 
-;; (use-package ghostel
-;;   :ensure t
-;;   :general-config
-;;   (ghostel-semi-char-mode
-;;    "C-s" 'consult-line
-;;    "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
-;;    "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
+(use-package ghostel
+  :ensure t
+  :hook
+  (eshell-load . ghostel-eshell-visual-command-mode)
+  :general-config
+  (ghostel-semi-char-mode
+   "C-s" 'consult-line
+   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
+   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
+  :config
+  ;; (el-patch-defun ghostel-eshell--exec-visual (&rest args)
+;;     "Replacement for `eshell-exec-visual' that dispatches to ghostel.
+;; ARGS are the program name followed by its arguments, as passed by
+;; eshell."
+;;     (require 'esh-ext)
+;;     (require 'esh-util)
+;;     (save-current-buffer
+;;       (let* ((eshell-interpreter-alist nil)
+;;              (interp (eshell-find-interpreter (car args) (cdr args)))
+;;              (program (car interp))
+;;              (prog-args (flatten-tree
+;;                          (eshell-stringify-list
+;;                           (append (cdr interp) (cdr args)))))
+;;              (el-patch-add (prog-args (if (tramp-tramp-file-p default-directory)  
+;;                                           (tramp-file-name-localname              
+;;                                            (tramp-dissect-file-name (car interp)))
+;;                                         (car interp))))                           
+;;              (buf (generate-new-buffer
+;;                    (concat "*" (file-name-nondirectory program) "*"))))
+;;         (switch-to-buffer buf)
+;;         (ghostel-exec buf program prog-args)
+;;         (with-current-buffer buf
+;;           (setq-local ghostel-kill-buffer-on-exit
+;;                       (bound-and-true-p eshell-destroy-buffer-when-process-dies))
+;;           (unless ghostel-eshell-track-title
+;;             (setq-local ghostel-buffer-name-function nil))
+;;           (add-hook 'ghostel-exit-functions
+;;                     #'ghostel-eshell--visual-exit nil t))
+;;         nil)))
+  )
 
-;; (use-package evil-ghostel
-;;   :ensure t
-;;   :after (ghostel evil)
-;;   :hook (ghostel-mode . evil-ghostel-mode))
+(use-package evil-ghostel
+  :ensure t
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
 
 ;; (use-package vterm
 ;;   :ensure t
@@ -2313,55 +2351,54 @@ sibling nodes at this level."
 ;;     (when compl
 ;;       (append compl '(:exclusive no)))))
 
-(use-package eat
-  :ensure t
-  :init
-  (el-patch-defun eat--eshell-exec-visual (&rest args)
-    "Run the specified PROGRAM in a terminal emulation buffer.
+;; (use-package eat
+;;   :ensure t
+;;   :config
+;;   (el-patch-defun eat--eshell-exec-visual (&rest args)
+;;     "Run the specified PROGRAM in a terminal emulation buffer.
 
-ARGS are passed to the program.  At the moment, no piping of input is
-allowed."
-    (require 'esh-ext)
-    (require 'esh-util)
-    (let* ((eshell-interpreter-alist nil)
-           (interp (eshell-find-interpreter (car args) (cdr args)))
-           (program (car interp))
-           (el-patch-add (program (if (tramp-tramp-file-p default-directory)
-                                      (tramp-file-name-localname
-                                       (tramp-dissect-file-name (car interp)))
-                                    (car interp))))
-           (args (flatten-tree
-                  (eshell-stringify-list (append (cdr interp)
-                                                 (cdr args)))))
-           (eat-buf
-            (generate-new-buffer
-             (concat "*" (file-name-nondirectory program) "*")))
-           (eshell-buf (current-buffer)))
-      (with-current-buffer eat-buf
-        (switch-to-buffer eat-buf)
-        (eat-mode)
-        (setq-local eshell-parent-buffer eshell-buf)
-        (setq-local eat-kill-buffer-on-exit nil)
-        (eat-exec eat-buf program program nil args)
-        (let ((proc (get-buffer-process eat-buf)))
-          (if (and proc (eq 'run (process-status proc)))
-              (let ((sentinel (process-sentinel proc)))
-                (add-function  :after (var sentinel)
-                               #'eat--eshell-visual-sentinel)
-                (set-process-sentinel proc sentinel))
-            (error "Failed to invoke visual command")))
-        (eat-semi-char-mode)))
-    nil)
-  :hook
-  (eshell-mode . eat-eshell-visual-command-mode)
-  )
+;; ARGS are passed to the program.  At the moment, no piping of input is
+;; allowed."
+;;     (require 'esh-ext)
+;;     (require 'esh-util)
+;;     (let* ((eshell-interpreter-alist nil)
+;;            (interp (eshell-find-interpreter (car args) (cdr args)))
+;;            (program (car interp))
+;;            (el-patch-add (program (if (tramp-tramp-file-p default-directory)
+;;                                       (tramp-file-name-localname
+;;                                        (tramp-dissect-file-name (car interp)))
+;;                                     (car interp))))
+;;            (args (flatten-tree
+;;                   (eshell-stringify-list (append (cdr interp)
+;;                                                  (cdr args)))))
+;;            (eat-buf
+;;             (generate-new-buffer
+;;              (concat "*" (file-name-nondirectory program) "*")))
+;;            (eshell-buf (current-buffer)))
+;;       (with-current-buffer eat-buf
+;;         (switch-to-buffer eat-buf)
+;;         (eat-mode)
+;;         (setq-local eshell-parent-buffer eshell-buf)
+;;         (setq-local eat-kill-buffer-on-exit nil)
+;;         (eat-exec eat-buf program program nil args)
+;;         (let ((proc (get-buffer-process eat-buf)))
+;;           (if (and proc (eq 'run (process-status proc)))
+;;               (let ((sentinel (process-sentinel proc)))
+;;                 (add-function  :after (var sentinel)
+;;                                #'eat--eshell-visual-sentinel)
+;;                 (set-process-sentinel proc sentinel))
+;;             (error "Failed to invoke visual command")))
+;;         (eat-semi-char-mode)))
+;;     nil)
+;;   :hook
+;;   (eshell-mode . eat-eshell-visual-command-mode)
+;;   )
 
 (use-package eshell
   :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
          ((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))
          ;; (eshell-mode . (lambda () (setq completion-at-point-functions (cape-capf-super (cape-capf-nonexclusive #'pcomplete-completions-at-point) #'my-eshell-bash-completion-capf-nonexclusive)))))
-         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point)))))
-         (eshell-mode . eat-eshell-visual-command-mode))
+         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point))))))
   :init
   (setopt
    password-cache-expiry 3600
