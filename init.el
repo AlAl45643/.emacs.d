@@ -2300,9 +2300,9 @@ eshell."
              (interp (eshell-find-interpreter (car args) (cdr args)))
              (program (car interp))
              (el-patch-add (program (if (tramp-tramp-file-p default-directory)  
-                                          (tramp-file-name-localname              
-                                           (tramp-dissect-file-name (car interp)))
-                                        (car interp))))
+                                        (tramp-file-name-localname              
+                                         (tramp-dissect-file-name (car interp)))
+                                      (car interp))))
              (prog-args (flatten-tree
                          (eshell-stringify-list
                           (append (cdr interp) (cdr args)))))
@@ -2399,7 +2399,7 @@ eshell."
   :hook ((eshell-first-time-mode . (lambda () (yas-minor-mode -1)))
          ((eshell-mode shell-mode) . (lambda () (corfu-mode -1)))
          ;; (eshell-mode . (lambda () (setq completion-at-point-functions (cape-capf-super (cape-capf-nonexclusive #'pcomplete-completions-at-point) #'my-eshell-bash-completion-capf-nonexclusive)))))
-         (eshell-mode . (lambda () (setq completion-at-point-functions `(,(cape-capf-nonexclusive #'pcomplete-completions-at-point))))))
+         )
   :init
   (setopt
    password-cache-expiry 3600
@@ -2415,6 +2415,7 @@ eshell."
                             "links" "ncftp" "ncmpcpp" "mutt" "pine" "tin" "trn" "elm" "virsh"))
   :config
   (require 'em-tramp)
+  (advice-add #'pcomplete-completions-at-point :around (lambda (orig-fun &rest args) (apply (cape-capf-nonexclusive orig-fun) args)))
   :general-config
   (eshell-hist-mode-map
    "M-r" 'cape-history))
@@ -2475,7 +2476,6 @@ eshell."
   :hook
   ((Info-mode prog-mode evil-org-mode html-ts-mode ibuffer-mode imenu-list-minor-mode dired-mode LaTeX-mode devdocs-mode yaml-mode) . (lambda () (setq display-line-numbers 'visual)))
   ((prog-mode LaTeX-mode fundamental-mode org-mode) . electric-pair-local-mode)
-  (emacs-lisp-mode . (lambda () (setq completion-at-point-functions `(yasnippet-capf ,(cape-capf-nonexclusive #'elisp-completion-at-point) t))))
   :mode ("init.el" . (lambda () (emacs-lisp-mode) (outline-minor-mode 1) (evil-close-folds)))
   :general-config
   ('(normal insert) 
