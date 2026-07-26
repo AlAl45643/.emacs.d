@@ -456,17 +456,54 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "C-b" 'my-delete-back-to-char)
   ('insert prog-mode-map
            "S-<return>" 'evil-open-below)
-  ('(normal insert) 
+  ('(normal insert)                     
    "M-J" 'forward-sexp
    "M-K" 'backward-sexp
    "M-h" 'backward-up-list
    "M-j" 'forward-list
    "M-k" 'backward-list
    "M-l" 'down-list
-   "C-S-f" 'scroll-other-window
+   "M-H" 'up-list
+   "M-u" 'raise-sexp
+   "C-S-f" 'scroll-other-window         
    "C-S-b" 'scroll-other-window-down
    )
   )
+
+(defun my-combobulate-keybinds ()
+  (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
+    "M-h" 'combobulate-navigate-up
+    "M-j" 'combobulate-navigate-next
+    "M-k" 'combobulate-navigate-previous
+    "M-l" 'combobulate-navigate-down
+    "M-a" 'combobulate-navigate-beginning-of-defun
+    "M-e" 'combobulate-navigate-end-of-defun
+    "M-w" 'combobulate-navigate-logical-next
+    "M-b" 'combobulate-navigate-logical-previous
+    "M-n" 'combobulate-navigate-sequence-next
+    "M-p" 'combobulate-navigate-sequence-previous
+    "M-u" 'combobulate-splice-up
+    ;; "<down>" 'combobulate-splice-down
+    ;; "<left>" 'combobulate-splice-self
+    ;; "<right>" 'combobulate-splice-parent
+    "M-P" 'combobulate-drag-up
+    "M-N" 'combobulate-drag-down
+    "M-v" 'combobulate-mark-node-dwim
+    "M-X" 'combobulate-kill-node-dwim
+    "<deletechar>" 'combobulate-kill-node-dwim)
+  (evil-normalize-keymaps))
+
+(use-package combobulate
+  :ensure (:host github :repo "mickeynp/combobulate")
+  :hook
+  ((python-ts-mode astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
+  ((combobulate-python-minor-mode combobulate-css-minor-mode combobulate-html-minor-mode combobulate-javascript-minor-mode combobulate-typescript-minor-mode) . #'my-combobulate-keybinds)
+  :init
+  (setopt
+   combobulate-flash-node nil)
+  )
+
 
 (use-package avy
   :ensure t
@@ -1333,39 +1370,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   )
 
 
-(defun my-combobulate-keybinds ()
-  (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
-    "M-h" 'combobulate-navigate-up
-    "M-j" 'combobulate-navigate-next
-    "M-k" 'combobulate-navigate-previous
-    "M-l" 'combobulate-navigate-down
-    "M-a" 'combobulate-navigate-beginning-of-defun
-    "M-e" 'combobulate-navigate-end-of-defun
-    "M-w" 'combobulate-navigate-logical-next
-    "M-b" 'combobulate-navigate-logical-previous
-    "M-n" 'combobulate-navigate-sequence-next
-    "M-p" 'combobulate-navigate-sequence-previous
-    "<up>" 'combobulate-splice-up
-    "<down>" 'combobulate-splice-down
-    "<left>" 'combobulate-splice-self
-    "<right>" 'combobulate-splice-parent
-    "M-P" 'combobulate-drag-up
-    "M-N" 'combobulate-drag-down
-    "M-v" 'combobulate-mark-node-dwim
-    "M-X" 'combobulate-kill-node-dwim
-    "<deletechar>" 'combobulate-kill-node-dwim)
-  (evil-normalize-keymaps))
-
-(use-package combobulate
-  :ensure (:host github :repo "mickeynp/combobulate")
-  :hook
-  ((python-ts-mode astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . combobulate-mode)
-  ((combobulate-python-minor-mode combobulate-css-minor-mode combobulate-html-minor-mode combobulate-javascript-minor-mode combobulate-typescript-minor-mode) . #'my-combobulate-keybinds)
-  :init
-  (setopt
-   combobulate-flash-node nil)
-  )
 
 ;;; csharp
 
