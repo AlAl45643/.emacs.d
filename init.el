@@ -458,18 +458,25 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   ('insert prog-mode-map
            "S-<return>" 'evil-open-below)
   ('(normal insert)                     
-   "M-J" 'forward-sexp
-   "M-K" 'backward-sexp
-   "M-h" 'backward-up-list
-   "M-j" 'forward-list
-   "M-k" 'backward-list
-   "M-l" 'down-list
-   "M-H" 'up-list
-   "M-u" 'raise-sexp
    "C-S-f" 'scroll-other-window         
    "C-S-b" 'scroll-other-window-down
    )
   )
+
+(use-package paredit
+  :ensure t
+  :init
+  (require 'paredit)
+  :general-config
+  ('(normal insert)                     
+   "M-j" 'paredit-forward
+   "M-k" 'paredit-backward
+   "M-h" 'paredit-backward-up
+   "M-H" 'paredit-backward-down
+   "M-l" 'paredit-forward-down
+   "M-L" 'paredit-forward-up
+   "M-r" 'paredit-raise-sexp
+   ))
 
 (defun my-combobulate-keybinds ()
   (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
