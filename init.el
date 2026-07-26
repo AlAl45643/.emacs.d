@@ -323,7 +323,8 @@
 (+general-global-menu! "elpaca" "l"
   "v" 'elpaca-visit
   "l" 'elpaca-log
-  "m" 'elpaca-manager)
+  "m" 'elpaca-manager
+  "t" 'elpaca-try)
 
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
@@ -699,6 +700,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   (org-metadown-final . (lambda () (interactive) (call-interactively #'forward-list) t))
   (org-shiftmetaup-final . (lambda () (interactive) (call-interactively #'backward-sexp) t))
   (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'forward-sexp) t))
+  (org-shiftmetaleft-final . (lambda () (interactive) (call-interactively #'up-list) t))
   :general-config
   (org-mode-map
    "C-<tab>" 'org-cycle
