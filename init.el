@@ -2423,7 +2423,7 @@ eshell."
   (require 'em-tramp)
   (advice-add #'pcomplete-completions-at-point :around (lambda (orig-fun &rest args) (apply (cape-capf-nonexclusive orig-fun) args)))
   :general-config
-  (eshell-hist-mode-map
+  ('(normal insert) eshell-hist-mode-map
    "M-r" 'cape-history))
 
 ;;; embark
