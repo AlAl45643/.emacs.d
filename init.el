@@ -475,30 +475,23 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-H" 'paredit-backward-down
    "M-l" 'paredit-forward-down
    "M-L" 'paredit-forward-up
+   "M-a" 'beginning-of-defun
+   "M-e" 'end-of-defun
    "M-r" 'paredit-raise-sexp
    ))
 
 (defun my-combobulate-keybinds ()
   (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
-    "M-h" 'combobulate-navigate-up
     "M-j" 'combobulate-navigate-next
     "M-k" 'combobulate-navigate-previous
+    "M-h" 'combobulate-navigate-up
     "M-l" 'combobulate-navigate-down
     "M-a" 'combobulate-navigate-beginning-of-defun
     "M-e" 'combobulate-navigate-end-of-defun
-    "M-w" 'combobulate-navigate-logical-next
-    "M-b" 'combobulate-navigate-logical-previous
-    "M-n" 'combobulate-navigate-sequence-next
-    "M-p" 'combobulate-navigate-sequence-previous
-    "M-u" 'combobulate-splice-up
-    ;; "<down>" 'combobulate-splice-down
-    ;; "<left>" 'combobulate-splice-self
-    ;; "<right>" 'combobulate-splice-parent
-    "M-P" 'combobulate-drag-up
-    "M-N" 'combobulate-drag-down
-    "M-v" 'combobulate-mark-node-dwim
-    "M-X" 'combobulate-kill-node-dwim
-    "<deletechar>" 'combobulate-kill-node-dwim)
+    "M-r" 'combobulate-splice-up
+    ;; "M-X" 'combobulate-kill-node-dwim
+    ;; "<deletechar>" 'combobulate-kill-node-dwim
+  )
   (evil-normalize-keymaps))
 
 (use-package combobulate
