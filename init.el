@@ -1871,10 +1871,6 @@ changes."
      (t "." :icon "crosshairs-question" :face font-lock-warning-face)))
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
   )
-(use-package marginalia
-  :ensure t
-  :init
-  (marginalia-mode))
 
 ;;; windows
 
@@ -2095,6 +2091,11 @@ sibling nodes at this level."
 
 (use-package doric-themes
   :ensure t)
+
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
 
 (use-package emacs
   :config
