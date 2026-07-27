@@ -40,6 +40,7 @@
 ;; ]] [[ next visible heading
 ;; C-S-j C-S-k next grouping or scroll
 ;; should M or S or C have meanings?
+
 ;;; core
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -114,7 +115,7 @@
   (general-auto-unbind-keys)
   )
 
-
+
 ;;;; my-main-leader-evil-map
 (defun my-run-program ()
   "Run program at point depending on mode."
@@ -214,7 +215,7 @@
   "!" 'compile
   "w" 'window-toggle-side-windows
   )
-
+
 ;;;; my-second-leader-evil-map
 
 (defun my-test-code ()
@@ -295,6 +296,13 @@
       (narrow-to-region start end))
       (switch-to-buffer buf)))
 
+(defun widen-indirect ()
+  (interactive)
+  (let ((indirect-start (window-start))
+        (indirect-point (point)))
+    (kill-current-buffer)
+    (set-window-start nil indirect-start)
+    (set-window-point nil indirect-point)))
 
 (general-define-key
  :keymaps 'override
@@ -378,7 +386,7 @@
   "p" 'narrow-to-page-indirect
   "d" 'narrow-to-defun-indirect
   "r" 'narrow-to-region-indirect
-  "w" 'kill-current-buffer)
+  "w" 'widen-indirect)
 
 
 ;;;; simulation keys
@@ -389,6 +397,7 @@
 (general-def 'insert 'override
   "C-," (general-simulate-key "C-c")
   "C-<menu>" (general-simulate-key "C-c"))
+
 ;;; evil suite
 (defun smart-tab ()
   (interactive)
@@ -636,6 +645,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook (evil-mode . global-evil-surround-mode))
 (use-package posframe
   :ensure t)
+
 ;;; org
 
 ;;;; org tasks and notes
@@ -970,7 +980,7 @@ kill the current timer, this may be a break or a running pomodoro."
 (use-package ob-html
   :ensure (:host github :repo "misohena/ob-html"))
 ;;; better help 
-
+
 
 (defun my-persist-eldoc (interactive)
   (interactive (list t))
@@ -1040,6 +1050,7 @@ kill the current timer, this may be a break or a running pomodoro."
 
 (use-package elisp-demos
   :ensure t)
+
 ;;; better docs
 
 
@@ -1196,6 +1207,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   :config
   (advice-add 'org-noter--doc-location-change-handler :around #'org-noter-toggle-advice)
   )
+
+
 ;;; git
 
 (use-package transient
@@ -1239,6 +1252,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    docker-command "docker"))
 (use-package dockerfile-mode
   :ensure t)
+
 ;;; language servers
 (use-package mason
   :ensure t
@@ -1530,7 +1544,7 @@ changes."
 
 
 ;;; debugging
-
+
 
 (defun my-dape-watch-dwim ()
   "Call dape-watch-dwim without opening dape-info watch."
@@ -1631,6 +1645,7 @@ changes."
    "RET" 'edebug-update-eval-list))
 
 
+
 ;;; language server completion backends documentation output
 
 
@@ -1721,6 +1736,7 @@ changes."
   :init
   (add-to-list 'completion-at-point-functions #'cape-file))
 
+
 ;;; completion middle end
 
 
@@ -1732,7 +1748,6 @@ changes."
    completion-category-defaults nil
    completion-category-overrides '((file (styles partial-completion)))))
 ;;; completion frontends
-
 (use-package corfu
   :ensure t
   :init
@@ -1860,6 +1875,7 @@ changes."
   :ensure t
   :init
   (marginalia-mode))
+
 ;;; windows
 
 (use-package burly
@@ -2020,6 +2036,7 @@ sibling nodes at this level."
           )))
 
 
+
 ;;; visual non-functional changes
 
 
@@ -2260,6 +2277,7 @@ sibling nodes at this level."
           )
   (which-key-mode) 
   )
+
 ;;; calc
 
 
@@ -2308,6 +2326,7 @@ sibling nodes at this level."
 
 (use-package flyspell
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
+
 ;;; shells
 
 (use-package ghostel
@@ -2451,6 +2470,7 @@ eshell."
   ('(normal insert) eshell-hist-mode-map
    "M-r" 'cape-history))
 
+
 ;;; embark
 
 
@@ -2494,6 +2514,7 @@ eshell."
 
 (use-package embark-consult
   :ensure t)
+
 ;;; emacs
 (defun my-ctrl-g ()
   (interactive)
