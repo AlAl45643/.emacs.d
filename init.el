@@ -156,10 +156,6 @@
    (t (call-interactively #'eval-defun))))
 
 
-
-
-
-
 (defun my-window-bookmark-home ()
   "Move to home bookmark."
   (interactive)
@@ -276,6 +272,29 @@
     (call-interactively #'slime-eval-buffer))
    (t (call-interactively #'eval-buffer))))
 
+(defun narrow-to-page-indirect ()
+  (interactive)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-page))
+      (switch-to-buffer buf)))
+
+(defun narrow-to-defun-indirect ()
+  (interactive)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-defun)
+      (switch-to-buffer buf))))
+
+(defun narrow-to-region-indirect (start end)
+  "Restrict editing in this buffer to the current region, indirectly."
+  (interactive "r")
+  (deactivate-mark)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-region start end))
+      (switch-to-buffer buf)))
+
 
 (general-define-key
  :keymaps 'override
@@ -354,6 +373,12 @@
   "l" 'windmove-display-right
   "j" 'windmove-display-down
   "k" 'windmove-display-up)
+
+(+general-global-menu! "narrow" "n"
+  "p" 'narrow-to-page-indirect
+  "d" 'narrow-to-defun-indirect
+  "r" 'narrow-to-region-indirect
+  "w" 'kill-current-buffer)
 
 
 ;;;; simulation keys
@@ -2567,3 +2592,5 @@ eshell."
  '(org-habit-overdue-future-face ((t (:background "#cc3232" :foreground "black"))))
  '(org-habit-ready-face ((t (:background "#2dc937" :foreground "black"))))
  '(org-habit-ready-future-face ((t (:background "#2dc937" :foreground "black")))))
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
