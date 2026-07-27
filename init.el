@@ -511,7 +511,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-L" 'paredit-forward-up
    "M-a" 'beginning-of-defun
    "M-e" 'end-of-defun
-   "M-r" 'paredit-raise-sexp
+   "M-u" 'paredit-raise-sexp
    ))
 
 (defun my-combobulate-keybinds ()
