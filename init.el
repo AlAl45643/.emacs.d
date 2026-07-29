@@ -385,6 +385,7 @@
 (+general-global-menu! "narrow" "n"
   "p" 'narrow-to-page-indirect
   "d" 'narrow-to-defun-indirect
+  "h" '("narrow-to-heading-indirect" . narrow-to-defun-indirect)
   "r" 'narrow-to-region-indirect
   "w" 'widen-indirect)
 
@@ -734,13 +735,14 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-agenda-finalize . my-org-agenda-to-appt)
-  (org-metaleft-final . (lambda () (interactive) (call-interactively #'backward-up-list) t))
-  (org-metaright-final . (lambda () (interactive) (call-interactively #'down-list) t))
-  (org-metaup-final . (lambda () (interactive) (call-interactively #'backward-list) t))
-  (org-metadown-final . (lambda () (interactive) (call-interactively #'forward-list) t))
-  (org-shiftmetaup-final . (lambda () (interactive) (call-interactively #'backward-sexp) t))
-  (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'forward-sexp) t))
-  (org-shiftmetaleft-final . (lambda () (interactive) (call-interactively #'up-list) t))
+  (org-metaleft-final . (lambda () (interactive) (call-interactively #'paredit-backward-up) t))
+  (org-metaright-final . (lambda () (interactive) (call-interactively #'paredit-forward-down) t))
+  (org-metaup-final . (lambda () (interactive) (call-interactively #'paredit-backward) t))
+  (org-metadown-final . (lambda () (interactive) (call-interactively #'paredit-forward) t))
+  (org-shiftmetaup-final . (lambda () (interactive) (call-interactively #'paredit-backward) t))
+  (org-shiftmetadown-final . (lambda () (interactive) (call-interactively #'paredit-forward) t))
+  (org-shiftmetaleft-final . (lambda () (interactive) (call-interactively #'paredit-backward-down) t))
+  (org-shiftmetaright-final . (lambda () (interactive) (call-interactively #'paredit-forward-up)))
   :general-config
   (org-mode-map
    "C-<tab>" 'org-cycle
