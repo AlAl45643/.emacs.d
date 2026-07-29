@@ -512,7 +512,12 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "M-a" 'beginning-of-defun
    "M-e" 'end-of-defun
    "M-u" 'paredit-raise-sexp
-   ))
+   "M-(" 'paredit-wrap-round
+   "M-)" 'paredit-close-round-and-newline))
+
+
+
+
 
 (defun my-combobulate-keybinds ()
   (general-def '(normal insert visual) '(combobulate-css-map combobulate-html-map combobulate-javascript-map combobulate-typescript-map combobulate-python-map)
@@ -525,7 +530,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
     "M-r" 'combobulate-splice-up
     ;; "M-X" 'combobulate-kill-node-dwim
     ;; "<deletechar>" 'combobulate-kill-node-dwim
-  )
+    )
   (evil-normalize-keymaps))
 
 (use-package combobulate
@@ -848,10 +853,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-pomodoro-ask-upon-killing t
    org-pomodoro-finished-sound (concat user-emacs-directory "finished.wav")
    ;; 30 15 11 7
+   ;; 20 9 7 5
    ;; 15 8 6 4
-   org-pomodoro-length 15 
-   org-pomodoro-short-break-length 4
-   org-pomodoro-long-break-length 8
+   org-pomodoro-length 20 
+   org-pomodoro-short-break-length 5
+   org-pomodoro-long-break-length 9
    org-pomodoro-start-sound (concat user-emacs-directory "bell.wav")
    org-pomodoro-start-sound-p t)
   :config
@@ -1736,7 +1742,6 @@ changes."
   :init
   (add-to-list 'completion-at-point-functions #'cape-file))
 
-
 ;;; completion middle end
 
 
