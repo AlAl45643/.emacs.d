@@ -2492,6 +2492,9 @@ eshell."
    ;; ("C-." . embark-act)         ;; pick some comfortable binding
    ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
    "B" 'embark-bindings) ;; alternative for `describe-bindings'
+  :general-config
+  (embark-symbol-map
+   "h" 'helpful-symbol)
 
   :init
 
