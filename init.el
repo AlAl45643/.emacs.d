@@ -1036,6 +1036,9 @@ kill the current timer, this may be a break or a running pomodoro."
   (interactive)
   (save-selected-window (call-interactively 'helpful-function)))
 
+(defun my-helpful-symbol-save-window ()
+  (interactive)
+  (save-selected-window (call-interactively 'helpful-symbol)))
 
 (use-package helpful
   :ensure t
@@ -1048,7 +1051,8 @@ kill the current timer, this may be a break or a running pomodoro."
    "v" 'my-helpful-variable-save-window
    "k" 'my-helpful-key-save-window
    "x" 'my-helpful-command-save-window
-   "F" 'my-helpful-function-save-window)
+   "F" 'my-helpful-function-save-window
+   "o" 'my-helpful-symbol-save-window)
   ('normal
    "g h" 'my-help-at-point)
   (help-map
