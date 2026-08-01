@@ -278,7 +278,7 @@
   (let ((buf (clone-indirect-buffer nil nil)))
     (with-current-buffer buf
       (narrow-to-page))
-      (switch-to-buffer buf)))
+    (switch-to-buffer buf)))
 
 (defun narrow-to-defun-indirect ()
   (interactive)
@@ -294,7 +294,7 @@
   (let ((buf (clone-indirect-buffer nil nil)))
     (with-current-buffer buf
       (narrow-to-region start end))
-      (switch-to-buffer buf)))
+    (switch-to-buffer buf)))
 
 (defun widen-indirect ()
   (interactive)
@@ -908,7 +908,10 @@ kill the current timer, this may be a break or a running pomodoro."
                                (org-pomodoro-start :pomodoro))
                            (org-pomodoro-start :pomodoro))))))
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
-  (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice))
+  (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice)
+  (advice-add 'org-pomodoro :after (lambda (&rest r) (with-selected-window (get-buffer-window "*Org Agenda*")
+                                                       (org-agenda-goto-today)
+                                                       (call-interactively #'evil-scroll-line-to-top)))))
 
 
 (use-package evil-org
@@ -2498,7 +2501,7 @@ eshell."
    "B" 'embark-bindings) ;; alternative for `describe-bindings'
   :general-config
   (embark-symbol-map
-   "h" 'helpful-symbol)
+   "h" 'my-helpful-symbol-save-window)
 
   :init
 
