@@ -844,6 +844,12 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       (save-window-excursion
         (org-clock-out))))
 
+(defun my-org-pomodoro-fix-agenda (&rest r)
+  "Keep agenda on current day."
+  (with-selected-window (get-buffer-window "*Org Agenda*")
+    (org-agenda-goto-today)
+    (call-interactively #'evil-scroll-line-to-top)))
+
 (defvar my-killed-pomodoro-time 30 "Value when pomdoro is killed.")
 
 
@@ -909,9 +915,11 @@ kill the current timer, this may be a break or a running pomodoro."
                            (org-pomodoro-start :pomodoro))))))
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
   (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice)
-  (advice-add 'org-pomodoro :after (lambda (&rest r) (with-selected-window (get-buffer-window "*Org Agenda*")
-                                                       (org-agenda-goto-today)
-                                                       (call-interactively #'evil-scroll-line-to-top)))))
+  (advice-add 'org-pomodoro-start :after #'my-org-pomodoro-fix-agenda)
+  (advice-add 'org-pomodoro-rest :after #'my-org-pomodoro-fix-agenda)
+  (advice-add 'org-pomodoro-finished :after #'my-org-pomodoro-fix-agenda)
+  (advice-add 'my-org-pomodoro-resume-after-break :after #'my-org-pomodoro-fix-agenda)
+  (advice-add 'org-pomodoro-kill :after #'my-org-pomodoro-fix-agenda))
 
 
 (use-package evil-org
@@ -2468,7 +2476,7 @@ eshell."
              (prog-args (flatten-tree
                          (eshell-stringify-list
                           (append (cdr interp) (cdr args)))))
-                                        
+             
              (buf (generate-new-buffer
                    (concat "*" (file-name-nondirectory program) "*"))))
         (switch-to-buffer buf)
