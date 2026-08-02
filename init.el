@@ -2276,7 +2276,7 @@ sibling nodes at this level."
                       ;;   mode-line-remote mode-line-window-dedicated)
                       ;;  display (min-width (6.0)))
                       mode-line-frame-identification mode-line-buffer-identification "   "
-                      ;; mode-line-position
+                      mode-line-position
                       (project-mode-line project-mode-line-format)
                       (vc-mode vc-mode) "   " mode-line-modes mode-line-misc-info
                       mode-line-end-spaces)))
