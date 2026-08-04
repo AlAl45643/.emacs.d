@@ -282,10 +282,15 @@
 
 (defun narrow-to-defun-indirect ()
   (interactive)
-  (let ((buf (clone-indirect-buffer nil nil)))
-    (with-current-buffer buf
-      (narrow-to-defun)
-      (switch-to-buffer buf))))
+  (cond
+   ((eq major-mode 'org-mode)
+    (call-interactively #'org-tree-to-indirect-buffer))
+   ((eq major-mode 'org-agenda-mode)
+    (call-interactively #'org-agenda-tree-to-indirect-buffer))
+   (t (let ((buf (clone-indirect-buffer nil nil)))
+        (with-current-buffer buf
+          (narrow-to-defun)
+          (switch-to-buffer buf))))))
 
 (defun narrow-to-region-indirect (start end)
   "Restrict editing in this buffer to the current region, indirectly."
@@ -805,7 +810,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                              ("docker exec latex dvipng -D %D -T tight -bg Transparent /workdir/%b.dvi && docker cp latex:/workdir/%b1.png %O"
                                               )))
    org-latex-packages-alist '(("" "cancel" t ("pdflatex")))
-   org-imenu-depth 1)
+   org-imenu-depth 1
+   org-indirect-buffer-display 'current-window)
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
                                                            (dot . t)
