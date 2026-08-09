@@ -303,11 +303,13 @@
 
 (defun widen-indirect ()
   (interactive)
-  (let ((indirect-start (window-start))
-        (indirect-point (point)))
-    (kill-current-buffer)
-    (set-window-start nil indirect-start)
-    (set-window-point nil indirect-point)))
+  (if (buffer-base-buffer)
+      (let ((indirect-start (window-start))
+            (indirect-point (point)))
+        (kill-current-buffer)
+        (set-window-start nil indirect-start)
+        (set-window-point nil indirect-point))
+    (call-interactively #'widen)))
 
 (general-define-key
  :keymaps 'override
@@ -392,7 +394,11 @@
   "d" 'narrow-to-defun-indirect
   "h" '("narrow-to-heading-indirect" . narrow-to-defun-indirect)
   "r" 'narrow-to-region-indirect
-  "w" 'widen-indirect)
+  "w" 'widen-indirect
+  "P" 'narrow-to-page
+  "D" 'narrow-to-defun
+  "H" 'narrow-to-defun
+  "R" 'narrow-to-region)
 
 
 ;;;; simulation keys
