@@ -2310,7 +2310,7 @@ sibling nodes at this level."
           which-key-allow-multiple-replacements t
           which-key-popup-type 'minibuffer
           )
-  (which-key-mode) 
+  ;; (which-key-mode) 
   )
 
 ;;; calc
