@@ -964,6 +964,13 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c a r" 'anki-editor-delete-note-at-point
    "C-c a n" 'anki-editor-push-note-at-point))
 
+(use-package org-download
+  :ensure t
+  :init
+  (require 'org-download)
+  :general-config
+  (org-mode-map
+   "C-c p" 'org-download-clipboard))
 
 ;;;; org babel
 (use-package plantuml-mode
