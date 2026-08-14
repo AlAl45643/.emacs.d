@@ -931,7 +931,8 @@ kill the current timer, this may be a break or a running pomodoro."
   (advice-add 'org-pomodoro-rest :after #'my-org-pomodoro-fix-agenda)
   (advice-add 'org-pomodoro-finished :after #'my-org-pomodoro-fix-agenda)
   (advice-add 'my-org-pomodoro-resume-after-break :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'org-pomodoro-kill :after #'my-org-pomodoro-fix-agenda))
+  (advice-add 'org-pomodoro-kill :after #'my-org-pomodoro-fix-agenda)
+  (advice-add 'org-pomodoro :after #'my-org-pomodoro-fix-agenda))
 
 
 (use-package evil-org
@@ -1238,7 +1239,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t
   :init
   (setopt
-   org-noter-auto-save-last-location t)
+   org-noter-auto-save-last-location t
+   org-noter-always-create-frame nil)
   :general
   ('(visual normal) org-noter-doc-mode-map
    "i" 'org-noter-insert-note
@@ -1296,34 +1298,34 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t)
 
 ;;; language servers
-(use-package mason
-  :ensure t
-  :demand t
-  :config
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "texlab"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "ty"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "csharp-language-server"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "clangd"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "typescript-language-server"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "eslint-lsp"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "tailwindcss-language-server"))))
-  (mason-ensure
-   (lambda ()
-     (ignore-errors (mason-install "jdtls")))))
+;; (use-package mason
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "texlab"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "ty"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "csharp-language-server"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "clangd"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "typescript-language-server"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "eslint-lsp"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "tailwindcss-language-server"))))
+;;   (mason-ensure
+;;    (lambda ()
+;;      (ignore-errors (mason-install "jdtls")))))
 ;;; php
 
 
