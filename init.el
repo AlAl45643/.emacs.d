@@ -2484,7 +2484,9 @@ sibling nodes at this level."
                                       eshell-unix ;; eshell-elecslash
                                       )
    eshell-visual-commands '("vi" "vim" "nvim" "screen" "tmux" "top" "htop" "less" "more" "lynx"
-                            "links" "ncftp" "ncmpcpp" "mutt" "pine" "tin" "trn" "elm" "virsh"))
+                            "links" "ncftp" "ncmpcpp" "mutt" "pine" "tin" "trn" "elm" "virsh")
+   eshell-history-append t
+   eshell-history-size 1000)
   :config
   (require 'em-tramp)
   (advice-add #'pcomplete-completions-at-point :around (lambda (orig-fun &rest args) (apply (cape-capf-nonexclusive orig-fun) args)))
