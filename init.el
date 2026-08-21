@@ -352,6 +352,7 @@
 
 (+general-global-menu! "miscellaneous" "s"
   "c" 'calc
+  "d" 'dictionary-search
   )
 
 (+general-global-menu! "elpaca" "l"
@@ -958,6 +959,7 @@ kill the current timer, this may be a break or a running pomodoro."
   :general-config
   (anki-editor-mode-map
    "C-c a ?" 'anki-editor-ui
+   "C-c a c" 'anki-editor-cloze-dwim
    "C-c a h" 'my-anki-editor-make-heading-note
    "C-c a I" 'anki-editor-insert-note
    "C-c a i" 'anki-editor-insert-default-note
@@ -1099,14 +1101,13 @@ kill the current timer, this may be a break or a running pomodoro."
 
 (use-package pdf-tools
   :ensure t
-  :hook
-  (pdf-view-mode . pdf-view-roll-minor-mode)
   :init
   (pdf-tools-install t)
   :general-config
   ('(normal visual) pdf-annot-minor-mode-map
    "<return>" '("pdf-annot-mark-highlight". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
-   "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
+   ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
+   "C-c 1" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
    "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
    "C-c 3" '("pdf-annot-mark-sentence". (lambda () (interactive) (pdf-annot-add-underline-markup-annotation (pdf-view-active-region t) "DarkViolet")))
    "C-c 4" '("pdf-annot-mark-argument" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "red")))
@@ -2007,6 +2008,7 @@ sibling nodes at this level."
      "\\*Backtrace\\*"
      "\\*Occur\\*"
      "\\*ghostel"
+     "\\*Dictionary"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
      debugger-mode
@@ -2066,7 +2068,7 @@ sibling nodes at this level."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*\\|\\*ghostel" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*\\|\\*ghostel\\|\\*Dictionary" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
@@ -2322,6 +2324,12 @@ sibling nodes at this level."
   ;; (which-key-mode) 
   )
 
+;;; dictionary
+(use-package dictionary
+  :init
+  (setopt
+   dictionary-server "localhost"))
+ 
 ;;; calc
 
 
