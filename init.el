@@ -758,6 +758,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :general-config
   (org-mode-map
    "C-<tab>" 'org-cycle
+   "C-c c" 'org-capture
    "C-<iso-lefttab>" 'org-shifttab
    "C-c t" 'org-match-sparse-tree-heading)
   :init
@@ -818,7 +819,10 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
                                               )))
    org-latex-packages-alist '(("" "cancel" t ("pdflatex")))
    org-imenu-depth 1
-   org-indirect-buffer-display 'current-window)
+   org-indirect-buffer-display 'current-window
+   org-capture-templates
+   '(("o" "Outline" entry (here)
+      "* Outline\n** The first part is about %? \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)))
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
                                                            (dot . t)
