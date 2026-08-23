@@ -1849,9 +1849,7 @@ changes."
    "C-j" 'vertico-next
    "C-k" 'vertico-previous
    "C-S-j" 'scroll-up-command
-   "C-S-k" 'scroll-down-command
-   "C-b" 'evil-backward-char
-   "C-f" 'evil-forward-char))
+   "C-S-k" 'scroll-down-command))
 
 (use-package consult
   :ensure t
@@ -1863,7 +1861,7 @@ changes."
   :general
   ('(normal insert) vertico-map
    "C-d" 'consult-dir
-   "C-u" 'consult-dir-jump-file)
+   "C-f" 'consult-dir-jump-file)
   )
 
 (use-package kind-icon
