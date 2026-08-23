@@ -348,7 +348,7 @@
 (+general-global-menu! "consult" "c"
   "g" 'consult-grep
   "f" 'consult-find
-  "o" 'consult-outline)
+  "d" 'consult-dir)
 
 (+general-global-menu! "miscellaneous" "s"
   "c" 'calc
@@ -760,7 +760,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "C-<tab>" 'org-cycle
    "C-c c" 'org-capture
    "C-<iso-lefttab>" 'org-shifttab
-   "C-c t" 'org-match-sparse-tree-heading)
+   "C-c t" 'org-match-sparse-tree-heading
+   "C-c h" 'org-fold-hide-drawer-all)
   :init
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit t)
@@ -967,6 +968,8 @@ kill the current timer, this may be a break or a running pomodoro."
    "C-c a h" 'my-anki-editor-make-heading-note
    "C-c a I" 'anki-editor-insert-note
    "C-c a i" 'anki-editor-insert-default-note
+   "C-c a a" 'anki-editor-gui-add-cards
+   "C-c a b" 'anki-editor-gui-browse
    "C-c a p" 'anki-editor-push-notes
    "C-c a r" 'anki-editor-delete-note-at-point
    "C-c a n" 'anki-editor-push-note-at-point))
@@ -1854,6 +1857,14 @@ changes."
   :ensure t
   :init
   (setopt completion-in-region-function 'consult-completion-in-region))
+
+(use-package consult-dir
+  :ensure t
+  :general
+  ('(normal insert) vertico-map
+   "C-d" 'consult-dir
+   "C-u" 'consult-dir-jump-file)
+  )
 
 (use-package kind-icon
   :ensure t
