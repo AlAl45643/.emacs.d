@@ -762,6 +762,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    "C-<iso-lefttab>" 'org-shifttab
    "C-c t" 'org-match-sparse-tree-heading
    "C-c h" 'org-fold-hide-drawer-all)
+  ('normal org-mode-map
+           "[ o" 'org-mark-ring-goto)
   :init
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit t)
