@@ -825,7 +825,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-indirect-buffer-display 'current-window
    org-capture-templates
    '(("o" "Outline" entry (here)
-      "* Outline\n** The first part is about %? \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)))
+      "* Outline\n** The first part is about %? \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)
+     ("n" "Note" entry (file "notes.org") "* %? %^g\n%t" :jump-to-captured t)))
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
                                                            (dot . t)
