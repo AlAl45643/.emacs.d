@@ -663,6 +663,11 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :hook (evil-mode . global-evil-surround-mode))
 (use-package posframe
   :ensure t)
+
+(use-package undo-fu-session
+  :ensure t
+  :init
+  (undo-fu-session-global-mode))
 
 ;;; org
 
@@ -824,9 +829,10 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-imenu-depth 1
    org-indirect-buffer-display 'current-window
    org-capture-templates
-   '(("o" "Outline" entry (here)
-      "* Outline\n** The first part is about %? \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)
-     ("n" "Note" entry (file "notes.org") "* %? %^g\n%t" :jump-to-captured t)))
+   '(("o" "Unity and Outline" entry (here)
+      "* Unity and Outline\n%?\n** The first part is about \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)
+     ("n" "Note" entry (file "notes.org") "* %? %^g\n%t" :jump-to-captured t)
+     ("e" "Emacs Config" entry (file+headline "TODO.org" "Emacs Configuration") "* TODO %?\n")))
   :config
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
                                                            (dot . t)
@@ -1942,6 +1948,7 @@ changes."
   :demand t
   :config
   (space-tree-init)
+  (space-tree-init-frames)
   (el-patch-defun space-tree--modeline-string-for-level
     (parent-address selected-space-number spaces-at-this-level)
     "Render one level of the modeline lighter as a string.
@@ -1954,7 +1961,7 @@ sibling nodes at this level."
     (mapconcat
      (lambda (n)
        (let ((label (or (gethash (append parent-address (list n))
-			         space-tree-space-name-tbl)
+			         (space-tree--get-space-name-tbl))
 		        (number-to-string n))))
          (if (equal n selected-space-number)
 	     (propertize (concat label "' ") 'face (el-patch-swap 'bold 'mode-line-highlight))
@@ -2115,7 +2122,7 @@ sibling nodes at this level."
 (use-package simple
   :hook
   (visual-line-mode . visual-wrap-prefix-mode)
-  ((helpful-mode info-mode diff-mode) . visual-line-mode)
+  ((helpful-mode dictionar-mode info-mode diff-mode) . visual-line-mode)
   :init
   (setopt
    visual-line-fringe-indicators '(nill nill)))
