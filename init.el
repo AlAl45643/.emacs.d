@@ -206,7 +206,7 @@
   "1" 'my-window-bookmark-home
   "2" 'my-window-bookmark-init
   "o" 'consult-outline
-  "y" 'evil-avy-goto-char
+  "y" 'evil-avy-goto-char-2
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
   "0" '("text-scale-adjust-0" . (lambda () (interactive) (text-scale-decrease 0)))
@@ -562,8 +562,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   :ensure t
   :init
   (setopt
-   avy-all-windows nil
-   avy-all-windows-alt t
+   avy-all-windows t
    avy-case-fold-search nil))
 
 
