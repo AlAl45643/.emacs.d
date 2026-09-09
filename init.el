@@ -1330,6 +1330,9 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;   (mason-ensure
 ;;    (lambda ()
 ;;      (ignore-errors (mason-install "clangd"))))
+;; bun install -g typescript typescript-language-server
+;; bun install -g vscode-langservers-extracted
+;; bun install -g @tailwindcss/language-server
 ;;   (mason-ensure
 ;;    (lambda ()
 ;;      (ignore-errors (mason-install "typescript-language-server"))))
@@ -2031,6 +2034,7 @@ sibling nodes at this level."
      "\\*Occur\\*"
      "\\*ghostel"
      "\\*Dictionary"
+     "^\\* docker eshell"
      (lambda (buf) (with-current-buffer buf
                      (derived-mode-p 'comint-mode)))
      debugger-mode
@@ -2090,7 +2094,7 @@ sibling nodes at this level."
            (side . right)
            (slot . -1)
            (window-width . my-fit-window-to-right-side))
-          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*\\|\\*ghostel\\|\\*Dictionary" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
+          ((or "\\*dotnet\\|\\*Messages\\*\\|Output\\*\\|events\\*\\|\\*eshell\\*\\|\\*shell\\*\\|\\*dape-shell\\*\\|\\*vterm\\*\\|^\\* docker.+ up\\|^\\* docker.+ exec\\|\\*Racket\\|^\\* docker vterm\\|\\*slime-repl uv-python\\|\\*sldb\\|\\*xref\\*\\|\\* docker container logs\\|\\*Outline\\|\\*Warnings\\*\\|\\*Backtrace\\*\\|\\*Occur\\*\\|\\*ghostel\\|\\*Dictionary\\|^\\* docker eshell" (major-mode . compilation-mode)  (major-mode . debugger-mode) (derived-mode . comint-mode) (major-mode . diff-mode)) 
            (display-buffer-reuse-window display-buffer-in-side-window)
            (side . bottom)
            (slot . 0)
