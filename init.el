@@ -1946,7 +1946,7 @@ changes."
   :ensure t)
 
 (use-package space-tree
-  :ensure (:host github :repo "chiply/space-tree")
+  :ensure (:host github :repo "AlAl45643/space-tree" :branch "frames")
   :demand t
   :config
   (space-tree-init)
