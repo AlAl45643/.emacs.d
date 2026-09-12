@@ -510,23 +510,23 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    )
   )
 
-(use-package paredit
-  :ensure t
-  :init
-  (require 'paredit)
-  :general-config
-  ('(normal insert)                     
-   "M-j" 'paredit-forward
-   "M-k" 'paredit-backward
-   "M-h" 'paredit-backward-up
-   "M-H" 'paredit-backward-down
-   "M-l" 'paredit-forward-down
-   "M-L" 'paredit-forward-up
-   "M-a" 'beginning-of-defun
-   "M-e" 'end-of-defun
-   "M-u" 'paredit-raise-sexp
-   "M-(" 'paredit-wrap-round
-   "M-)" 'paredit-close-round-and-newline))
+;; (use-package paredit
+;;   :ensure t
+;;   :init
+;;   (require 'paredit)
+;;   :general-config
+;;   ('(normal insert)                     
+;;    "M-j" 'paredit-forward
+;;    "M-k" 'paredit-backward
+;;    "M-h" 'paredit-backward-up
+;;    "M-H" 'paredit-backward-down
+;;    "M-l" 'paredit-forward-down
+;;    "M-L" 'paredit-forward-up
+;;    "M-a" 'beginning-of-defun
+;;    "M-e" 'end-of-defun
+;;    "M-u" 'paredit-raise-sexp
+;;    "M-(" 'paredit-wrap-round
+;;    "M-)" 'paredit-close-round-and-newline))
 
 
 
@@ -2157,8 +2157,9 @@ sibling nodes at this level."
                                    ((:theme . doric-siren)
                                     (:font "JetBrains Mono 10")
                                     (:modes sql-mode)))
-   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*" "*eshell*"))
-  (per-buffer-theme-mode 1))
+   per-buffer-theme-ignored-buffernames-regex '("*[Mm]ini" "*helpful" "*info*" "magit" "COMMIT" "vterm" "notes.org" "*devdocs*" "*Async Shell Command" "Calc" "*persisted eldoc*" "docker" "sldb" "slime" "*Messages*" "*Ibuffer*" "*Help*" ".pdf" "*SQL:" "*compilation*" "*eshell*" "*MDN CSS*"))
+  (per-buffer-theme-mode 1)
+  )
 
 (use-package doric-themes
   :ensure t)
@@ -2355,7 +2356,7 @@ sibling nodes at this level."
   :init
   (setopt
    dictionary-server "localhost"))
- 
+
 ;;; calc
 
 
