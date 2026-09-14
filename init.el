@@ -1527,20 +1527,22 @@ If NOERROR, inhibit error messages when we can't find the node."
   :hook
   (c-ts-mode . eglot-ensure))
 
-;;; javascript
+;;; javascript and css
 
 
 (use-package ts
-  :mode ("\\.tsx\\'" . js-ts-mode)
-  :hook
-  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure))
+  :mode ("\\.tsx\\'" . js-ts-mode))
 
-(use-package eglot-typescript-preset
-  :ensure t
-  :init
-  (setopt
-   eglot-typescript-preset-lsp-server 'rass))
+(use-package eglot
+  :hook 
+  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "typescript-language-server" "--stdio"))
+  (add-to-list 'eglot-server-programs
+               '((css-mode css-ts-mode) "tailwindcss-language-server" "--stdio")))
+
 
 
 

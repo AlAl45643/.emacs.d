@@ -319,18 +319,6 @@
                          :type git :protocol https :inherit t :depth
                          treeless :ref
                          "19138a4d1ecdca8018a305f5624283368dfff28f"))
- (eglot-typescript-preset :source "elpaca-menu-lock-file" :recipe
-                          (:package "eglot-typescript-preset" :fetcher
-                                    github :repo
-                                    "mwolson/eglot-typescript-preset"
-                                    :files
-                                    (:defaults
-                                     ("templates" "templates/*.tpl.py"))
-                                    :source "elpaca-menu-lock-file"
-                                    :id eglot-typescript-preset :type
-                                    git :protocol https :inherit t
-                                    :depth treeless :ref
-                                    "cc780650223cf08f2268bca3de16509c61ef885d"))
  (el-patch :source "elpaca-menu-lock-file" :recipe
            (:package "el-patch" :fetcher github :repo
                      "radian-software/el-patch" :files
