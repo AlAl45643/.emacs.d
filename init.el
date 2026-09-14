@@ -367,7 +367,8 @@
   "r" 'my-eval-region)
 
 (+general-global-menu! "completion" "p"
-  "p" 'completion-at-point)
+  "p" 'completion-at-point
+  "y" 'yas-expand)
 
 (+general-global-menu! "git" "g"
   "x" 'diff-hl-revert-hunk
@@ -510,23 +511,23 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    )
   )
 
-;; (use-package paredit
-;;   :ensure t
-;;   :init
-;;   (require 'paredit)
-;;   :general-config
-;;   ('(normal insert)                     
-;;    "M-j" 'paredit-forward
-;;    "M-k" 'paredit-backward
-;;    "M-h" 'paredit-backward-up
-;;    "M-H" 'paredit-backward-down
-;;    "M-l" 'paredit-forward-down
-;;    "M-L" 'paredit-forward-up
-;;    "M-a" 'beginning-of-defun
-;;    "M-e" 'end-of-defun
-;;    "M-u" 'paredit-raise-sexp
-;;    "M-(" 'paredit-wrap-round
-;;    "M-)" 'paredit-close-round-and-newline))
+(use-package paredit
+  :ensure t
+  :init
+  (require 'paredit)
+  :general-config
+  ('(normal insert)                     
+   "M-j" 'paredit-forward
+   "M-k" 'paredit-backward
+   "M-h" 'paredit-backward-up
+   "M-H" 'paredit-backward-down
+   "M-l" 'paredit-forward-down
+   "M-L" 'paredit-forward-up
+   "M-a" 'beginning-of-defun
+   "M-e" 'end-of-defun
+   "M-u" 'paredit-raise-sexp
+   "M-(" 'paredit-wrap-round
+   "M-)" 'paredit-close-round-and-newline))
 
 
 
@@ -1114,18 +1115,37 @@ kill the current timer, this may be a break or a running pomodoro."
 ;;; better docs
 
 
+(defun pdf-view-highlight-and-note-precise ()
+  "Highlight the active region and create org-noter note."
+  (interactive)
+  (call-interactively #'org-noter-insert-precise-note)
+  (windmove-left)
+  (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
+  (windmove-right))
+
+(defun pdf-view-highlight-and-note-no-question ()
+  "Highlight the active region and create org-noter no without question"
+  (interactive)
+  (call-interactively #'org-noter-insert-precise-note-toggle-no-questions)
+  (windmove-left)
+  (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
+  (windmove-right))
+
 (use-package pdf-tools
   :ensure t
   :init
   (pdf-tools-install t)
   :general-config
   ('(normal visual) pdf-annot-minor-mode-map
-   "<return>" '("pdf-annot-mark-highlight". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
+   "<return>" 'pdf-view-highlight-and-note-precise
+   "M-RET" 'pdf-view-highlight-and-note-no-question
    ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
+   "<mouse-9>" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
    "C-c 1" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
-   "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
-   "C-c 3" '("pdf-annot-mark-sentence". (lambda () (interactive) (pdf-annot-add-underline-markup-annotation (pdf-view-active-region t) "DarkViolet")))
-   "C-c 4" '("pdf-annot-mark-argument" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "red")))
+   "C-c 2" '("pdf-annot-highlight" . (lambda () (interactive (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e"))))
+   ;; "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
+   ;; "C-c 3" '("pdf-annot-mark-sentence". (lambda () (interactive) (pdf-annot-add-underline-markup-annotation (pdf-view-active-region t) "DarkViolet")))
+   ;; "C-c 4" '("pdf-annot-mark-argument" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "red")))
    "r" 'pdf-annot-delete
    "d" 'pdf-annot-delete
    "t" 'pdf-annot-add-text-annotation)
@@ -1330,9 +1350,6 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;   (mason-ensure
 ;;    (lambda ()
 ;;      (ignore-errors (mason-install "clangd"))))
-;; bun install -g typescript typescript-language-server
-;; bun install -g vscode-langservers-extracted
-;; bun install -g @tailwindcss/language-server
 ;;   (mason-ensure
 ;;    (lambda ()
 ;;      (ignore-errors (mason-install "typescript-language-server"))))
@@ -1628,7 +1645,7 @@ changes."
   (dape-key-prefix nil)
   :init
   (setopt
-   dape-buffer-window-arrangement 'gud
+   dape-buffer-window-arrangement 'left
    dape-info-hide-mode-line nil)
   :config
   (push (cons '("Z Q" . nil)
@@ -1946,7 +1963,7 @@ changes."
   :ensure t)
 
 (use-package space-tree
-  :ensure (:host github :repo "AlAl45643/space-tree" :branch "frames")
+  :ensure (:host github :repo "chiply/space-tree")
   :demand t
   :config
   (space-tree-init)
@@ -1998,7 +2015,7 @@ sibling nodes at this level."
 
    ;; Navigation
    ;; "C-S-<iso-lefttab>"   #'space-tree-switch-space-by-name
-   "C-S-<iso-lefttab>"     #'space-tree-go-to-last-space
+   ;; "C-S-<iso-lefttab>"     #'space-tree-go-to-last-space
    ;; "C-M-<tab>"   #'space-tree-go-right
    ;; "C-M-S-<tab>" #'space-tree-go-left
 
@@ -2642,12 +2659,19 @@ eshell."
    redisplay-skip-fontification-on-input t
    highlight-nonselected-windows nil
    inhibit-message-regexps '("No highlights or annotations found for" "Saving file" "Wrote" "Quit" "Undo" "Using try-expand-dabbrev" "Quit" "Mark saved where search started")
-   mode-line-percent-position nil)
+   mode-line-percent-position nil
+   auth-sources '("~/.authinfo.gpg"))
   (setq-default
    truncate-lines t
    bidi-display-reordering 'left-to-right
    bidi-paragraph-direction 'left-to-right
    cursor-in-non-selected-windows nil)
+  (defun my-security-clear-caches ()
+    "Clear all cached authentication data managed by auth-source."
+    (when (fboundp 'auth-source-forget-all-cached)
+      (auth-source-forget-all-cached)))
+
+  (run-with-idle-timer 900 t #'my-security-clear-caches)
   (scroll-bar-mode -1)
   (auto-save-visited-mode 1)
   (winner-mode 1)
