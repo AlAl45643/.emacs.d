@@ -433,7 +433,12 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
-   ((and (featurep 'eglot) eglot--managed-mode (eglot-server-capable :documentFormattingProvider))
+   ((and (featurep 'eglot) eglot--managed-mode (eglot-server-capable :documentFormattingProvider) (not
+                                                                                                   (or (equal major-mode 'js-ts-mode)
+                                                                                                       (equal major-mode 'typescript-ts-mode)
+                                                                                                       (equal major-mode 'tsx-ts-mode)
+                                                                                                       (equal major-mode 'json-ts-mode)
+                                                                                                       (equal major-mode 'prisma-ts-mode))))
     (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
