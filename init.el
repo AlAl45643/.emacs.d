@@ -359,7 +359,8 @@
   "v" 'elpaca-visit
   "l" 'elpaca-log
   "m" 'elpaca-manager
-  "t" 'elpaca-try)
+  "t" 'elpaca-try
+  "d" 'elpaca-delete)
 
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
@@ -1551,8 +1552,11 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; javascript and css
 
+(use-package js2-mode
+  :ensure t
+  :hook (js-ts-mode . js2-minor-mode))
 
-(use-package ts
+(use-package js
   :mode ("\\.tsx\\'" . js-ts-mode))
 
 (use-package eglot
