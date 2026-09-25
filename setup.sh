@@ -3,6 +3,7 @@ mkdir bin
 cd bin
 
 
+# setup c#
 # wget https://github.com/Samsung/netcoredbg/releases/download/3.1.2-1054/netcoredbg-linux-amd64.tar.gz
 # tar -xf netcoredbg-linux-amd64.tar.gz
 # mv ./netcoredbg netcored
@@ -24,6 +25,9 @@ source $HOME/.local/bin/env
 
 # setup rass
 uv tool install "rassumfrassum"
+
+# install npm
+sudo dnf install nodejs
 
 
 # install jetbrains mono font
