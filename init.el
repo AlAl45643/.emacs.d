@@ -1582,7 +1582,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass tslint"))
+               '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" "tslint"))
   (add-to-list 'eglot-server-programs
                '((css-mode css-ts-mode) "tailwindcss-language-server" "--stdio")))
 
