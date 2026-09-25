@@ -19,8 +19,8 @@ cd bin
 
 
 # setup python
-sudo dnf install pip
-pip install "uv"
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
 
 # setup rass
 uv tool install "rassumfrassum"

@@ -359,7 +359,8 @@
   "v" 'elpaca-visit
   "l" 'elpaca-log
   "m" 'elpaca-manager
-  "t" 'elpaca-try)
+  "t" 'elpaca-try
+  "d" 'elpaca-delete)
 
 (+general-global-menu! "eval" "v"
   "s" 'my-eval-last-sexp
@@ -433,7 +434,12 @@
 (defun my-format-buffer ()
   (interactive)
   (cond
-   ((and (featurep 'eglot) eglot--managed-mode (eglot-server-capable :documentFormattingProvider))
+   ((and (featurep 'eglot) eglot--managed-mode (eglot-server-capable :documentFormattingProvider) (not
+                                                                                                   (or (equal major-mode 'js-ts-mode)
+                                                                                                       (equal major-mode 'typescript-ts-mode)
+                                                                                                       (equal major-mode 'tsx-ts-mode)
+                                                                                                       (equal major-mode 'json-ts-mode)
+                                                                                                       (equal major-mode 'prisma-ts-mode))))
     (call-interactively #'eglot-format-buffer))
    (t (indent-region (point-min) (point-max)))))
 
@@ -1560,8 +1566,11 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 ;;; javascript and css
 
+(use-package js2-mode
+  :ensure t
+  :hook (js-ts-mode . js2-minor-mode))
 
-(use-package ts
+(use-package js
   :mode ("\\.tsx\\'" . js-ts-mode))
 
 (use-package eglot
@@ -1979,7 +1988,7 @@ changes."
   :ensure t)
 
 (use-package space-tree
-  :ensure (:host github :repo "chiply/space-tree")
+  :ensure (:host github :repo "AlAl45643/space-tree" :branch "frames")
   :demand t
   :config
   (space-tree-init)
