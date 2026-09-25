@@ -25,9 +25,11 @@ source $HOME/.local/bin/env
 
 # setup rass
 uv tool install "rassumfrassum"
+uv tool install "black"
 
 # install npm
 sudo dnf install nodejs
+sudo npm install -g prettier
 
 
 # install jetbrains mono font

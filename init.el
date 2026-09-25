@@ -1383,6 +1383,13 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;    (lambda ()
      ;; (ignore-errors (mason-install "jdtls")))))
 )
+;;; formatting code
+
+(use-package apheleia
+  :ensure t
+  :init
+  (apheleia-global-mode +1)
+  )
 ;;; php
 
 
