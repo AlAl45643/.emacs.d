@@ -1354,10 +1354,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t)
 
 ;;; language servers
-;; (use-package mason
-;;   :ensure t
-;;   :demand t
-;;   :config
+(use-package mason
+  :ensure t
+  :demand t
+  :config
 ;;   (mason-ensure
 ;;    (lambda ()
 ;;      (ignore-errors (mason-install "texlab"))))
@@ -1381,7 +1381,8 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;      (ignore-errors (mason-install "tailwindcss-language-server"))))
 ;;   (mason-ensure
 ;;    (lambda ()
-;;      (ignore-errors (mason-install "jdtls")))))
+     ;; (ignore-errors (mason-install "jdtls")))))
+)
 ;;; php
 
 
