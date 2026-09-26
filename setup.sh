@@ -18,6 +18,8 @@ cd bin
 # export PATH=\$PATH:\$DOTNET_ROOT:\$DOTNET_ROOT/tools
 # EOL
 
+# setup makeinfo for info
+sudo dnf install makeinfo
 
 # setup python
 curl -LsSf https://astral.sh/uv/install.sh | sh
