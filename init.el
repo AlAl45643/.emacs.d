@@ -1350,50 +1350,55 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t
   :demand t
   :config
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "texlab"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "ty"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "csharp-language-server"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "clangd"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "typescript-language-server"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "eslint-lsp"))))
-;;   (mason-ensure
-;;    (lambda ()
-;;      (ignore-errors (mason-install "tailwindcss-language-server"))))
-;;   (mason-ensure
-;;    (lambda ()
-     ;; (ignore-errors (mason-install "jdtls")))))
-)
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "texlab"))))
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "ty"))))
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "csharp-language-server"))))
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "clangd"))))
+
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "typescript-language-server"))))
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "eslint-lsp"))))
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;;      (ignore-errors (mason-install "tailwindcss-language-server"))))
+
+  ;;   (mason-ensure
+  ;;    (lambda ()
+  ;; (ignore-errors (mason-install "jdtls")))))
+  )
+
 ;; upgrade eglot to get publishDiagnostics support for vscode-eslint-language-server
+
+(use-package flymake
+  :ensure (:repo "https://github.com/emacs-mirror/emacs"))
+
 (unload-feature 'eldoc t)
 (setq custom-delayed-init-variables '())
 (defvar global-eldoc-mode nil)
-
-(elpaca eldoc
-  (require 'eldoc)
+(use-package eldoc
+  :ensure (:repo "https://github.com/emacs-mirror/emacs")
+  :config
   (global-eldoc-mode))
-(elpaca project
-  (require 'project))
 (use-package jsonrpc
-  :defer t
-  :ensure (:wait t))
-(use-package flymake
-  :ensure t)
-
+  :ensure (:repo "https://github.com/emacs-mirror/emacs"))
+(unload-feature 'project t)
+(use-package project
+  :ensure (:repo "https://github.com/emacs-mirror/emacs"))
 (use-package eglot
-  :defer t
-  :ensure (:wait t))
+  :ensure (:repo "https://github.com/emacs-mirror/emacs"))
+(elpaca-wait)
+(princ (elpaca-log "cloning"))
 ;;; formatting code
 
 (use-package apheleia
