@@ -1375,6 +1375,25 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;    (lambda ()
      ;; (ignore-errors (mason-install "jdtls")))))
 )
+;; upgrade eglot to get publishDiagnostics support for vscode-eslint-language-server
+(unload-feature 'eldoc t)
+(setq custom-delayed-init-variables '())
+(defvar global-eldoc-mode nil)
+
+(elpaca eldoc
+  (require 'eldoc)
+  (global-eldoc-mode))
+(elpaca project
+  (require 'project))
+(use-package jsonrpc
+  :defer t
+  :ensure (:wait t))
+(use-package flymake
+  :ensure t)
+
+(use-package eglot
+  :defer t
+  :ensure (:wait t))
 ;;; formatting code
 
 (use-package apheleia
