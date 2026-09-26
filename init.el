@@ -501,7 +501,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
   ('insert
    "TAB" 'smart-tab
    "C-b" 'my-delete-back-to-char)
-  ('insert prog-mode-map
+  ('insert (prog-mode-map html-ts-mode-map)
            "S-<return>" 'evil-open-below)
   ('(normal insert)                     
    "C-S-f" 'scroll-other-window         
@@ -1050,7 +1050,10 @@ kill the current timer, this may be a break or a running pomodoro."
           (display-buffer (current-buffer))
           (set-window-start (get-buffer-window "*persisted eldoc*") 0)
           (general-def 'normal 'local
-            "q" 'evil-window-delete))))))
+            "q" 'evil-window-delete
+            "C-c C-o" 'markdown-follow-link-at-point
+            "TAB" 'markdown-next-link
+            "<backtab>" 'markdown-previous-link))))))
 
 (defun my-help-at-point ()
   (interactive)
@@ -1583,7 +1586,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :hook
   (c-ts-mode . eglot-ensure))
 
-;;; javascript, html, and css
+;;; typescript, javascript, html, and css
 
 (use-package js2-mode
   :ensure t
@@ -1597,12 +1600,26 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package eglot
   :hook 
   ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode) . eglot-ensure)
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode html-mode html-ts-mode json-ts-mode) . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
                '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" "tslint"))
   (add-to-list 'eglot-server-programs
-               '((css-mode css-ts-mode) "tailwindcss-language-server" "--stdio")))
+               '((css-mode css-ts-mode) "vscode-css-language-server" "--stdio"))
+  (add-to-list 'eglot-server-programs
+               '((html-mode html-ts-mode) "vscode-html-language-server" "--stdio"))
+  (add-to-list 'eglot-server-programs
+               '((json-ts-mode) "vscode-json-language-server" "--stdio"))
+  )
+
+(use-package emmet-mode
+  :ensure t
+  :hook
+  ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode html-mode html-ts-mode) . emmet-mode)
+  :init
+  (setopt emmet-jsx-major-modes '(jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode js-ts-mode typescript-ts-mode tsx-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode)))
+
 
 
 
