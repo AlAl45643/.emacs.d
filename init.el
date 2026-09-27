@@ -1149,7 +1149,7 @@ kill the current timer, this may be a break or a running pomodoro."
   (pdf-tools-install t)
   :general-config
   ('(normal visual) pdf-annot-minor-mode-map
-   "<return>" 'pdf-view-highlight-and-note-precise
+   "<return>" '("pdf-annot-highlight" . (lambda () (interactive (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e"))))
    ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
    "<mouse-8>" 'pdf-view-highlight-and-note-no-question-argument
    "<mouse-9>" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
@@ -2229,7 +2229,7 @@ sibling nodes at this level."
    per-buffer-theme-themes-alist '(((:theme . modus-operandi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes inferior-python-mode python-ts-mode python-mode))
-                                   ((:theme . doric-almond)
+                                   ((:theme . ef-cherie)
                                     (:font "JetBrains Mono 10")
                                     (:modes astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
                                             js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode))
@@ -2248,6 +2248,10 @@ sibling nodes at this level."
 
 (use-package doric-themes
   :ensure t)
+
+
+(use-package ef-themes
+  :ensure (:wait t))
 
 (use-package marginalia
   :ensure t
