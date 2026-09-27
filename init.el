@@ -1359,6 +1359,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   ;;   (dolist (pkg '("texlab" "ty" "csharp-language-server" "clangd" "typescript-language-server" "eslint-lsp" "tailwindcss-language-server" "jdtls"))
   ;;     (unless (mason-installed-p pkg)
   ;;       (ignore-errors (mason-install pkg)))))
+  (add-to-list 'exec-path (expand-file-name (concat user-emacs-directory "mason/bin/")))
   (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name (concat user-emacs-directory "mason/bin/"))))
   )
 
