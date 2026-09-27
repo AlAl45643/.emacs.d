@@ -1593,7 +1593,7 @@ If NOERROR, inhibit error messages when we can't find the node."
                   js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode html-mode html-ts-mode json-ts-mode) . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" "tslint"))
+               `((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" ,(expand-file-name (concat user-emacs-directory "rass-presets/tslint.py"))))
   (add-to-list 'eglot-server-programs
                '((css-mode css-ts-mode) "vscode-css-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
@@ -1802,7 +1802,6 @@ changes."
   :config
   (setopt
    eglot-connect-timeout 60)
-  (add-to-list 'exec-path (concat user-emacs-directory "mason/bin/"))
   (add-hook 'eglot-managed-mode-hook #'my-eglot-capf)
   (add-hook 'eglot-managed-mode-hook #'my-file-completion-for-eglot 100)
   ;; if lsp-server returns many completions then turn off but if it doesn't then turn it on
