@@ -1594,10 +1594,16 @@ If NOERROR, inhibit error messages when we can't find the node."
 
 (use-package js2-mode
   :ensure t
-  :hook (js-ts-mode . js2-minor-mode))
+  :hook
+  (tsx-ts-mode . js2-minor-mode)
+  (jsx-ts-mode . js2-minor-mode))
 
 (use-package js
-  :mode ("\\.tsx\\'" . js-ts-mode)
+  :mode
+  ("\\.tsx\\'" . tsx-ts-mode)
+  ("\\.jsx\\'" . tsx-ts-mode)
+  ("\\.ts\\'" . typescript-ts-mode)
+  ("\\.js\\'" . js-ts-mode)
   :config
   (modify-syntax-entry ?' "\"" js-mode-syntax-table))
 
