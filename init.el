@@ -433,7 +433,9 @@
 
 (defun my-format-buffer ()
   (interactive)
-  (indent-region (point-min) (point-max)))
+  (if (derived-mode-p 'prog-mode)
+      (call-interactively #'apheleia-format-buffer)
+    (indent-region (point-min) (point-max))))
 
 (defun my-delete-back-to-char ()
   "Delete backward to char."
@@ -1405,10 +1407,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; formatting code
 
 (use-package apheleia
-  :ensure t
-  :init
-  (apheleia-global-mode +1)
-  )
+  :ensure t)
 ;;; php
 
 

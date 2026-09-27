@@ -322,11 +322,21 @@
                          ("https://github.com/protesilaos/doric-themes"
                           . "doric-themes")
                          :tar "1.1.0" :host gnu :files
-                         ("*" (:exclude ".git")) :source
-                         "elpaca-menu-lock-file" :id doric-themes
-                         :type git :protocol https :inherit t :depth
-                         treeless :ref
-                         "19138a4d1ecdca8018a305f5624283368dfff28f"))
+                         ("*" (:exclude ".git")) :source "GNU ELPA"
+                         :id doric-themes :type git :protocol https
+                         :inherit t :depth treeless :ref
+                         "d0be237b7b63e455023666a51492ac34409d2caf"))
+ (ef-themes :source "elpaca-menu-lock-file" :recipe
+            (:package "ef-themes" :repo
+                      ("https://github.com/protesilaos/ef-themes"
+                       . "ef-themes")
+                      :tar "2.2.0" :host gnu :files
+                      ("*"
+                       (:exclude ".git" "COPYING" "doclicense.texi"
+                                 "contrast-ratios.org"))
+                      :source "GNU ELPA" :id ef-themes :wait t :type
+                      git :protocol https :inherit t :depth treeless
+                      :ref "e1f617607a5f0692b398365dcd8412ba1e98ccb3"))
  (eglot :source "elpaca-menu-lock-file" :recipe
         (:package "eglot" :repo
                   "https://github.com/emacs-mirror/emacs" :tar "1.24"
@@ -378,9 +388,9 @@
                        "541a064c3ce27867872cf708354a65d83baf2a6d"))
  (elpaca :source
    "elpaca-menu-lock-file" :recipe
-   (:source "Init file" :package "elpaca" :id elpaca :repo
+   (:source nil :package "elpaca" :id elpaca :repo
             "https://github.com/progfolio/elpaca.git" :ref
-            "78b8e7cc98c198c8dbeb18140649e2d668126712" :depth 1
+            "fedf24160150b0195a42999b3bb53748217b779c" :depth 1
             :inherit ignore :files
             (:defaults "elpaca-test.el" (:exclude "extensions"))
             :build (:not elpaca-activate) :type git :protocol https))
@@ -396,7 +406,7 @@
                                :source "Elpaca extensions" :id
                                elpaca-use-package :type git :protocol
                                https :inherit t :depth treeless :ref
-                               "78b8e7cc98c198c8dbeb18140649e2d668126712"))
+                               "fedf24160150b0195a42999b3bb53748217b779c"))
  (embark :source "elpaca-menu-lock-file" :recipe
          (:package "embark" :repo "oantolin/embark" :fetcher github
                    :files ("embark.el" "embark-org.el" "embark.texi")
@@ -411,6 +421,20 @@
                            :type git :protocol https :inherit t :depth
                            treeless :ref
                            "350ca86924c5027e80875943fba7b912a71e5791"))
+ (emmet-mode :source "elpaca-menu-lock-file" :recipe
+             (:package "emmet-mode" :fetcher github :repo
+                       "smihica/emmet-mode" :files
+                       ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                        "*.texinfo" "doc/dir" "doc/*.info"
+                        "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                        "docs/dir" "docs/*.info" "docs/*.texi"
+                        "docs/*.texinfo"
+                        (:exclude ".dir-locals.el" "test.el"
+                                  "tests.el" "*-test.el" "*-tests.el"
+                                  "LICENSE" "README*" "*-pkg.el"))
+                       :source "MELPA" :id emmet-mode :type git
+                       :protocol https :inherit t :depth treeless :ref
+                       "322d3bb112fced57d63b44863357f7a0b7eee1e3"))
  (evil :source "elpaca-menu-lock-file" :recipe
        (:package "evil" :repo "emacs-evil/evil" :fetcher github :files
                  (:defaults "doc/build/texinfo/evil.texi"
@@ -450,7 +474,7 @@
                          :source "elpaca-menu-lock-file" :id
                          evil-ghostel :type git :protocol https
                          :inherit t :depth treeless :ref
-                         "2bea18f3b52bf97d8222fea706da6fabdfc2cbb8"))
+                         "48d5a219c931a7de969559070d78c1f6d1a71929"))
  (evil-org :source "elpaca-menu-lock-file" :recipe
            (:package "evil-org" :fetcher github :repo
                      "Somelauw/evil-org-mode" :files
@@ -552,7 +576,7 @@
                                "build.zig.zon" "symbols.map")
                     :source "elpaca-menu-lock-file" :id ghostel :type
                     git :protocol https :inherit t :depth treeless
-                    :ref "2bea18f3b52bf97d8222fea706da6fabdfc2cbb8"))
+                    :ref "48d5a219c931a7de969559070d78c1f6d1a71929"))
  (gntp :source "elpaca-menu-lock-file" :recipe
        (:package "gntp" :repo "tekai/gntp.el" :fetcher github :files
                  ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
@@ -747,6 +771,22 @@
                   :source "elpaca-menu-lock-file" :id mason :type git
                   :protocol https :inherit t :depth treeless :ref
                   "8dc604d12bea314dba3db89ea29d84b0d1438eeb"))
+ (modus-themes :source "elpaca-menu-lock-file" :recipe
+               (:package "modus-themes" :fetcher github :repo
+                         "protesilaos/modus-themes" :files
+                         ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+                          "*.texinfo" "doc/dir" "doc/*.info"
+                          "doc/*.texi" "doc/*.texinfo" "lisp/*.el"
+                          "docs/dir" "docs/*.info" "docs/*.texi"
+                          "docs/*.texinfo"
+                          (:exclude ".dir-locals.el" "test.el"
+                                    "tests.el" "*-test.el"
+                                    "*-tests.el" "LICENSE" "README*"
+                                    "*-pkg.el"))
+                         :source "MELPA" :id modus-themes :type git
+                         :protocol https :inherit t :depth treeless
+                         :ref
+                         "4fcc8d00540a81936a213d608a69c4c85df8f970"))
  (ob-html :source "elpaca-menu-lock-file" :recipe
           (:source "elpaca-menu-lock-file" :package "ob-html" :id
                    ob-html :host github :repo "misohena/ob-html" :type
@@ -1027,7 +1067,7 @@
                       :id space-tree :host github :repo
                       "AlAl45643/space-tree" :branch "frames" :type
                       git :protocol https :inherit t :depth treeless
-                      :ref "331c619dd837dc44a0b526adea70f17b4946356a"))
+                      :ref "11f5c97723c8daa92d8a0cca2cd51c405f9a308f"))
  (sql-indent :source "elpaca-menu-lock-file" :recipe
              (:package "sql-indent" :repo
                        ("https://github.com/alex-hhh/emacs-sql-indent"
@@ -1160,7 +1200,7 @@
                       "joaotavora/yasnippet" :files
                       (:defaults ("doc" "doc/*.org")) :source
                       "elpaca-menu-lock-file" :id yasnippet :type git
-                      :protocol https :inherit t :depth nil :ref
+                      :protocol https :inherit t :depth treeless :ref
                       "c1e6ff23e9af16b856c88dfaab9d3ad7b746ad37"))
  (yasnippet-capf :source "elpaca-menu-lock-file" :recipe
                  (:package "yasnippet-capf" :fetcher github :repo
