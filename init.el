@@ -1355,32 +1355,11 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t
   :demand t
   :config
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "texlab"))))
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "ty"))))
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "csharp-language-server"))))
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "clangd"))))
-
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "typescript-language-server"))))
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "eslint-lsp"))))
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;;      (ignore-errors (mason-install "tailwindcss-language-server"))))
-
-  ;;   (mason-ensure
-  ;;    (lambda ()
-  ;; (ignore-errors (mason-install "jdtls")))))
+  ;; (mason-setup
+  ;;   (dolist (pkg '("texlab" "ty" "csharp-language-server" "clangd" "typescript-language-server" "eslint-lsp" "tailwindcss-language-server" "jdtls"))
+  ;;     (unless (mason-installed-p pkg)
+  ;;       (ignore-errors (mason-install pkg)))))
+  (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name (concat user-emacs-directory "mason/bin/"))))
   )
 
 ;; upgrade eglot to get publishDiagnostics support for vscode-eslint-language-server
