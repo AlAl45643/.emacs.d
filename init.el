@@ -1291,7 +1291,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :init
   (setopt
    org-noter-auto-save-last-location t
-   org-noter-always-create-frame nil
+   org-noter-always-create-frame t
    org-noter-max-short-selected-text-length 10000)
   :general
   ('(visual normal) org-noter-doc-mode-map
