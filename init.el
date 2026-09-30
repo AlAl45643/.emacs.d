@@ -1576,7 +1576,10 @@ If NOERROR, inhibit error messages when we can't find the node."
   :ensure t
   :hook
   (tsx-ts-mode . js2-minor-mode)
-  (jsx-ts-mode . js2-minor-mode))
+  (jsx-ts-mode . js2-minor-mode)
+  :init
+  (setopt
+   js2-mode-show-parse-errors nil))
 
 (use-package js
   :mode
@@ -1590,12 +1593,13 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package eglot
   :hook 
   ((astro-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode
-                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode html-mode html-ts-mode json-ts-mode) . eglot-ensure)
+                  js-mode js-ts-mode typescript-ts-mode tsx-ts-mode css-mode css-ts-mode svelte-mode svelte-ts-mode vue-mode vue-ts-mode html-mode html-ts-mode json-ts-mode)
+   . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               `((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" ,(expand-file-name (concat user-emacs-directory "rass-presets/tslint.py"))))
+               `((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" ,(expand-file-name (concat user-emacs-directory "rass-presets/mytslint.py"))))
   (add-to-list 'eglot-server-programs
-               '((css-mode css-ts-mode) "vscode-css-language-server" "--stdio"))
+               '((css-mode css-ts-mode) "rass" "--" "vscode-css-language-server" "--stdio" "--" "tailwindcss-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
                '((html-mode html-ts-mode) "vscode-html-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
