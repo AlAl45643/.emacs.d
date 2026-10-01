@@ -1597,7 +1597,7 @@ If NOERROR, inhibit error messages when we can't find the node."
    . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               `((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" ,(expand-file-name (concat user-emacs-directory "rass-presets/mytslint.py"))))
+               `((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode jtsx-jsx-mode jtsx-tsx-mode jtsx-typescript-mode) "rass" ,(expand-file-name (concat user-emacs-directory "rass-presets/tslinttail.py"))))
   (add-to-list 'eglot-server-programs
                '((css-mode css-ts-mode) "rass" "--" "vscode-css-language-server" "--stdio" "--" "tailwindcss-language-server" "--stdio"))
   (add-to-list 'eglot-server-programs
