@@ -1151,7 +1151,7 @@ kill the current timer, this may be a break or a running pomodoro."
   (pdf-tools-install t)
   :general-config
   ('(normal visual) pdf-annot-minor-mode-map
-   "<return>" '("pdf-annot-highlight" . (lambda () (interactive (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e"))))
+   "<return>" '("pdf-annot-highlight" . (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
    ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
    "<mouse-8>" 'pdf-view-highlight-and-note-no-question-argument
    "<mouse-9>" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
