@@ -1577,6 +1577,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   :hook
   (tsx-ts-mode . js2-minor-mode)
   (jsx-ts-mode . js2-minor-mode)
+  (js-ts-mode . js2-minor-mode)
+  (typescript-ts-mode . js2-minor-mode)
   :init
   (setopt
    js2-mode-show-parse-errors nil))
