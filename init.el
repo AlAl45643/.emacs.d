@@ -1316,6 +1316,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   :init
   (require 'hi-lock)
   (setopt
+   forge-add-default-bindings nil
    magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   :general
   ("C-c g" 'magit-dispatch
@@ -1323,10 +1324,25 @@ If NOERROR, inhibit error messages when we can't find the node."
   :general-config
   ('(visual normal) magit-mode-map
    "] ]" 'magit-section-forward
-   "[ [" 'magit-section-backward)
+   "[ [" 'magit-section-backward
+   "C-j" 'magit-section-forward-sibling
+   "C-k" 'magit-section-backward-sibling
+   "M-j" 'magit-section-forward
+   "M-k" 'magit-section-backward)
   ('normal magit-section-mode-map
            "] ]" 'magit-section-forward
-           "[ [" 'magit-section-backward))
+           "[ [" 'magit-section-backward
+           "C-j" 'magit-section-forward-sibling
+           "C-k" 'magit-section-backward-sibling
+           "M-j" 'magit-section-forward
+           "M-k" 'magit-section-backward))
+
+(use-package forge
+  :ensure t
+  :init
+  (evil-collection-forge-setup)
+  :after magit
+  )
 
 
 (use-package diff-hl
@@ -1341,6 +1357,8 @@ If NOERROR, inhibit error messages when we can't find the node."
    "[ g" 'diff-hl-previous-hunk
    "] G" 'diff-hl-show-hunk-next
    "[ G" 'diff-hl-show-hunk-previous ))
+
+
 ;;; docker
 
 (use-package docker
