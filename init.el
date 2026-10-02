@@ -1589,6 +1589,11 @@ If NOERROR, inhibit error messages when we can't find the node."
   :hook
   (c-ts-mode . eglot-ensure))
 
+;;; c++
+(use-package eglot
+  :hook
+  (c++-ts-mode . eglot-ensure))
+
 ;;; typescript, javascript, html, and css
 
 (use-package js2-mode
@@ -1600,7 +1605,8 @@ If NOERROR, inhibit error messages when we can't find the node."
   (typescript-ts-mode . js2-minor-mode)
   :init
   (setopt
-   js2-mode-show-parse-errors nil))
+   js2-mode-show-parse-errors nil
+   js2-mode-show-strict-warnings nil))
 
 (use-package js
   :mode
@@ -2245,6 +2251,9 @@ sibling nodes at this level."
                                    ((:theme . modus-vivendi-tinted)
                                     (:font "JetBrains Mono 10")
                                     (:modes csharp-mode csharp-ts-mode))
+                                   ((:theme . ef-maris-light)
+                                    (:font "JetBrains Mono 10")
+                                    (:modes c++-ts-mode c++-mode))
                                    ((:theme . modus-operandi)
                                     (:font "JetBrains Mono 10")
                                     (:modes c-ts-mode))
@@ -2778,7 +2787,16 @@ eshell."
  ;; If there is more than one, they won't work right.
  '(bmkp-last-as-first-bookmark-file "/home/alal/.emacs.d/bookmarks")
  '(custom-safe-themes
-   '("b243ec44629b75034c83be3fa411662f89582223012e8f4110a82dc40bf8561a"
+   '("2b0531a540f4b51e524f551ed7374099f9d743b4de458ade0c52ba18ee6bfe46"
+     "10e330880269244ae45ae9e02fe6f55766da9e15036e7c7f07d7ce228195deb5"
+     "2493d0ad0bb94bd2ad297a6d76288751a532fd6d8d6af694ac14008caa6b7fa2"
+     "ec717a4698b3fa398eb7f8214adba47d4f51bab42c3925ba0ffe3abc5f82712a"
+     "138ed99a323c1b93c52f4b3726caf2bc634b79a76fa63a3d3aff76394db5f28f"
+     "2dd2fe7575d76094652d9e04de604db1cd1cdf1582e1494bc646b2a6e402afb0"
+     "eeaa104f99d641c8be210d3555eba029756d5dc7a2f9a342af526045c3a82c60"
+     "13b88366eb891d6496e06c72c7ef55943c72095bcc93f46bb67473adeb88fcd1"
+     "953a4391d91a93ac734777a53001d1b514c22c4b7233c932ae029a5b01cdf3f7"
+     "b243ec44629b75034c83be3fa411662f89582223012e8f4110a82dc40bf8561a"
      "57496b1da377e22301a964a691534c6f782642c8df57453c2971685c6de08ba1"
      "530e730924892af285af79d88339048da48c572a3c974882682eadb9881fb051"
      default))
