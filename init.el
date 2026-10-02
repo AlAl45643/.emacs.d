@@ -23,23 +23,21 @@
 ;; 2. What is the shortest memorable keybind you can think of?
 ;; 3. Is the keybind available? if it is, then bind the keybind to the command. If not, then is the command currently bound less used than our command? if it is, then replace the command and if command used redo step 7 for the command you replaced. if it is not, then think of the next shortest memorable keybind and redo step 3.
 
-;; + SPC prefix commands should be commands with higher frequency of use than , prefix commands.
+;; + SPC prefix commands should be commands with higher frequency of use than \ prefix commands.
 ;; + The \ prefix and the SPC prefix are restricted to global commands while the , prefix is restricted to major mode.
 ;; + Inbetween keybinds shall be global through functions or local depending on whichever solution is cleaner.
-;; + Incorporate emacs prefixes such as C-h and C-x.
-;; + Prefer binding to prefix-maps when incorporating emacs prefixes.
 ;; + Only defer load for keybinds when keymap isn't available or commands aren't needed until package is loaded.
-;; + Keybinds should be put in the package definition that provides them
+;; + Non-global keybinds should be put in the package definition that provides them
 ;; + Use M-F instead of M-S-f
 
 ;;;;; keybind conventions
 ;; q ephermal quit
 ;; Z Q non epehermal quit
-;; C-j C-k for history elements
+;; M-p M-n for history elements
+;; C-j C-k next same heading
 ;; g j g k next same heading
 ;; ]] [[ next visible heading
 ;; C-S-j C-S-k next grouping or scroll
-;; should M or S or C have meanings?
 
 ;;; core
 (defvar elpaca-installer-version 0.12)
@@ -402,6 +400,12 @@
   "D" 'narrow-to-defun
   "H" 'narrow-to-defun
   "R" 'narrow-to-region)
+
+(+general-global-menu! "bookmarks" "b"
+  "w" 'burly-bookmark-windows
+  "o" 'burly-open-bookmark
+  "f" 'burly-bookmark-frames)
+
 
 
 ;;;; simulation keys
