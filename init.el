@@ -1314,6 +1314,7 @@ If NOERROR, inhibit error messages when we can't find the node."
 (use-package magit
   :ensure t
   :init
+  (require 'hi-lock)
   (setopt
    magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   :general
