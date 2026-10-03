@@ -33,6 +33,9 @@ uv tool install "black"
 sudo dnf install nodejs
 sudo npm install -g prettier
 
+# install c++
+sudo dnf install g++
+sudo dnf install clang-format
 
 # install jetbrains mono font
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh)"
