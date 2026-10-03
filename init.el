@@ -2517,6 +2517,28 @@ sibling nodes at this level."
 (use-package flyspell
   :hook ((org-mode LaTeX-mode) . flyspell-mode))
 
+;;; compile
+(defun my-recompile ()
+  "Recompile then normalize evil keymaps."
+  (interactive)
+  (recompile)
+  (evil-normalize-keymaps))
+
+(use-package compile
+  :general-config
+  ('(normal motion) compilation-shell-minor-mode-map
+           "TAB" 'compilation-next-error
+           "S-TAB" 'compilation-previous-error
+           "<backtab>" 'compilation-previous-error
+           "RET" 'compile-goto-error
+           "M-RET" 'compilation-display-error
+           "M-<return>" 'compilation-display-error
+           "g r" 'my-recompile
+           "q" 'quit-window
+           "Z Z" 'quit-window
+           "Z Q" 'evil-quit
+           "[ [" 'compilation-previous-file
+           "] ]" 'compilation-next-file))
 ;;; shells
 
 (use-package ghostel
