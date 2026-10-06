@@ -338,6 +338,7 @@
   "b" 'my-build-code
   "a" 'my-code-action
   "d" 'dape
+  "r" 'dape-repl
   "n" 'my-code-rename
   "k" 'docker
   "e" 'eglot
@@ -1730,13 +1731,12 @@ changes."
   (dape-display-source . pulse-momentary-highlight-one-line)
   (dape-start . (lambda () (save-some-buffers t t)))
   (dape-compile . kill-buffer)
-  (python-ts-mode . dape-breakpoint-global-mode)
-  (csharp-ts-mode . dape-breakpoint-global-mode)
+  (prog-mode . dape-breakpoint-global-mode)
   :custom
   (dape-key-prefix nil)
   :init
   (setopt
-   dape-buffer-window-arrangement 'left
+   dape-buffer-window-arrangement 'gud
    dape-info-hide-mode-line nil)
   :config
   (push (cons '("Z Q" . nil)
@@ -1750,32 +1750,46 @@ changes."
   ('normal 'override
            :predicate 'dape-active-mode
            "Z Q" '("dape-quit" . dape-quit))
-  ('(normal insert) 'override
-   :predicate 'dape-active-mode
-   "<f5>" 'dape-continue
-   "<f6>" 'dape-step-out
-   "<f7>" 'dape-step-in
-   "<f8>" 'dape-next)
-  (python-ts-mode-map
-   "C-c B" 'dape-breakpoint-remove-all
-   "C-c r" 'dape-repl
-   "C-c b" 'dape-breakpoint-toggle
-   "C-c e" 'dape-breakpoint-expression
-   "C-c h" 'dape-breakpoint-hits
-   "C-c i" 'dape-info
-   "C-c l" 'dape-breakpoint-log
-   "C-c q" 'dape-quit
-   "C-c w" 'my-dape-watch-dwim)
-  (csharp-ts-mode-map
-   "C-c B" 'dape-breakpoint-remove-all
-   "C-c r" 'dape-repl
-   "C-c b" 'dape-breakpoint-toggle
-   "C-c e" 'dape-breakpoint-expression
-   "C-c h" 'dape-breakpoint-hits
-   "C-c i" 'dape-info
-   "C-c l" 'dape-breakpoint-log
-   "C-c q" 'dape-quit
-   "C-c w" 'my-dape-watch-dwim))
+  ;; ('(normal insert) 'override
+  ;;  :predicate 'dape-active-mode
+  ;;  "<f5>" 'dape-continue
+  ;;  "<f6>" 'dape-step-out
+  ;;  "<f7>" 'dape-step-in
+  ;;  "<f8>" 'dape-next)
+  ;; (python-ts-mode-map
+  ;;  "C-c B" 'dape-breakpoint-remove-all
+  ;;  "C-c r" 'dape-repl
+  ;;  "C-c b" 'dape-breakpoint-toggle
+  ;;  "C-c e" 'dape-breakpoint-expression
+  ;;  "C-c h" 'dape-breakpoint-hits
+  ;;  "C-c i" 'dape-info
+  ;;  "C-c l" 'dape-breakpoint-log
+  ;;  "C-c q" 'dape-quit
+  ;;  "C-c k" 'dape-quit
+  ;;  "C-c w" 'my-dape-watch-dwim)
+  ;; (csharp-ts-mode-map
+  ;;  "C-c B" 'dape-breakpoint-remove-all
+  ;;  "C-c r" 'dape-repl
+  ;;  "C-c b" 'dape-breakpoint-toggle
+  ;;  "C-c e" 'dape-breakpoint-expression
+  ;;  "C-c h" 'dape-breakpoint-hits
+  ;;  "C-c i" 'dape-info
+  ;;  "C-c l" 'dape-breakpoint-log
+  ;;  "C-c q" 'dape-quit
+  ;;  "C-c k" 'dape-quit
+  ;;  "C-c w" 'my-dape-watch-dwim)
+  ;; (c++-ts-mode-map
+  ;;  "C-c B" 'dape-breakpoint-remove-all
+  ;;  "C-c r" 'dape-repl
+  ;;  "C-c b" 'dape-breakpoint-toggle
+  ;;  "C-c e" 'dape-breakpoint-expression
+  ;;  "C-c h" 'dape-breakpoint-hits
+  ;;  "C-c i" 'dape-info
+  ;;  "C-c l" 'dape-breakpoint-log
+  ;;  "C-c q" 'dape-quit
+  ;;  "C-c k" 'dape-quit
+  ;;  "C-c w" 'my-dape-watch-dwim))
+  )
 
 (use-package edebug
   :config
@@ -2530,18 +2544,18 @@ sibling nodes at this level."
 (use-package compile
   :general-config
   ('(normal motion) compilation-shell-minor-mode-map
-           "TAB" 'compilation-next-error
-           "S-TAB" 'compilation-previous-error
-           "<backtab>" 'compilation-previous-error
-           "RET" 'compile-goto-error
-           "M-RET" 'compilation-display-error
-           "M-<return>" 'compilation-display-error
-           "g r" 'my-recompile
-           "q" 'quit-window
-           "Z Z" 'quit-window
-           "Z Q" 'evil-quit
-           "[ [" 'compilation-previous-file
-           "] ]" 'compilation-next-file))
+   "TAB" 'compilation-next-error
+   "S-TAB" 'compilation-previous-error
+   "<backtab>" 'compilation-previous-error
+   "RET" 'compile-goto-error
+   "M-RET" 'compilation-display-error
+   "M-<return>" 'compilation-display-error
+   "g r" 'my-recompile
+   "q" 'quit-window
+   "Z Z" 'quit-window
+   "Z Q" 'evil-quit
+   "[ [" 'compilation-previous-file
+   "] ]" 'compilation-next-file))
 ;;; shells
 
 (use-package ghostel
