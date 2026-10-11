@@ -88,6 +88,7 @@ class TypeScriptLogic(LspLogic):
                         res_items[i] = dmerge(res_items[i], cfg)
                     else:
                         res_items[i] = cfg
+        # this fixes tailwindcss completion not working in some files
         elif (
             method == "workspace/configuration"
             and not is_error
@@ -118,16 +119,6 @@ class TypeScriptLogic(LspLogic):
                     else:
                         res_items[i] = language
 
-                # elif section == "editor":
-                #     editor = {
-                #         "quickSuggestions": {
-                #             "strings": True
-                #         },
-                #     }
-                #     if isinstance(res_items[i], dict):
-                #         res_items[i] = dmerge(res_items[i], editor)
-                #     else:
-                #         res_items[i] = editor
 
 
         await super().on_client_response(
