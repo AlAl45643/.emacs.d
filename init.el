@@ -383,7 +383,9 @@
 
 (+general-global-menu! "file" "f"
   "d" 'delete-file
-  "c" 'copy-file)
+  "c" 'copy-file
+  "r" 'rename-file
+  "m" 'rename-file)
 
 (+general-global-menu! "window" "w"
   "h" 'windmove-display-left

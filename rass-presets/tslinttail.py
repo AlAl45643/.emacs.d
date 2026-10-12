@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import subprocess
 
 from rassumfrassum.frassum import LspLogic, Server
 from rassumfrassum.json import JSON
@@ -126,15 +127,39 @@ class TypeScriptLogic(LspLogic):
         )
 
 
+# get node js json and typescript version
+
+# search for tsc and run tsc --version
+def _find_workspace_folder_from_curdir() -> str | None:
+    """Find workspace folder from path called from."""
+
+    current_dir = os.path.abspath("./")
+    while current_dir != "/":
+        if os.path.exists(os.path.join(current_dir, "package.json")):
+            return current_dir
+        current_dir = os.path.dirname(current_dir)
+    return None
+    
+
+def _get_tsc_version() -> int:
+    """Get tsc version."""
+    process = subprocess.run([f"{_find_workspace_folder_from_curdir()}/node_modules/.bin/tsc", "--version"], capture_output=True, text=True)
+    res = int(process.stdout[8])
+    return res
 def servers():
     """Return eslint-language-server."""
+
+    typescript_server = ["typescript-language-server", "--stdio"]
+    if  _get_tsc_version() >= 7:
+        typescript_server = [f"{_find_workspace_folder_from_curdir()}/node_modules/.bin/tsc", "--lsp", "--stdio"]
+    
 
     eslint_server = "vscode-eslint-language-server"
     if shutil.which(eslint_server) is None:
         eslint_server = "eslint-language-server"
 
     return [
-        ["typescript-language-server", "--stdio"],
+        typescript_server,
         [eslint_server, "--stdio"],
         ["tailwindcss-language-server", "--stdio"],
     ]
