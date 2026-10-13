@@ -843,8 +843,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-imenu-depth 1
    org-indirect-buffer-display 'current-window
    org-capture-templates
-   '(("o" "Unity and Outline" entry (here)
-      "* Unity and Outline\n%?\n** The first part is about \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about" :immediate-finish t)
+   '(("o" "Structural Reading" entry (here)
+      "* What type of book is this, practical or theoretical, and what subject that already contains other books does this one belong in?\n* What is the unity of this book in a single sentence?\n* How are the major parts of this book outlined and organized into a whole? \n** The first part is about \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about \n* What problems is the author trying to solve?" :immediate-finish t)
      ("n" "Note" entry (file "notes.org") "* %? %^g\n%t" :jump-to-captured t)
      ("e" "Emacs Config" entry (file+headline "TODO.org" "Emacs Configuration") "* TODO %?\n")))
   :config
