@@ -173,6 +173,13 @@
   (bookmark-maybe-load-default-file)
   (bookmark-jump "Burly: init"))
 
+(defun my-consult-outline ()
+  "Use consult-org-heading in org-mode, consult-outline else."
+  (interactive)
+  (if (eq major-mode 'org-mode)
+      (call-interactively #'consult-org-heading)
+    (call-interactively #'consult-outline)))
+
 
 (general-define-key
  :keymaps 'override
@@ -203,7 +210,7 @@
   "m" 'make-frame-command
   "1" 'my-window-bookmark-home
   "2" 'my-window-bookmark-init
-  "o" 'consult-outline
+  "o" 'my-consult-outline
   "y" 'evil-avy-goto-char-2
   "=" 'text-scale-adjust
   "-" 'text-scale-adjust
