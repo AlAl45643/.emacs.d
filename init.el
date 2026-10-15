@@ -1609,7 +1609,7 @@ If NOERROR, inhibit error messages when we can't find the node."
   (c++-ts-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
-               '((c++-ts-mode c++-mode) "clangd" "--limit-results=500")))
+               '((c++-ts-mode c++-mode) "clangd" "--limit-results=1000")))
 
 ;;; typescript, javascript, html, and css
 
