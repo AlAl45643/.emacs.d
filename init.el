@@ -761,6 +761,17 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       (org-timestamp-change min 'minute)
       )))
 
+(defun my-org--collect-todo-state (property target)
+  "Return `property' value if TODO is `target', else empty string."
+  (let ((val (org-entry-get (org-element-at-point) "EFFORT"))
+        (state (org-get-todo-state)))
+    (if (or (null val) (not (string= state target)))
+        ""
+      val)))
+
+
+
+
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
@@ -842,6 +853,8 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-latex-packages-alist '(("" "cancel" t ("pdflatex")))
    org-imenu-depth 1
    org-indirect-buffer-display 'current-window
+   org-columns-summary-types `((":todo" org-columns--summary-sum-times ,(lambda (property) (my-org--collect-todo-state property "TODO")))
+                               (":done" org-columns--summary-sum-times ,(lambda (property) (my-org--collect-todo-state property "DONE"))))
    org-capture-templates
    '(("o" "Structural Reading" entry (here)
       "* What type of book is this, practical or theoretical, and what subject that already contains other books does this one belong in?\n* What is the unity of this book in a single sentence?\n* How are the major parts of this book outlined and organized into a whole? \n** The first part is about \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about \n* What problems is the author trying to solve?" :immediate-finish t)
