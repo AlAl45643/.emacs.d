@@ -416,7 +416,12 @@
   "o" 'burly-open-bookmark
   "f" 'burly-bookmark-frames)
 
-
+(+general-global-menu! "replace" "r"
+    "q" 'query-replace
+    "Q" 'query-replace-regexp
+    "r" 'replace-string
+    "R" 'replace-regexp
+    "d" 'replace-regexp-as-diff)
 
 ;;;; simulation keys
 (general-def '(normal visual) 'override
