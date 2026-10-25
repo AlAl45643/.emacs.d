@@ -308,10 +308,12 @@
 
 (defun widen-indirect ()
   (interactive)
-  (if (buffer-base-buffer)
-      (let ((indirect-start (window-start))
-            (indirect-point (point)))
+  (if-let ((base (buffer-base-buffer))
+           (indirect-start (window-start))
+           (indirect-point (point)))
+      (progn
         (kill-current-buffer)
+        (switch-to-buffer base)
         (set-window-start nil indirect-start)
         (set-window-point nil indirect-point))
     (call-interactively #'widen)))
@@ -417,11 +419,11 @@
   "f" 'burly-bookmark-frames)
 
 (+general-global-menu! "replace" "r"
-    "q" 'query-replace
-    "Q" 'query-replace-regexp
-    "r" 'replace-string
-    "R" 'replace-regexp
-    "d" 'replace-regexp-as-diff)
+  "q" 'query-replace
+  "Q" 'query-replace-regexp
+  "r" 'replace-string
+  "R" 'replace-regexp
+  "d" 'replace-regexp-as-diff)
 
 ;;;; simulation keys
 (general-def '(normal visual) 'override
@@ -775,12 +777,20 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       val)))
 
 
+(defun my-org-fix-agenda ()
+  "Keep agenda on current day."
+  (if-let ((wind (get-buffer-window "*Org Agenda*")))
+      (with-selected-window wind
+        (org-agenda-goto-today)
+        (call-interactively #'evil-scroll-line-to-top))
+    nil))
 
 
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
   :hook
+  (org-agenda-mode . (lambda () (run-at-time "5 minutes" "5 minutes" #'my-org-fix-agenda)))
   (org-agenda-finalize . my-org-agenda-to-appt)
   (org-metaleft-final . (lambda () (interactive) (call-interactively #'paredit-backward-up) t))
   (org-metaright-final . (lambda () (interactive) (call-interactively #'paredit-forward-down) t))
@@ -903,11 +913,6 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       (save-window-excursion
         (org-clock-out))))
 
-(defun my-org-pomodoro-fix-agenda (&rest r)
-  "Keep agenda on current day."
-  (with-selected-window (get-buffer-window "*Org Agenda*")
-    (org-agenda-goto-today)
-    (call-interactively #'evil-scroll-line-to-top)))
 
 (defvar my-killed-pomodoro-time 30 "Value when pomdoro is killed.")
 
@@ -973,13 +978,7 @@ kill the current timer, this may be a break or a running pomodoro."
                                (org-pomodoro-start :pomodoro))
                            (org-pomodoro-start :pomodoro))))))
   (advice-add 'org-pomodoro-finished :around #'my-org-pomodoro-finished-with-overtime-advice)
-  (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice)
-  (advice-add 'org-pomodoro-start :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'org-pomodoro-rest :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'org-pomodoro-finished :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'my-org-pomodoro-resume-after-break :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'org-pomodoro-kill :after #'my-org-pomodoro-fix-agenda)
-  (advice-add 'org-pomodoro :after #'my-org-pomodoro-fix-agenda))
+  (advice-add 'org-pomodoro-kill :before #'my-org-pomodoro-clockout-before-kill-advice))
 
 
 (use-package evil-org
