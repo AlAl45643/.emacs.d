@@ -1156,18 +1156,7 @@ kill the current timer, this may be a break or a running pomodoro."
   (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
   (windmove-right))
 
-(defun pdf-view-highlight-and-note-no-question-argument ()
-  "Highlight the active region and create org-noter no without question"
-  (interactive)
-  (call-interactively #'org-noter-insert-precise-note-toggle-no-questions)
-  (windmove-left)
-  (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
-  (windmove-right)
-  (call-interactively #'org-previous-visible-heading)
-  (call-interactively #'evil-forward-word-begin)
-  (evil-insert 0))
-
-(defun pdf-view-highlight-and-note-no-question-sentence-or-word ()
+(defun pdf-view-highlight-and-note ()
   "Highlight the active region and create org-noter no without question"
   (interactive)
   (call-interactively #'org-noter-insert-precise-note-toggle-no-questions)
@@ -1177,7 +1166,7 @@ kill the current timer, this may be a break or a running pomodoro."
   )
 
 
-(defun pdf-view-highlight-and-add-to-argument ()
+(defun pdf-view-highlight-and-add-to-previous-note ()
   "Highlight the active region and add region to previous argument."
   (interactive)
   (let ((region (pdf-view-active-region)))
@@ -1193,17 +1182,6 @@ kill the current timer, this may be a break or a running pomodoro."
     (pdf-annot-add-highlight-markup-annotation region "#baa60e")))
 
 
-(defun pdf-view-summarize-last-argument ()
-  "Go to the start of the last heading (argument) to summarize."
-  (interactive)
-  (windmove-right)
-  (when (not (org-at-heading-p t))
-    (org-previous-visible-heading 1))
-  (visual-line-mode -1)
-  (evil-org-beginning-of-line)
-  (evil-forward-word-begin)
-  (evil-insert 0)
-  (visual-line-mode 1))
 
 
 
@@ -1216,11 +1194,11 @@ kill the current timer, this may be a break or a running pomodoro."
   ('(normal visual) pdf-annot-minor-mode-map
    "<return>" '("pdf-annot-highlight" . (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
    ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
-   "<mouse-8>" 'pdf-view-highlight-and-note-no-question-argument
+   "<mouse-8>" 'pdf-view-highlight-and-note
    "<mouse-9>" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
-   "<mouse-10>" 'pdf-view-highlight-and-note-no-question-sentence-or-word
-   "<mouse-11>" 'pdf-view-highlight-and-add-to-argument
-   "<mouse-12>" 'pdf-view-summarize-last-argument
+   "<mouse-10>" 'pdf-view-highlight-and-add-to-previous-note
+   ;; "<mouse-11>" 'pdf-view-highlight-and-add-to-argument
+   ;; "<mouse-12>" 'pdf-view-summarize-last-argument
    "C-c 1" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
    "C-c 2" '("pdf-annot-highlight" . (lambda () (interactive (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e"))))
    ;; "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
@@ -1321,19 +1299,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   )
 
 
-(use-package devdocs
-  :ensure t
-  :general
-  (help-map
-   "D" 'devdocs-peruse)
-  :general-config
-  ('normal devdocs-mode-map
-           "C-o" 'devdocs-go-back
-           "C-i" 'devdocs-go-forward
-           "C-j" 'devdocs-next-page
-           "C-k" 'devdocs-previous-page
-           "i" 'devdocs-lookup)
-  )
 
 (defvar org-noter-toggle-sync t)
 
