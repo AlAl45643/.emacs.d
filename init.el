@@ -777,26 +777,19 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       val)))
 
 
-(defun my-org-fix-agenda ()
-  "Keep agenda on current day."
-  (if-let ((wind (get-buffer-window "*Org Agenda*")))
-      (with-selected-window wind
-        (org-agenda-goto-today)
-        (call-interactively #'evil-scroll-line-to-top))
-    nil))
-
 (defun my-org-update-agenda ()
   "Update agenda."
   (if-let ((wind (get-buffer-window "*Org Agenda*")))
       (with-selected-window wind
         (org-agenda-redo)
-    nil)))
+        (org-agenda-goto-today)
+        (call-interactively #'evil-scroll-line-to-top))
+    nil))
 
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
   :hook
-  (org-agenda-mode . (lambda () (run-at-time "5 minutes" "5 minutes" #'my-org-fix-agenda)))
   (org-agenda-mode . (lambda () (run-at-time "5 minutes" "5 minutes" #'my-org-update-agenda)))
   (org-agenda-finalize . my-org-agenda-to-appt)
   (org-metaleft-final . (lambda () (interactive) (call-interactively #'paredit-backward-up) t))
