@@ -19,23 +19,23 @@ cd bin
 # EOL
 
 # setup makeinfo for info
-sudo dnf install makeinfo
+sudo dnf install -y makeinfo
 
 # setup python
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 
 # setup rass
-uv tool install "rassumfrassum"
-uv tool install "black"
+uv tool install -y "rassumfrassum"
+uv tool install -y "black"
 
 # install npm
-sudo dnf install nodejs
+sudo dnf install -y nodejs
 sudo npm install -g prettier
 
 # install c++
-sudo dnf install g++
-sudo dnf install clang-format
+sudo dnf install -y g++
+sudo dnf install -y clang-format
 
 # install jetbrains mono font
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/install_manual.sh)"

@@ -8,9 +8,10 @@ RUN usermod -aG wheel user
 RUN dnf -y install glibc-locale-source glibc-langpack-en
 ENV LANG=en_US.utf8
 RUN echo "$LANG UTF-8" >> /etc/locale.gen
-RUN localedef --verbose --force -i en_US -f UTF-8 en_US.UTF-8
-RUN update-locale --reset LANG=$LANG
+# RUN localedef --verbose --force -i en_US -f UTF-8 en_US.UTF-8
+# RUN update-locale --reset LANG=$LANG
 USER user
 WORKDIR /home/user/
-
-CMD rm .emacs && git clone https://github.com/AlAl45643/.emacs.d.git && bash .emacs.d/setup.sh && emacs
+RUN rm .emacs
+RUN git clone https://github.com/AlAl45643/.emacs.d.git
+CMD emacs
