@@ -1440,10 +1440,10 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; php
 
 
-(use-package php-mode
-  :ensure t
-  :mode ("\\.php\\'" . php-ts-mode)
-  )
+;; (use-package php-mode
+;;   :ensure t
+;;   :mode ("\\.php\\'" . php-ts-mode)
+;;   )
 ;;; latex
 
 
