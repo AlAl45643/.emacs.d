@@ -778,20 +778,20 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
      (t "0:00"))))
 
 
-(defun my-org-fix-agenda ()
-  "Keep agenda on current day."
+(defun my-org-update-agenda ()
+  "Update agenda."
   (if-let ((wind (get-buffer-window "*Org Agenda*")))
       (with-selected-window wind
+        (org-agenda-redo)
         (org-agenda-goto-today)
         (call-interactively #'evil-scroll-line-to-top))
     nil))
-
 
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
   :hook
-  (org-agenda-mode . (lambda () (run-at-time "5 minutes" "5 minutes" #'my-org-fix-agenda)))
+  (org-agenda-mode . (lambda () (run-at-time "5 minutes" "5 minutes" #'my-org-update-agenda)))
   (org-agenda-finalize . my-org-agenda-to-appt)
   (org-metaleft-final . (lambda () (interactive) (call-interactively #'paredit-backward-up) t))
   (org-metaright-final . (lambda () (interactive) (call-interactively #'paredit-forward-down) t))
@@ -869,8 +869,7 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
    org-latex-packages-alist '(("" "cancel" t ("pdflatex")))
    org-imenu-depth 1
    org-indirect-buffer-display 'current-window
-   org-columns-summary-types `((":todo" org-columns--summary-sum-times ,(lambda (property) (my-org--collect-todo-state property "TODO")))
-                               (":done" org-columns--summary-sum-times ,(lambda (property) (my-org--collect-todo-state property "DONE"))))
+   org-columns-summary-types `((":todo" org-columns--summary-sum-times ,(lambda (property) (my-org--collect-todo-state property "TODO"))))
    org-capture-templates
    '(("o" "Structural Reading" entry (here)
       "* What type of book is this, practical or theoretical, and what subject that already contains other books does this one belong in?\n* What is the unity of this book in a single sentence?\n* How are the major parts of this book outlined and organized into a whole? \n** The first part is about \n*** The first section considers \n**** The first point is \n** The second part is about \n** The third part is about \n* What problems is the author trying to solve?" :immediate-finish t)
@@ -1158,18 +1157,7 @@ kill the current timer, this may be a break or a running pomodoro."
   (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
   (windmove-right))
 
-(defun pdf-view-highlight-and-note-no-question-argument ()
-  "Highlight the active region and create org-noter no without question"
-  (interactive)
-  (call-interactively #'org-noter-insert-precise-note-toggle-no-questions)
-  (windmove-left)
-  (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")
-  (windmove-right)
-  (call-interactively #'org-previous-visible-heading)
-  (call-interactively #'evil-forward-word-begin)
-  (evil-insert 0))
-
-(defun pdf-view-highlight-and-note-no-question-sentence-or-word ()
+(defun pdf-view-highlight-and-note ()
   "Highlight the active region and create org-noter no without question"
   (interactive)
   (call-interactively #'org-noter-insert-precise-note-toggle-no-questions)
@@ -1179,7 +1167,7 @@ kill the current timer, this may be a break or a running pomodoro."
   )
 
 
-(defun pdf-view-highlight-and-add-to-argument ()
+(defun pdf-view-highlight-and-add-to-previous-note ()
   "Highlight the active region and add region to previous argument."
   (interactive)
   (let ((region (pdf-view-active-region)))
@@ -1195,17 +1183,6 @@ kill the current timer, this may be a break or a running pomodoro."
     (pdf-annot-add-highlight-markup-annotation region "#baa60e")))
 
 
-(defun pdf-view-summarize-last-argument ()
-  "Go to the start of the last heading (argument) to summarize."
-  (interactive)
-  (windmove-right)
-  (when (not (org-at-heading-p t))
-    (org-previous-visible-heading 1))
-  (visual-line-mode -1)
-  (evil-org-beginning-of-line)
-  (evil-forward-word-begin)
-  (evil-insert 0)
-  (visual-line-mode 1))
 
 
 
@@ -1218,11 +1195,11 @@ kill the current timer, this may be a break or a running pomodoro."
   ('(normal visual) pdf-annot-minor-mode-map
    "<return>" '("pdf-annot-highlight" . (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e")))
    ;; "C-c 1" '("pdf-annot-mark-understand". (lambda () (interactive) (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#3d7f4d")))
-   "<mouse-8>" 'pdf-view-highlight-and-note-no-question-argument
+   "<mouse-8>" 'pdf-view-highlight-and-note
    "<mouse-9>" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
-   "<mouse-10>" 'pdf-view-highlight-and-note-no-question-sentence-or-word
-   "<mouse-11>" 'pdf-view-highlight-and-add-to-argument
-   "<mouse-12>" 'pdf-view-summarize-last-argument
+   "<mouse-10>" 'pdf-view-highlight-and-add-to-previous-note
+   ;; "<mouse-11>" 'pdf-view-highlight-and-add-to-argument
+   ;; "<mouse-12>" 'pdf-view-summarize-last-argument
    "C-c 1" '("pdf-annot-mark-squiggly" . (lambda () (interactive) (pdf-annot-add-squiggly-markup-annotation (pdf-view-active-region t) "#4d7f4d")))
    "C-c 2" '("pdf-annot-highlight" . (lambda () (interactive (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t) "#baa60e"))))
    ;; "C-c 2" '("pdf-annot-mark-keyword". (lambda () (interactive) (pdf-annot-add-strikeout-markup-annotation (pdf-view-active-region t) "blue")))
@@ -1323,19 +1300,6 @@ If NOERROR, inhibit error messages when we can't find the node."
   )
 
 
-(use-package devdocs
-  :ensure t
-  :general
-  (help-map
-   "D" 'devdocs-peruse)
-  :general-config
-  ('normal devdocs-mode-map
-           "C-o" 'devdocs-go-back
-           "C-i" 'devdocs-go-forward
-           "C-j" 'devdocs-next-page
-           "C-k" 'devdocs-previous-page
-           "i" 'devdocs-lookup)
-  )
 
 (defvar org-noter-toggle-sync t)
 
@@ -1477,10 +1441,10 @@ If NOERROR, inhibit error messages when we can't find the node."
 ;;; php
 
 
-(use-package php-mode
-  :ensure t
-  :mode ("\\.php\\'" . php-ts-mode)
-  )
+;; (use-package php-mode
+;;   :ensure t
+;;   :mode ("\\.php\\'" . php-ts-mode)
+;;   )
 ;;; latex
 
 
