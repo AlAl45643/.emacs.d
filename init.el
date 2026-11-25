@@ -769,12 +769,13 @@ If COUNT is given, move COUNT - 1 screen lines downward first."
       )))
 
 (defun my-org--collect-todo-state (property target)
-  "Return `property' value if TODO is `target', else empty string."
+  "Return effort for matching TODO state, or zero when effort is present."
   (let ((val (org-entry-get (org-element-at-point) "EFFORT"))
         (state (org-get-todo-state)))
-    (if (or (null val) (not (string= state target)))
-        ""
-      val)))
+    (cond
+     ((null val) "")
+     ((string= state target) val)
+     (t "0:00"))))
 
 
 (defun my-org-fix-agenda ()
